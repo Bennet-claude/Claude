@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dilo's — Friseursalon &amp; Barbershop in Hemmingen</title>
+<meta name="description" content="Dilo's Friseursalon &amp; Barbershop, Alfred-Bentz-Straße 1 in Hemmingen, direkt beim Kaufland. Damen-, Herren- und Kinderhaarschnitte sowie Bartpflege. Mo–Sa 9:00–18:30 Uhr. Telefon 0511 20300647.">
+<meta name="theme-color" content="#14120f">
+<link rel="canonical" href="https://www.beispiel-domain.de/"><!-- HIER EINTRAGEN (5/6): echte Domain -->
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Dilo's — Friseursalon &amp; Barbershop in Hemmingen">
+<meta property="og:description" content="Haarschnitt und Bartpflege für die ganze Familie. Alfred-Bentz-Straße 1, direkt beim Kaufland Hemmingen. Mo–Sa 9:00–18:30 Uhr.">
+<meta property="og:locale" content="de_DE">
+<!-- HIER EINTRAGEN (6/6): Vorschaubild, sobald ein Salonfoto da ist:
+     <meta property="og:image" content="https://www.beispiel-domain.de/bilder/salon.jpg"> -->
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2314120f'/%3E%3Ctext x='32' y='46' font-family='Georgia,serif' font-size='36' fill='%23c9a35c' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+
+<!-- Schriften liegen lokal im Ordner /fonts.
+     Bewusst NICHT über fonts.googleapis.com: dabei würde die IP-Adresse jedes
+     Besuchers an Google gehen – dafür gab es in Deutschland bereits
+     Schadensersatzurteile und Abmahnungen. Lokal gehostet: gleiche Schrift,
+     kein externer Request, kein Einwilligungsbedarf. -->
+<link rel="preload" href="fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+
+<!-- ================================================================
+     DILO'S FRISEURSALON & BARBERSHOP
+     Offene Stellen: "HIER EINTRAGEN" (6 Stück).
+
+     Animationen – bewusst zweigeteilt:
+     A) Normale Abschnitte: native CSS Scroll-Driven Animations
+        (animation-timeline: view()), kein JavaScript.
+     B) Genau ein Signature-Moment (gepinnter Hero mit sich selbst
+        zeichnender Schere): GSAP + ScrollTrigger.
+     ================================================================ -->
+
+<!-- Läuft VOR dem ersten Paint: markiert, ob der gepinnte Hero überhaupt
+     zum Einsatz kommt. Nur dann wird Hero-Inhalt vorab ausgeblendet –
+     sonst gäbe es ein Aufblitzen von Text, der gleich wieder verschwindet. -->
+<script>
+(function(){
+  var d = document.documentElement;
+  var big = window.matchMedia('(min-width: 768px)').matches;
+  var ok  = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  if (big && ok) d.className = 'pinmode';
+})();
+</script>
+
+<style>
+/* ================= Schriften ================= */
+@font-face{
+  font-family:'Fraunces';font-style:normal;font-display:swap;font-weight:100 900;
+  src:url(fonts/fraunces.woff2) format('woff2-variations');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:'Inter';font-style:normal;font-display:swap;font-weight:100 900;
+  src:url(fonts/inter.woff2) format('woff2-variations');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+FEFF,U+FFFD;
+}
+
+:root{
+  --ink:#14120f;
+  --ink-2:#1b1814;
+  --text:#f3ede3;
+  --text-2:#918879;
+  --line:rgba(255,255,255,.085);
+  --brass:#c9a35c;
+  --brass-lt:#e9cf9b;
+
+  --display:'Fraunces',"Iowan Old Style",Georgia,serif;
+  --body:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+
+  /* Eine einzige Kurve für alles Hereinkommende. Nie ease-in. */
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ui:180ms;              /* UI-Feedback: Hover, Buttons */
+
+  --pad:clamp(22px,5vw,52px);
+  --air:clamp(108px,17vh,216px);
+  --bar:0px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ink);color:var(--text);
+  font-family:var(--body);font-size:17px;line-height:1.62;font-optical-sizing:auto;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:var(--bar)}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{margin:0;font-family:var(--display);font-optical-sizing:auto;
+  font-weight:600;letter-spacing:-.022em;line-height:1.04}
+.wrap{width:100%;max-width:1180px;margin-inline:auto;padding-inline:var(--pad)}
+section{padding-block:var(--air);position:relative}
+
+/* ---------- Papier-/Leinenstruktur über der ganzen Fläche ---------- */
+.paper{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.04;
+  mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E")}
+
+/* ---------- Typografie ---------- */
+.display{font-size:clamp(3.2rem,7.6vw,5.6rem);line-height:1.02;letter-spacing:-.028em;
+  max-width:min(100%,900px);text-wrap:balance}
+.lead{font-size:clamp(1.1rem,1.8vw,1.35rem);color:var(--text-2);max-width:42ch;
+  margin:1.5em 0 0;line-height:1.5}
+
+/* ---------- Navigation ---------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:40}
+.nav::before{content:"";position:absolute;inset:0;z-index:-1;opacity:1;
+  background:rgba(20,18,15,.74);backdrop-filter:saturate(150%) blur(18px);
+  border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding-block:15px;min-height:58px}
+.nav-name{font-family:var(--display);font-size:1.05rem;font-weight:600;
+  letter-spacing:-.015em;text-decoration:none;white-space:nowrap;
+  min-width:0;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis}
+.nav-name em{font-style:normal;font-family:var(--body);font-size:.88rem;
+  font-weight:400;color:var(--text-2);letter-spacing:0}
+.nav-right{display:flex;align-items:center;gap:clamp(18px,2.6vw,32px)}
+.nav-links{display:none;gap:clamp(18px,2.4vw,28px);font-size:.9rem}
+@media(min-width:900px){.nav-links{display:flex}}
+.nav-links a{color:var(--text-2);text-decoration:none;transition:color var(--ui) var(--ease-out)}
+.nav-tel{font-size:.93rem;font-weight:500;text-decoration:none;white-space:nowrap;
+  flex:none;font-variant-numeric:tabular-nums;transition:opacity var(--ui) var(--ease-out)}
+
+/* ---------- Signature-Moment: Hero ---------- */
+.hero{min-height:100svh;display:flex;align-items:center;position:relative;
+  padding-block:118px 104px;overflow:hidden}
+.hero .wrap{position:relative;z-index:1;width:100%}
+.draw{position:absolute;top:50%;left:50%;width:min(92vw,430px);height:auto;
+  transform:translate(-50%,-56%);color:var(--brass);opacity:.4;pointer-events:none;z-index:0}
+@media(min-width:900px){
+  .draw{left:auto;right:4%;top:50%;width:min(46vw,540px);transform:translateY(-50%);opacity:.55}
+}
+.draw path{fill:none;stroke:currentColor;stroke-width:3;
+  stroke-linecap:round;stroke-linejoin:round}
+.hero h1{font-size:clamp(4.2rem,14.5vw,10rem);line-height:.92;letter-spacing:-.035em;
+  margin-bottom:.16em}
+.hero .claim{font-family:var(--body);font-size:clamp(1.1rem,2.2vw,1.55rem);
+  line-height:1.4;max-width:23ch;margin:0 0 2.4em;letter-spacing:-.012em;color:var(--text)}
+.hero .cta-row{margin:0}
+.herofoot{border-top:1px solid var(--line)}
+.herofoot .wrap{display:flex;flex-wrap:wrap;gap:10px 48px;padding-block:26px;
+  font-size:.95rem;color:var(--text-2)}
+.herofoot b{color:var(--text);font-weight:500}
+
+/* Der einzige Goldakzent pro Bildschirm */
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:.6em;
+  padding:1.08em 1.9em;border-radius:999px;text-decoration:none;
+  font-size:1rem;font-weight:600;letter-spacing:-.01em;color:#1d1710;background:var(--brass);
+  transition:background var(--ui) var(--ease-out),transform var(--ui) var(--ease-out)}
+.cta-quiet{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.2)}
+
+/* ---------- Foto-Band ---------- */
+.band{padding-inline:var(--pad)}
+.shot{max-width:1180px;margin-inline:auto;aspect-ratio:4/5;background:var(--ink-2);
+  border:1px solid var(--line);border-radius:20px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:.6em;text-align:center;padding:30px}
+@media(min-width:760px){.shot{aspect-ratio:16/9}}
+.shot .tag{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--brass)}
+.shot .t{font-family:var(--display);font-size:clamp(1.2rem,2.6vw,1.7rem);font-weight:600}
+.shot .s{font-size:.93rem;color:var(--text-2);max-width:34ch}
+
+/* ---------- Leistungen ---------- */
+.grid{display:grid;gap:1px;margin-top:clamp(52px,7vw,92px);
+  background:var(--line);border-block:1px solid var(--line)}
+@media(min-width:680px){.grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(4,1fr)}}
+.cell{background:var(--ink);padding:clamp(30px,3.4vw,46px) clamp(24px,2.4vw,34px);
+  display:flex;flex-direction:column;min-height:228px;
+  transition:background var(--ui) var(--ease-out)}
+.cell h3{font-size:1.5rem;margin-bottom:.5em}
+.cell p{margin:0 0 2.4em;color:var(--text-2);font-size:.97rem;line-height:1.5}
+.cell .price{margin-top:auto;font-family:var(--display);font-size:1.35rem;font-weight:600;
+  color:var(--brass);font-variant-numeric:tabular-nums}
+.cell .price em{display:block;font-family:var(--body);font-style:normal;font-size:.62rem;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--text-2);font-weight:500;margin-top:.8em}
+.after{margin-top:clamp(38px,5vw,62px);display:flex;flex-wrap:wrap;gap:16px 52px}
+.after p{margin:0;color:var(--text-2);font-size:.95rem;max-width:44ch}
+.after b{color:var(--text);font-weight:600}
+
+/* ---------- Warum ---------- */
+.reasons{display:grid;gap:clamp(34px,5vw,56px);margin-top:clamp(52px,7vw,92px)}
+@media(min-width:860px){.reasons{grid-template-columns:repeat(3,1fr)}}
+.reason h3{font-size:clamp(1.5rem,2.4vw,1.9rem);margin-bottom:.55em}
+.reason p{margin:0;color:var(--text-2);font-size:1rem}
+
+/* ---------- Standort ---------- */
+.split{display:grid;gap:clamp(34px,5vw,72px);margin-top:clamp(50px,7vw,86px)}
+@media(min-width:920px){.split{grid-template-columns:1.05fr .95fr;align-items:start}}
+.map{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);
+  aspect-ratio:4/3;background:var(--ink-2)}
+.map iframe{width:100%;height:100%;border:0;display:block;background:var(--ink-2);
+  filter:saturate(.8) contrast(.95) brightness(.9)}
+.mapload{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:.5em;text-align:center;padding:28px;text-decoration:none;
+  color:var(--text);transition:background-color var(--ui) var(--ease-out)}
+.mapload b{font-family:var(--display);font-size:1.2rem;font-weight:600}
+.mapload span{font-size:.93rem;color:var(--text-2)}
+.mapload .cta{margin-top:1em;font-size:.9rem;padding:.78em 1.5em}
+.mapload .hint{font-size:.78rem;max-width:30ch;margin-top:1em}
+.meta dl{margin:0}
+.meta dt{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-2);margin-top:2.4em}
+.meta dt:first-of-type{margin-top:0}
+.meta dd{margin:.6em 0 0;font-size:1.06rem}
+.meta a{text-decoration:none;border-bottom:1px solid rgba(255,255,255,.22);padding-bottom:1px;
+  transition:border-color var(--ui) var(--ease-out)}
+.hours{width:100%;max-width:19em;border-collapse:collapse;font-size:1.02rem}
+.hours th{text-align:left;font-weight:400;padding:.42em 0}
+.hours td{text-align:right;padding:.42em 0;color:var(--text-2);font-variant-numeric:tabular-nums}
+.hours tr+tr th,.hours tr+tr td{border-top:1px solid var(--line)}
+
+/* ---------- Kontakt ---------- */
+.contact{text-align:center}
+.contact .display{margin-inline:auto}
+.telbig{display:inline-block;margin:.7em 0 0;text-decoration:none;color:var(--brass);
+  font-family:var(--display);font-size:clamp(2.3rem,8.4vw,4.8rem);font-weight:600;
+  letter-spacing:-.03em;font-variant-numeric:tabular-nums;
+  transition:color var(--ui) var(--ease-out)}
+.contact .row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:2.6em}
+.contact .note{margin:3.2em auto 0;max-width:36ch;font-size:.92rem;color:var(--text-2)}
+
+/* ---------- Footer ---------- */
+footer{padding-block:clamp(70px,9vw,110px) 48px;font-size:.92rem;color:var(--text-2);
+  border-top:1px solid var(--line)}
+.fcols{display:grid;gap:40px}
+@media(min-width:760px){.fcols{grid-template-columns:1.3fr 1fr 1fr}}
+footer h2{font-family:var(--body);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--text-2);font-weight:500;margin-bottom:1.6em}
+footer p{margin:.35em 0}
+footer a{color:var(--text);text-decoration:none}
+.fname{font-family:var(--display);font-size:1.8rem;font-weight:600;color:var(--text);margin-bottom:.4em}
+.todo{display:inline-block;padding:.2em .55em;border-radius:4px;color:var(--brass-lt);
+  background:rgba(201,163,92,.1);border:1px dashed rgba(201,163,92,.32);font-size:.94em}
+.copy{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);font-size:.8rem}
+
+/* ---------- Anrufleiste (Handy) ---------- */
+.callbar{position:fixed;left:0;right:0;bottom:0;z-index:45;display:none;
+  padding:10px var(--pad) calc(10px + env(safe-area-inset-bottom));
+  background:rgba(20,18,15,.9);backdrop-filter:saturate(150%) blur(18px);
+  border-top:1px solid var(--line)}
+.callbar .cta{width:100%}
+@media(max-width:768px){.callbar{display:block}body{--bar:78px}}
+
+/* =========================================================
+   HOVER – nur wo es echte Zeigegeräte gibt
+   ========================================================= */
+@media (hover:hover) and (pointer:fine){
+  .cta:hover{background:var(--brass-lt);transform:translateY(-1px)}
+  .cta-quiet:hover{background:rgba(255,255,255,.06);transform:translateY(-1px)}
+  .nav-links a:hover{color:var(--text)}
+  .nav-tel:hover{opacity:.7}
+  .cell:hover{background:var(--ink-2)}
+  .mapload:hover{background-color:rgba(255,255,255,.03)}
+  .meta a:hover{border-color:var(--brass)}
+  .telbig:hover{color:var(--brass-lt)}
+}
+
+/* =========================================================
+   A) SCROLL-REVEALS – native CSS, kein JavaScript
+   Fallback ohne Unterstützung (z. B. Firefox ohne Flag):
+   Element ist einfach sichtbar. Kein Blitzen, kein leerer Screen.
+   ========================================================= */
+@keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes fadeonly{from{opacity:0}to{opacity:1}}
+@keyframes navbg{from{opacity:0}to{opacity:1}}
+
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    [data-reveal]{
+      animation:reveal linear both;
+      animation-timeline:view();
+      animation-range:entry 4% cover 26%;
+      animation-timing-function:var(--ease-out);
+    }
+    /* Stagger einer Gruppe: mit Scroll-Timelines wirkt animation-delay nicht,
+       der Versatz läuft deshalb über animation-range. */
+    .cell:nth-child(1){animation-range:entry 4%  cover 26%}
+    .cell:nth-child(2){animation-range:entry 7%  cover 29%}
+    .cell:nth-child(3){animation-range:entry 10% cover 32%}
+    .cell:nth-child(4){animation-range:entry 13% cover 35%}
+  }
+  @media (prefers-reduced-motion: reduce){
+    [data-reveal]{
+      animation:fadeonly linear both;
+      animation-timeline:view();
+      animation-range:entry 4% cover 24%;
+    }
+  }
+}
+@supports (animation-timeline: scroll()){
+  .nav::before{animation:navbg linear both;animation-timeline:scroll(root block);
+    animation-range:0 120px;animation-timing-function:var(--ease-out)}
+}
+
+/* =========================================================
+   B) SIGNATURE-MOMENT – Startzustand nur wenn wirklich gepinnt wird
+   ========================================================= */
+.pinmode [data-seq]{opacity:0}
+.pinmode [data-draw]{stroke-dasharray:1;stroke-dashoffset:1}
+</style>
+</head>
+<body>
+<div class="paper" aria-hidden="true"></div>
+
+<!-- =========================== NAVIGATION =========================== -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="nav-name" href="#top">Dilo's <em>Friseursalon &amp; Barbershop</em></a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="#leistungen">Leistungen</a>
+        <a href="#standort">Standort</a>
+      </div>
+      <a class="nav-tel" href="tel:+4951120300647">0511 20300647</a>
+    </div>
+  </div>
+</nav>
+
+<!-- =========================== HERO / SIGNATURE-MOMENT =========================== -->
+<header class="hero" id="top">
+  <!-- Handgezeichnet wirkende Schere. pathLength="1" normalisiert jede Linie,
+       dadurch reicht stroke-dashoffset 1 -> 0 zum Selbstzeichnen. -->
+  <svg class="draw" id="draw" viewBox="0 0 360 240" fill="none" aria-hidden="true">
+    <!-- Zeichenreihenfolge: Klinge, Klinge, Arm, Arm, Griff, Griff, Schraube -->
+    <path data-draw pathLength="1" d="M28 48 C70 66 120 94 170 120"/>
+    <path data-draw pathLength="1" d="M28 192 C70 174 120 146 170 120"/>
+    <path data-draw pathLength="1" d="M170 120 C200 140 230 160 258 178"/>
+    <path data-draw pathLength="1" d="M170 120 C200 110 230 95 258 84"/>
+    <path data-draw pathLength="1" d="M258 182 a34 26 0 1 0 68 0 a34 26 0 1 0 -68 0"/>
+    <path data-draw pathLength="1" d="M258 80 a34 26 0 1 0 68 0 a34 26 0 1 0 -68 0"/>
+    <path data-draw pathLength="1" d="M170 113 a7 7 0 1 0 0 14 a7 7 0 1 0 0 -14"/>
+  </svg>
+
+  <div class="wrap">
+    <h1 data-seq>Dilo's</h1>
+    <p class="claim" data-seq>Friseursalon und Barbershop für die ganze Familie.</p>
+    <p class="cta-row" data-seq><a class="cta" href="tel:+4951120300647">Termin: 0511 20300647</a></p>
+  </div>
+</header>
+
+<div class="herofoot">
+  <div class="wrap">
+    <span><b>Alfred-Bentz-Straße 1</b> · direkt beim Kaufland Hemmingen</span>
+    <span><b>Mo – Sa 9:00 – 18:30 Uhr</b> · sonntags geschlossen</span>
+  </div>
+</div>
+
+<!-- =========================== FOTO-BAND =========================== -->
+<!-- HIER EINTRAGEN (1/6): Salon-Foto.
+     Den Block <div class="shot"> … </div> ersetzen durch:
+     <img class="shot" src="bilder/salon.jpg"
+          alt="Innenraum von Dilo's Friseursalon & Barbershop in Hemmingen"
+          width="1600" height="900" style="object-fit:cover">  -->
+<div class="band" style="margin-top:var(--air)">
+  <div class="shot" data-reveal>
+    <span class="tag">Platzhalter</span>
+    <span class="t">Hier kommt das Salon-Foto</span>
+    <span class="s">Querformat, mindestens 1600 px breit – Innenraum, Barberstuhl oder Team.</span>
+  </div>
+</div>
+
+<!-- =========================== LEISTUNGEN =========================== -->
+<section id="leistungen">
+  <div class="wrap">
+    <h2 class="display" data-reveal>Vier Leistungen.<br>Ein Handwerk.</h2>
+
+    <div class="grid">
+      <!-- HIER EINTRAGEN (2/6): echte Preise. "XX" ersetzen und
+           danach die Zeile <em>Preis folgt</em> löschen. -->
+      <div class="cell" data-reveal>
+        <h3>Damen</h3>
+        <p>Schnitt und Styling – vom Nachschneiden bis zur neuen Frisur.</p>
+        <span class="price">ab XX&nbsp;€<em>Preis folgt</em></span>
+      </div>
+      <div class="cell" data-reveal>
+        <h3>Herren</h3>
+        <p>Klassischer Schnitt, saubere Übergänge und Konturen.</p>
+        <span class="price">ab XX&nbsp;€<em>Preis folgt</em></span>
+      </div>
+      <div class="cell" data-reveal>
+        <h3>Kinder</h3>
+        <p>Im Tempo des Kindes. Auch beim allerersten Mal.</p>
+        <span class="price">ab XX&nbsp;€<em>Preis folgt</em></span>
+      </div>
+      <div class="cell" data-reveal>
+        <h3>Bart</h3>
+        <p>Kürzen, in Form bringen, Konturen sauber ziehen.</p>
+        <span class="price">ab XX&nbsp;€<em>Preis folgt</em></span>
+      </div>
+    </div>
+
+    <div class="after">
+      <p data-reveal><b>Selbst geschnitten?</b> Wird korrigiert und wieder in Form gebracht –
+         kurz anrufen und beschreiben, worum es geht.</p>
+      <p data-reveal>Angegeben sind Startpreise. Der genaue Preis hängt von Haarlänge
+         und Aufwand ab.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== WARUM =========================== -->
+<section id="warum">
+  <div class="wrap">
+    <h2 class="display" data-reveal>Warum Kunden<br>wiederkommen.</h2>
+    <div class="reasons">
+      <div class="reason" data-reveal>
+        <h3>Kinder sind willkommen</h3>
+        <p>Familien gehören hier zum Alltag. Der Umgang mit jungen Kunden ist
+           eingespielt, nicht die Ausnahme.</p>
+      </div>
+      <div class="reason" data-reveal>
+        <h3>Es wird sich Zeit genommen</h3>
+        <p>Erst wird besprochen, was gewünscht ist. Dann wird geschnitten –
+           so lange, bis es passt.</p>
+      </div>
+      <div class="reason" data-reveal>
+        <h3>Geduld beim ersten Besuch</h3>
+        <p>Wer zum ersten Mal hier ist oder unsicher ist, bekommt Ruhe und
+           Erklärungen statt Zeitdruck.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== STANDORT =========================== -->
+<section id="standort">
+  <div class="wrap">
+    <h2 class="display" data-reveal>Direkt beim Kaufland.</h2>
+    <p class="lead" data-reveal>Alfred-Bentz-Straße 1 in Hemmingen. Den Weg kennt hier jeder.</p>
+
+    <div class="split">
+      <div class="map" data-reveal id="map">
+        <!-- Karte lädt erst auf Klick. Vorher geht nichts an Google.
+             Ohne JavaScript öffnet der Link direkt Google Maps. -->
+        <a class="mapload" id="mapload" target="_blank" rel="noopener"
+           href="https://www.google.com/maps/search/?api=1&query=Alfred-Bentz-Stra%C3%9Fe+1%2C+30966+Hemmingen">
+          <b>Alfred-Bentz-Straße 1</b>
+          <span>30966 Hemmingen</span>
+          <span class="cta">Karte anzeigen</span>
+          <span class="hint">Beim Anzeigen werden Daten an Google übertragen.</span>
+        </a>
+      </div>
+
+      <div class="meta" data-reveal>
+        <dl>
+          <dt>Adresse</dt>
+          <dd>Alfred-Bentz-Straße 1<br>30966 Hemmingen<br>
+              <span style="color:var(--text-2)">Direkt beim Kaufland Hemmingen</span></dd>
+          <dt>Öffnungszeiten</dt>
+          <dd>
+            <table class="hours"><tbody>
+              <tr><th scope="row">Montag – Samstag</th><td>9:00 – 18:30</td></tr>
+              <tr><th scope="row">Sonntag</th><td>geschlossen</td></tr>
+            </tbody></table>
+          </dd>
+          <dt>Telefon</dt>
+          <dd><a href="tel:+4951120300647">0511 20300647</a></dd>
+          <dt>Instagram</dt>
+          <dd><a href="https://www.instagram.com/salon.dilo/" target="_blank" rel="noopener">@salon.dilo</a></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== KONTAKT =========================== -->
+<section class="contact" id="kontakt">
+  <div class="wrap">
+    <h2 class="display" data-reveal>Termin? Einfach anrufen.</h2>
+    <p data-reveal><a class="telbig" href="tel:+4951120300647">0511 20300647</a></p>
+    <div class="row" data-reveal>
+      <a class="cta cta-quiet" href="tel:+4951120300647">Jetzt anrufen</a>
+      <a class="cta cta-quiet" href="https://www.instagram.com/salon.dilo/" target="_blank" rel="noopener">@salon.dilo</a>
+    </div>
+    <p class="note" data-reveal>Eine Online-Terminbuchung gibt es derzeit nicht.
+       Termine werden telefonisch oder direkt im Salon geklärt.</p>
+  </div>
+</section>
+
+<!-- =========================== FOOTER =========================== -->
+<footer>
+  <div class="wrap">
+    <div class="fcols">
+      <div data-reveal>
+        <p class="fname">Dilo's</p>
+        <p>Friseursalon &amp; Barbershop</p>
+        <p style="margin-top:1em">Alfred-Bentz-Straße 1<br>30966 Hemmingen</p>
+        <p style="margin-top:1em"><a href="tel:+4951120300647">0511 20300647</a></p>
+        <p><a href="https://www.instagram.com/salon.dilo/" target="_blank" rel="noopener">@salon.dilo</a></p>
+      </div>
+      <div data-reveal>
+        <h2>Impressum</h2>
+        <!-- HIER EINTRAGEN (3/6): Pflichtangaben nach § 5 DDG (früher § 5 TMG) -->
+        <p><span class="todo">[Rechtlicher Name folgt]</span></p>
+        <p>Inhaber: <span class="todo">[Name folgt]</span></p>
+        <p>E-Mail: <span class="todo">[Adresse folgt]</span></p>
+        <p>Telefon: <a href="tel:+4951120300647">0511 20300647</a></p>
+        <p>USt-IdNr.: <span class="todo">[falls vorhanden]</span></p>
+      </div>
+      <div data-reveal>
+        <h2>Rechtliches</h2>
+        <!-- HIER EINTRAGEN (4/6): Link zur Datenschutzerklärung.
+             Schriften liegen lokal, die Karte lädt erst auf Klick – es gehen
+             also beim Aufruf keine Daten an Dritte. Ein Absatz zu Google Maps
+             gehört trotzdem in die Datenschutzerklärung. -->
+        <p>Datenschutzerklärung: <span class="todo">[folgt]</span></p>
+        <p style="margin-top:1.4em">Mo – Sa 9:00 – 18:30 Uhr<br>Sonntag geschlossen</p>
+      </div>
+    </div>
+    <p class="copy">© <span id="y">2026</span> Dilo's Friseursalon &amp; Barbershop, Hemmingen.</p>
+  </div>
+</footer>
+
+<div class="callbar">
+  <a class="cta" href="tel:+4951120300647">Anrufen · 0511 20300647</a>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"HairSalon",
+  "name":"Dilo's Friseursalon & Barbershop",
+  "telephone":"+49 511 20300647",
+  "address":{"@type":"PostalAddress","streetAddress":"Alfred-Bentz-Straße 1",
+    "postalCode":"30966","addressLocality":"Hemmingen","addressCountry":"DE"},
+  "openingHoursSpecification":[{"@type":"OpeningHoursSpecification",
+    "dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+    "opens":"09:00","closes":"18:30"}],
+  "sameAs":["https://www.instagram.com/salon.dilo/"]
+}
+</script>
+
+<!-- GSAP – ausschließlich für den einen gepinnten Signature-Moment.
+     Selbst hosten statt CDN? Dann diese zwei Zeilen ersetzen durch
+     src="vendor/gsap.min.js" und src="vendor/ScrollTrigger.min.js" –
+     die Dateien liegen bereits im Ordner "vendor". -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+
+<script>
+(function(){
+  var doc = document, root = doc.documentElement;
+  doc.getElementById('y').textContent = new Date().getFullYear();
+
+  /* --- Karte erst auf Klick laden --- */
+  var mapload = doc.getElementById('mapload');
+  if (mapload) mapload.addEventListener('click', function(ev){
+    ev.preventDefault();
+    var f = doc.createElement('iframe');
+    f.title = 'Karte: Alfred-Bentz-Straße 1, 30966 Hemmingen';
+    f.src = 'https://maps.google.com/maps?q=Alfred-Bentz-Stra%C3%9Fe%201%2C%2030966%20Hemmingen&z=16&output=embed';
+    f.loading = 'lazy'; f.referrerPolicy = 'no-referrer-when-downgrade';
+    f.setAttribute('allowfullscreen','');
+    doc.getElementById('map').appendChild(f);
+    mapload.remove();
+  });
+
+  /* ============================================================
+     SCHALTER: Reihenfolge im Signature-Moment
+     true  = Headline erscheint erst, wenn die Schere fertig ist.
+             Wirkt stärker, aber der Salonname kommt erst nach rund
+             870 px Scrollen – der erste Bildschirm trägt dann nur
+             die Zeichnung und die Nummer oben rechts.
+     false = Headline und Telefonnummer stehen sofort da, die Schere
+             zeichnet sich trotzdem am Scroll.
+     ============================================================ */
+  var HEADLINE_NACH_LINIE = true;
+
+  var strokes = doc.querySelectorAll('[data-draw]');
+  var seq     = doc.querySelectorAll('[data-seq]');
+
+  function showEverything(){
+    root.classList.remove('pinmode');
+    for (var i=0;i<seq.length;i++)     seq[i].style.opacity = 1;
+    for (var j=0;j<strokes.length;j++) strokes[j].style.strokeDashoffset = 0;
+  }
+
+  /* Ohne GSAP bleibt die Seite vollständig lesbar, die Schere fertig gezeichnet. */
+  if (!window.gsap || !window.ScrollTrigger) { showEverything(); return; }
+  gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize:true });
+
+  var mm = gsap.matchMedia();
+
+  /* ---- Bewegung reduziert: fertige Linie, sanftes Einblenden, kein Pin ---- */
+  mm.add('(prefers-reduced-motion: reduce)', function(){
+    showEverything();
+    gsap.fromTo([strokes, seq], { opacity:0 },
+      { opacity:1, duration:.5, ease:'none', stagger:.06, delay:.1 });
+  });
+
+  /* ---- Desktop ab 768px: gepinnt, Linie zeichnet sich am Scroll ----
+     Wichtig: Die beiden Klingen werden schon beim Laden gezeichnet.
+     Sonst steht der Besucher vor einem leeren ersten Bildschirm, und das
+     kostet bei einem Ladengeschäft echte Anrufe. Erst der Rest der Schere
+     hängt am Scroll, danach kommt die Headline. */
+  mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', function(){
+    var blades = [strokes[0], strokes[1]];
+    var rest   = Array.prototype.slice.call(strokes, 2);
+
+    gsap.set(strokes, { strokeDasharray:1, strokeDashoffset:1 });
+    if (HEADLINE_NACH_LINIE) { gsap.set(seq, { opacity:0, y:22 }); }
+    else { root.classList.remove('pinmode');
+           gsap.fromTo(seq, { opacity:0, y:22 },
+             { opacity:1, y:0, duration:.7, stagger:.07, ease:'power2.out', delay:.1 }); }
+
+    /* Vorlauf beim Laden – einmalig, nicht scrollgebunden */
+    gsap.to(blades, { strokeDashoffset:0, duration:.9, stagger:.12,
+                      ease:'power2.out', delay:.15 });
+
+    var tl = gsap.timeline({
+      defaults:{ ease:'power1.out' },
+      scrollTrigger:{ trigger:'.hero', start:'top top', end:'+=1500',
+                      pin:true, scrub:true, anticipatePin:1, invalidateOnRefresh:true }
+    });
+
+    /* Arme, Griffe, Schraube folgen am Scroll */
+    tl.to(rest, { strokeDashoffset:0, duration:.2, stagger:.09, ease:'none' }, 0);
+
+    /* Headline erst, wenn die Linie fertig ist */
+    if (HEADLINE_NACH_LINIE) {
+      tl.to(seq[0], { opacity:1, y:0, duration:.16 }, .58)
+        .to(seq[1], { opacity:1, y:0, duration:.14 }, .68)
+        .to(seq[2], { opacity:1, y:0, duration:.14 }, .77);
+    }
+    tl.to('#draw', { opacity:.3, duration:.25, ease:'none' }, .58);
+
+    return function(){ showEverything(); };
+  });
+
+  /* ---- Handy: kein Pin. Die Linie zeichnet sich einmalig beim Laden,
+          Headline und Telefonnummer stehen sofort da. ---- */
+  mm.add('(max-width: 767px) and (prefers-reduced-motion: no-preference)', function(){
+    gsap.set(seq, { opacity:1, y:0 });
+    gsap.set(strokes, { strokeDasharray:1, strokeDashoffset:1 });
+    gsap.to(strokes, { strokeDashoffset:0, duration:.5, stagger:.16,
+                       ease:'power1.out', delay:.25 });
+    gsap.fromTo('#draw', { opacity:.5 }, { opacity:.26, duration:1.8, ease:'power1.out' });
+    return function(){ showEverything(); };
+  });
+
+  /* Sicherheitsnetz */
+  setTimeout(function(){
+    for (var i=0;i<seq.length;i++){
+      if (parseFloat(getComputedStyle(seq[i]).opacity) < .05 &&
+          !ScrollTrigger.getAll().some(function(t){ return t.pin; })) seq[i].style.opacity = 1;
+    }
+  }, 3000);
+})();
+</script>
+</body>
+</html>

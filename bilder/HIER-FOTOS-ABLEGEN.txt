@@ -1,0 +1,10 @@
+Salon-Fotos hier ablegen.
+
+Erwartet wird: salon.jpg
+- Querformat, mindestens 1600 px breit
+- Innenraum, Barberstuhl oder Team
+
+Danach in index.html den Block <div class="shot"> ... </div> ersetzen durch:
+<img class="shot" src="bilder/salon.jpg"
+     alt="Innenraum von Dilo's Friseursalon & Barbershop in Hemmingen"
+     width="1600" height="900" style="object-fit:cover">
