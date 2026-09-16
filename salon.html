@@ -4,181 +4,214 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Der Salon — Dilo's Friseursalon &amp; Barbershop Hemmingen</title>
-<meta name="description" content="Wie wir arbeiten: Zeit für Beratung, ruhige Atmosphäre und ein Salon, in den Familien mit Kindern gern kommen. In Hemmingen beim Kaufland.">
+<meta name="description" content="Wie wir arbeiten und wie es bei uns aussieht. Friseursalon und Barbershop in Hemmingen, beim Kaufland.">
 <link rel="canonical" href="https://friseurmanufaktur.de/salon.html">
-<link rel="preload" href="fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="css/styles.css">
+<link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/onest.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/app.css">
+<script>
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.documentElement.classList.add('motion');
+    window.__notbremse = setTimeout(function () {
+      document.documentElement.classList.remove('motion');
+    }, 1600);
+  })();
+</script>
 </head>
 <body>
 
-<a class="sprungmarke" href="#inhalt">Zum Inhalt springen</a>
+<a class="sprung" href="#inhalt">Zum Inhalt springen</a>
 
 <header class="kopf">
-  <div class="schale">
-    <div class="kopf__reihe">
-      <a class="marke" href="index.html">
-        Dilo's
-        <span>Friseursalon &amp; Barbershop</span>
-      </a>
-      <a class="ruf" href="tel:+4951120300647">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/>
-        </svg>
-        <span class="ruf__zahl">0511 20300647</span>
-        <span class="nur-fuer-screenreader">Anrufen: 0511 20300647</span>
-      </a>
-    </div>
-    <nav class="navigation" aria-label="Hauptnavigation">
-      <ul>
+  <div class="huelle kopf__reihe">
+    <a class="marke" href="index.html">Dilo's</a>
+    <nav aria-label="Hauptnavigation">
+      <ul class="nav">
         <li><a href="index.html">Start</a></li>
         <li><a href="leistungen.html">Preise</a></li>
         <li><a href="salon.html" aria-current="page">Salon</a></li>
-        <li><a href="galerie.html">Galerie</a></li>
         <li><a href="kontakt.html">Kontakt</a></li>
       </ul>
     </nav>
+    <a class="knopf" href="tel:+4951120300647">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+      0511 20300647
+    </a>
   </div>
 </header>
 
+<a class="knopf knopf--akzent ruf-fest" href="tel:+4951120300647">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+  Termin anrufen
+</a>
+
 <main id="inhalt">
 
-  <section class="band band--schmal">
-    <div class="schale">
-      <h1>Der Salon</h1>
-      <div class="fliesstext gross" style="margin-top:1.5rem">
-        <p>
-          Wir sind Friseursalon und Barbershop zugleich. Das heißt: Die Frau bekommt
-          ihre Farbe, der Mann seinen Bart, und das Kind seinen ersten Haarschnitt —
-          am selben Nachmittag, im selben Laden.
+  <section class="buehne">
+    <div class="huelle buehne__satz">
+      <div>
+        <h1 class="riese">
+          <span class="maske"><span>Zwei Läden</span></span>
+          <span class="maske"><span>in einem.</span></span>
+        </h1>
+        <div class="buehne__unter" style="margin-top:clamp(1.5rem,3vw,2.25rem)">
+          <p class="fuehrend">
+            Die Frau bekommt ihre Farbe, der Mann seinen Bart, das Kind seinen
+            ersten Haarschnitt. Am selben Nachmittag, im selben Laden.
+          </p>
+        </div>
+      </div>
+      <div class="buehne__neben">
+        <div class="foto foto--hoch foto--b">
+          <p class="foto__hinweis">Foto: Blick in den Salon</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--dunst">
+    <div class="huelle">
+      <div class="satz satz--text-bild">
+        <div class="auf">
+          <h2 class="gross">Erst zuhören.<br>Dann schneiden.</h2>
+          <div class="lauf" style="margin-top:1.5rem">
+            <p class="weich">
+              Die meisten schlechten Haarschnitte entstehen vor der Schere: Es
+              wird nicht gefragt, was jemand möchte, und nicht gesagt, was mit
+              den vorhandenen Haaren geht.
+            </p>
+            <p class="weich">
+              Wenn etwas nicht funktioniert, sagen wir das vorher. Ein Wunsch,
+              der bei Ihrer Haarstruktur nicht aufgeht, wird nicht besser,
+              wenn wir es trotzdem versuchen.
+            </p>
+          </div>
+        </div>
+        <div class="auf">
+          <div class="foto foto--quer foto--c" data-tiefe="4">
+            <p class="foto__hinweis">Foto: Beratung am Stuhl</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--eng">
+    <div class="huelle">
+      <div class="kopfzeile kopfzeile--geteilt">
+        <h2 class="gross">Arbeiten.</h2>
+        <p class="fuehrend">
+          Alle Bilder entstehen hier im Laden. Fotos aus dem Netz zeigen wir
+          nicht — die sagen nichts darüber, was Sie bekommen.
         </p>
       </div>
     </div>
+
+    <div class="galerie">
+      <div class="galerie__bahn" style="padding-inline:var(--rand)">
+        <figure class="galerie__stueck" style="margin:0">
+          <div class="foto foto--hoch"><p class="foto__hinweis">Damenschnitt</p></div>
+        </figure>
+        <figure class="galerie__stueck" style="margin:0">
+          <div class="foto foto--hoch foto--b"><p class="foto__hinweis">Herrenschnitt, Übergang</p></div>
+        </figure>
+        <figure class="galerie__stueck" style="margin:0">
+          <div class="foto foto--hoch foto--c"><p class="foto__hinweis">Bart in Form</p></div>
+        </figure>
+        <figure class="galerie__stueck" style="margin:0">
+          <div class="foto foto--hoch foto--d"><p class="foto__hinweis">Farbe und Strähnen</p></div>
+        </figure>
+        <figure class="galerie__stueck" style="margin:0">
+          <div class="foto foto--hoch foto--b"><p class="foto__hinweis">Kinderschnitt</p></div>
+        </figure>
+        <figure class="galerie__stueck" style="margin:0">
+          <div class="foto foto--hoch foto--c"><p class="foto__hinweis">Vorher und nachher</p></div>
+        </figure>
+      </div>
+    </div>
+
+    <div class="huelle" style="margin-top:clamp(2rem,4vw,3rem)">
+      <div class="notiz">
+        <p><b>An den Inhaber:</b> Ersetzen Sie jedes
+        <code>&lt;div class="foto …"&gt;…&lt;/div&gt;</code> durch
+        <code>&lt;img src="bilder/name.jpg" alt="kurze Beschreibung" loading="lazy"&gt;</code>.
+        Kundenfotos nur mit Einwilligung, bei Kindern mit der Einwilligung der
+        Eltern. Diesen Kasten vor dem Livegang löschen.</p>
+      </div>
+    </div>
   </section>
 
-  <section class="band band--schmal kante-oben">
-    <div class="schale">
-      <div class="satz satz--text-bild">
-        <div class="zeig">
-          <h2>Erst zuhören, dann schneiden.</h2>
-          <div class="fliesstext" style="margin-top:1.25rem">
-            <p>
-              Die meisten schlechten Haarschnitte entstehen nicht an der Schere,
-              sondern davor: Es wird nicht gefragt, was jemand eigentlich möchte,
-              und nicht gesagt, was mit den vorhandenen Haaren machbar ist.
+  <section class="band band--stein">
+    <div class="huelle">
+      <div class="satz satz--halb">
+        <div>
+          <h2 class="gross">Kinder dürfen hier Kinder sein.</h2>
+          <div class="lauf" style="margin-top:1.5rem">
+            <p class="weich">
+              Der erste Haarschnitt ist unheimlich: ein fremder Mensch, ein
+              surrendes Gerät, ein Umhang, unter dem man die Hände nicht sieht.
             </p>
-            <p>
-              Deshalb reden wir erst. Wie fällt Ihr Haar von allein? Wie viel Zeit
-              wollen Sie morgens investieren? Was hat beim letzten Mal gestört?
-              Danach wissen wir beide, was passieren soll.
-            </p>
-            <p>
-              Wenn etwas nicht geht, sagen wir das vorher. Ein Wunsch, der bei Ihrer
-              Haarstruktur nicht funktioniert, wird auch nicht dadurch besser, dass
-              wir es trotzdem versuchen.
+            <p class="weich">
+              Wir gehen das langsam an. Das Kind darf die Maschine erst ansehen
+              und anfassen. Klappt es heute nicht, klappt es an einem anderen
+              Tag — das kostet nichts.
             </p>
           </div>
         </div>
-
-        <div class="platz" style="aspect-ratio:4/5">
-          <b>Platzhalter: Foto vom Salon</b>
-          <small>
-            Innenraum, Stühle, Spiegel. Hochformat, mindestens 1200&nbsp;px breit.
-            Ablegen unter <code>bilder/salon-innen.jpg</code>
-          </small>
+        <div>
+          <h2 class="gross">Auch beim zehnten Mal gefragt.</h2>
+          <div class="lauf" style="margin-top:1.5rem">
+            <p class="weich">
+              Stammkunden bekommen nicht automatisch dasselbe wie beim letzten
+              Mal. Haare wachsen anders nach, und Menschen ändern ihre Meinung.
+            </p>
+            <p class="weich">
+              Wir fragen deshalb jedes Mal kurz nach. Das dauert dreißig
+              Sekunden und erspart sechs Wochen Ärger.
+            </p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="band leder">
-    <div class="schale">
-      <div class="satz satz--zwei">
-        <div>
-          <h2>Kinder dürfen hier Kinder sein.</h2>
-          <div class="fliesstext matt" style="margin-top:1.25rem">
-            <p>
-              Der erste Haarschnitt ist für viele Kinder erst einmal unheimlich.
-              Ein fremder Mensch, ein surrendes Gerät, ein Umhang, unter dem man
-              die Hände nicht mehr sieht.
-            </p>
-            <p>
-              Wir gehen das langsam an. Das Kind darf sich die Maschine erst ansehen
-              und anfassen. Wenn es an einem Tag nicht klappt, klappt es an einem
-              anderen — das ist kein Problem und kostet auch nichts.
-            </p>
-          </div>
-        </div>
-        <div>
-          <h2>Auch beim vierten Mal noch ernst gemeint.</h2>
-          <div class="fliesstext matt" style="margin-top:1.25rem">
-            <p>
-              Ein Stammkunde bekommt nicht automatisch dasselbe wie beim letzten Mal.
-              Haare wachsen anders nach, Jahreszeiten ändern, was gut aussitzt,
-              und Menschen ändern ihre Meinung.
-            </p>
-            <p>
-              Wir fragen deshalb jedes Mal kurz nach, ob es so bleiben soll. Das
-              dauert dreißig Sekunden und erspart sechs Wochen Ärger.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="band band--schmal">
-    <div class="schale">
-      <h2>Über Dilo</h2>
-
-      <div class="todo">
+  <section class="band">
+    <div class="huelle">
+      <h2 class="gross">Über Dilo</h2>
+      <div class="notiz" style="margin-top:1.5rem;max-width:56ch">
         <p><b>An den Inhaber:</b> Diesen Abschnitt schreiben nur Sie selbst — wir
         wollen nichts über Ihren Werdegang behaupten, was nicht stimmt.</p>
-        <p>Nützlich sind zum Beispiel: seit wann Sie Friseur sind, wo Sie gelernt
-        haben, seit wann es den Salon in Hemmingen gibt, ob Sie Meister sind, und
-        was Sie am liebsten machen. Drei bis fünf Sätze reichen völlig.</p>
+        <p>Nützlich sind: seit wann Sie Friseur sind, wo Sie gelernt haben, seit
+        wann es den Salon gibt, ob Sie Meister sind. Drei bis fünf Sätze reichen.</p>
       </div>
-
-      <div class="fliesstext" style="margin-top:2rem">
-        <p class="matt">
-          [Hier stehen später drei bis fünf Sätze über Dilo: Ausbildung, wie lange
-          es den Salon schon gibt, was ihm an der Arbeit wichtig ist.]
-        </p>
-      </div>
-
-      <p style="margin-top:2rem">
-        <a class="verweis" href="galerie.html">Arbeiten ansehen</a>
+      <p class="fuehrend" style="margin-top:2rem">
+        [Hier stehen später drei bis fünf Sätze über Dilo.]
       </p>
     </div>
   </section>
 
-  <section class="band band--schmal dunkel">
-    <div class="schale">
-      <div class="satz satz--zwei">
-        <div>
-          <h2>Kommen Sie vorbei.</h2>
-          <p class="fliesstext matt" style="margin-top:1rem">
-            Alfred-Bentz-Straße 1, direkt beim Kaufland in Hemmingen.
-            Montag bis Samstag von 9:00 bis 18:30 Uhr.
-          </p>
-        </div>
-        <div>
-          <p class="matt" style="margin-bottom:.6rem">Termin am Telefon</p>
-          <a class="telefon-gross" href="tel:+4951120300647">0511&nbsp;20300647</a>
-        </div>
-      </div>
+  <section class="band band--tinte">
+    <div class="huelle" style="text-align:center">
+      <p class="zart" style="font-size:1rem">Termine machen wir am Telefon</p>
+      <p style="margin-top:0.75rem">
+        <a class="telefon" href="tel:+4951120300647">0511 20300647</a>
+      </p>
+      <p style="margin-top:2rem">
+        <a class="knopf knopf--gross knopf--hell" href="kontakt.html">Anfahrt und Öffnungszeiten</a>
+      </p>
     </div>
   </section>
 
 </main>
 
 <footer class="fuss">
-  <div class="schale">
+  <div class="huelle">
     <div class="fuss__satz">
       <div>
         <p class="fuss__marke">Dilo's Friseursalon<br>&amp; Barbershop</p>
-        <address class="adresse matt">
+        <address class="weich">
           Alfred-Bentz-Straße 1<br>
           30966 Hemmingen<br>
           <a href="tel:+4951120300647">0511 20300647</a>
@@ -188,40 +221,29 @@
         <h2>Seiten</h2>
         <ul>
           <li><a href="index.html">Start</a></li>
-          <li><a href="leistungen.html">Leistungen &amp; Preise</a></li>
-          <li><a href="galerie.html">Galerie</a></li>
-          <li><a href="kontakt.html">Kontakt &amp; Anfahrt</a></li>
+          <li><a href="leistungen.html">Preise</a></li>
+          <li><a href="kontakt.html">Kontakt</a></li>
+          <li><a href="https://www.instagram.com/salon.dilo/" rel="noopener">Instagram</a></li>
         </ul>
       </div>
       <div>
-        <h2>Öffnungszeiten</h2>
-        <ul class="tafel">
-          <li class="zeile">
-            <span class="zeile__name">Mo–Sa</span>
-            <span class="zeile__f" aria-hidden="true"></span>
-            <span class="zeile__preis">9:00–18:30</span>
-          </li>
-          <li class="zeile">
-            <span class="zeile__name">So</span>
-            <span class="zeile__f" aria-hidden="true"></span>
-            <span class="zeile__preis geschlossen">geschlossen</span>
-          </li>
+        <h2>Geöffnet</h2>
+        <ul>
+          <li class="weich">Montag bis Samstag<br>9:00 – 18:30 Uhr</li>
+          <li class="zart">Sonntag geschlossen</li>
         </ul>
-        <p style="margin-top:1.25rem">
-          <a href="https://www.instagram.com/salon.dilo/" rel="noopener">Instagram @salon.dilo</a>
-        </p>
       </div>
     </div>
     <div class="fuss__schluss">
-      <span>© <span id="jahr">2026</span> Dilo's Friseursalon &amp; Barbershop</span>
-      <span>
-        <a href="impressum.html">Impressum</a> &nbsp;
-        <a href="datenschutz.html">Datenschutz</a>
-      </span>
+      <span>© <span data-jahr>2026</span> Dilo's Friseursalon &amp; Barbershop</span>
+      <span><a href="impressum.html">Impressum</a> &nbsp;&nbsp; <a href="datenschutz.html">Datenschutz</a></span>
     </div>
   </div>
 </footer>
 
-<script>document.getElementById('jahr').textContent = new Date().getFullYear();</script>
+<script src="vendor/gsap.min.js" defer></script>
+<script src="vendor/ScrollTrigger.min.js" defer></script>
+<script src="js/motion.js" defer></script>
+<script src="js/salon.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,778 @@
+/* Dilo's Friseursalon & Barbershop — Hemmingen */
+
+@font-face {
+  font-family: 'Geist';
+  src: url('../fonts/geist.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Onest';
+  src: url('../fonts/onest.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Hell und neutral. Der Akzent ist ein tiefes Gruen statt des ueblichen
+     warmen Sandtons — der Laden ist zur Haelfte Barbershop, eine Beauty-
+     Palette in Rosé oder Terrakotta wuerde die Haelfte der Kundschaft
+     ansprechen und die andere nicht. */
+  --weiss: #FFFFFF;
+  --dunst: #F5F4F2;
+  --stein: #EAE8E4;
+  --stein-tief: #DEDBD6;
+  --tinte: #16171A;
+  --grau: #6C6E73;
+  --zart: #A3A5AA;
+  --akzent: #1E5C48;
+  --akzent-hell: #3E8F73;
+
+  --display: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --text: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --rund-gross: 32px;
+  --rund: 22px;
+  --rund-klein: 14px;
+
+  --kurve: cubic-bezier(0.22, 1, 0.36, 1);
+  --schnell: 200ms;
+  --ruhig: 320ms;
+
+  --spalte: 1240px;
+  --rand: clamp(1.25rem, 4.5vw, 4rem);
+
+  --schatten: 0 2px 6px rgba(22, 23, 26, 0.04), 0 12px 32px rgba(22, 23, 26, 0.06);
+  --schatten-hoch: 0 4px 12px rgba(22, 23, 26, 0.06), 0 24px 60px rgba(22, 23, 26, 0.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--weiss);
+  color: var(--tinte);
+  font-family: var(--text);
+  font-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
+  line-height: 1.65;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  font-synthesis-weight: none;
+}
+
+/* Keine Silbentrennung, nirgends — es soll nirgends ein Trennstrich
+   mitten in einem Wort stehen. Damit lange deutsche Komposita auf schmalen
+   Geraeten trotzdem nicht aus dem Bild laufen, duerfen sie ohne Strich
+   umbrechen. */
+body, p, h1, h2, h3, li, a, span {
+  hyphens: none;
+  -webkit-hyphens: none;
+}
+
+/* anywhere statt break-word: nur anywhere verkleinert auch die
+   Mindestbreite, sonst sprengt ein langes Kompositum das Grid. */
+h1, h2, h3, p, li, address { overflow-wrap: anywhere; }
+.recht > *, .lauf > *, .karte > *, .zahlen > * { min-width: 0; }
+
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+
+:focus-visible {
+  outline: 2.5px solid var(--akzent);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.sr {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+.sprung {
+  position: fixed; top: 0; left: 50%;
+  transform: translate(-50%, -150%);
+  z-index: 200;
+  background: var(--tinte); color: var(--weiss);
+  padding: 0.85rem 1.5rem;
+  border-radius: 0 0 var(--rund-klein) var(--rund-klein);
+  font-weight: 600;
+  transition: transform var(--ruhig) var(--kurve);
+}
+.sprung:focus { transform: translate(-50%, 0); }
+
+/* ---------- Typografie ---------- */
+
+h1, h2, h3 {
+  font-family: var(--display);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.riese {
+  font-size: clamp(2.75rem, 7.2vw, 5.25rem);
+  font-weight: 700;
+  letter-spacing: -0.042em;
+  line-height: 0.94;
+}
+
+.gross {
+  font-size: clamp(2rem, 4.6vw, 3.5rem);
+  font-weight: 650;
+  letter-spacing: -0.038em;
+  line-height: 0.98;
+}
+
+.mittel {
+  font-size: clamp(1.625rem, 3.4vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.klein-titel {
+  font-family: var(--display);
+  font-size: clamp(1.125rem, 1.6vw, 1.3125rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+p { margin: 0; }
+.lauf { max-width: 46ch; }
+.lauf p + p { margin-top: 1.1em; }
+
+.fuehrend {
+  font-size: clamp(1.125rem, 1.5vw, 1.3125rem);
+  line-height: 1.6;
+  color: var(--grau);
+  max-width: 44ch;
+}
+
+.weich { color: var(--grau); }
+.zart { color: var(--zart); }
+/* Der helle Grauton erreicht auf Weiss nur 2,5:1. Er ist deshalb
+   ausschliesslich fuer grosse Schrift zugelassen, nie fuer Fliesstext. */
+.zart:not(.mittel):not(.gross):not(.riese) { font-size: max(1.125rem, 1em); }
+
+.dunkel { color: var(--weiss); }
+.dunkel .weich { color: rgba(255, 255, 255, 0.72); }
+.dunkel .zart { color: rgba(255, 255, 255, 0.52); }
+.dunkel .fuehrend { color: rgba(255, 255, 255, 0.74); }
+
+/* ---------- Geruest ---------- */
+
+.huelle {
+  width: 100%;
+  max-width: var(--spalte);
+  margin-inline: auto;
+  padding-inline: var(--rand);
+}
+
+.band { padding-block: clamp(4.5rem, 10vw, 9rem); scroll-margin-top: 6rem; }
+.band--eng { padding-block: clamp(3rem, 6vw, 5rem); }
+.band--dunst { background: var(--dunst); }
+.band--stein { background: var(--stein); }
+.band--tinte { background: var(--tinte); color: var(--weiss); }
+
+/* ---------- Navigation ---------- */
+
+.kopf {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: clamp(0.6rem, 1.5vw, 1rem) 0;
+  transition: background var(--ruhig) var(--kurve), backdrop-filter var(--ruhig) var(--kurve);
+}
+
+.kopf--fest {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(22px);
+  -webkit-backdrop-filter: saturate(180%) blur(22px);
+}
+
+.kopf__reihe {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.marke {
+  font-family: var(--display);
+  font-size: clamp(1.125rem, 1.7vw, 1.375rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.nav { display: none; }
+
+@media (min-width: 60rem) {
+  .nav {
+    display: flex;
+    gap: clamp(1.5rem, 2.6vw, 2.5rem);
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+  .nav a {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--grau);
+    transition: color var(--schnell) var(--kurve);
+  }
+  .nav a[aria-current='page'] { color: var(--tinte); font-weight: 600; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav a:hover { color: var(--tinte); }
+}
+
+.knopf {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--text);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 0.7rem 1.35rem;
+  border-radius: 999px;
+  border: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  background: var(--tinte);
+  color: var(--weiss);
+  transition: transform var(--schnell) var(--kurve), background var(--schnell) var(--kurve);
+}
+
+.knopf svg { width: 15px; height: 15px; flex: none; }
+
+.knopf--hell { background: var(--weiss); color: var(--tinte); }
+.knopf--akzent { background: var(--akzent); color: var(--weiss); }
+
+.knopf--gross {
+  font-size: clamp(1rem, 1.3vw, 1.125rem);
+  padding: 1.05rem 2.1rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .knopf:hover { transform: translateY(-2px); }
+  .knopf--hell:hover { background: var(--stein); }
+}
+
+/* Auf Mobil bleibt die Nummer ueber der Daumenzone erreichbar. */
+.ruf-fest {
+  position: fixed;
+  left: 50%;
+  bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 90;
+  box-shadow: var(--schatten-hoch);
+}
+
+@media (min-width: 60rem) {
+  .ruf-fest { display: none; }
+}
+
+/* ---------- Foto-Flaechen ----------
+   Bis echte Bilder da sind, stehen hier bewusst gestaltete Farbflaechen
+   statt grauer Kaesten. Ein <img> darin uebernimmt automatisch. */
+
+.foto {
+  position: relative;
+  border-radius: var(--rund-gross);
+  overflow: hidden;
+  background: var(--stein);
+  isolation: isolate;
+  box-shadow: inset 0 0 0 1px rgba(22,23,26,0.05), inset 0 -60px 90px -50px rgba(22,23,26,0.28);
+}
+
+.foto img { width: 100%; height: 100%; object-fit: cover; }
+
+.foto::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 100% at 30% -5%, #FFFFFF 0%, rgba(255,255,255,0) 46%),
+    radial-gradient(85% 85% at 82% 18%, #C6D4CD 0%, rgba(0,0,0,0) 56%),
+    radial-gradient(130% 115% at 15% 105%, #8EA79B 0%, rgba(0,0,0,0) 62%),
+    linear-gradient(155deg, #E9EDEB 0%, #A5BAB0 100%);
+  z-index: -2;
+}
+
+/* Randabdunklung gibt der Flaeche Koerper, damit sie nicht wie ein
+   vergessener Kasten wirkt. */
+.foto::marker { content: ''; }
+
+.foto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+.foto--b::before {
+  background:
+    radial-gradient(120% 100% at 30% -5%, #FFFFFF 0%, rgba(255,255,255,0) 46%),
+    radial-gradient(85% 85% at 82% 18%, #CFD8D4 0%, rgba(0,0,0,0) 56%),
+    radial-gradient(130% 115% at 15% 105%, #7E9AAA 0%, rgba(0,0,0,0) 62%),
+    linear-gradient(200deg, #E9EDEB 0%, #9FB4BE 100%);
+}
+
+.foto--c::before {
+  background:
+    radial-gradient(120% 100% at 30% -5%, #FFFFFF 0%, rgba(255,255,255,0) 46%),
+    radial-gradient(85% 85% at 82% 18%, #D3D7CE 0%, rgba(0,0,0,0) 56%),
+    radial-gradient(130% 115% at 15% 105%, #93A188 0%, rgba(0,0,0,0) 62%),
+    linear-gradient(140deg, #E9EDEB 0%, #AFB9A6 100%);
+}
+
+.foto--d::before {
+  background:
+    radial-gradient(120% 100% at 30% -5%, #FFFFFF 0%, rgba(255,255,255,0) 46%),
+    radial-gradient(85% 85% at 82% 18%, #CBD3D9 0%, rgba(0,0,0,0) 56%),
+    radial-gradient(130% 115% at 15% 105%, #8B929B 0%, rgba(0,0,0,0) 62%),
+    linear-gradient(175deg, #E9EDEB 0%, #A6AEB6 100%);
+}
+
+.foto__hinweis {
+  position: absolute;
+  left: 1rem; bottom: 1rem;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--grau);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+}
+
+.foto--hoch { aspect-ratio: 4 / 5; }
+.foto--quadrat { aspect-ratio: 1 / 1; }
+.foto--quer { aspect-ratio: 16 / 10; }
+.foto--breit { aspect-ratio: 21 / 9; }
+
+/* ---------- Startbild ---------- */
+
+.buehne {
+  position: relative;
+  padding-top: clamp(6rem, 11vw, 8.5rem);
+  padding-bottom: clamp(2.5rem, 5vw, 4rem);
+  background:
+    radial-gradient(70% 55% at 78% 8%, #EBF0ED 0%, rgba(235,240,237,0) 62%),
+    radial-gradient(60% 50% at 8% 34%, #F3F4F3 0%, rgba(243,244,243,0) 58%),
+    var(--weiss);
+  overflow: hidden;
+}
+
+.buehne__satz {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+  align-items: end;
+}
+
+@media (min-width: 62rem) {
+  .buehne__satz { grid-template-columns: 1.18fr 0.82fr; }
+}
+
+.maske { display: block; overflow: hidden; padding-block: 0.06em; }
+.maske > span { display: block; }
+
+.schere {
+  display: block;
+  width: min(100%, 13rem);
+  height: auto;
+  margin-block: clamp(0.75rem, 1.6vw, 1.25rem) clamp(0.25rem, 1vw, 0.75rem);
+  overflow: visible;
+}
+
+.schere path, .schere circle, .schere line {
+  fill: none;
+  stroke: var(--akzent);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Ausgangszustaende nur, wenn die Bewegung wirklich laeuft. */
+.motion .buehne .maske > span { transform: translateY(104%); }
+.motion .buehne__neben,
+.motion .buehne__unter { opacity: 0; }
+
+/* ---------- Kennzahlen ---------- */
+
+.zahlen {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+
+.zahl__wert {
+  font-family: var(--display);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.92;
+  font-variant-numeric: tabular-nums;
+  display: block;
+}
+
+.zahl__text {
+  margin-top: 0.65rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 22ch;
+}
+
+/* ---------- Karten ---------- */
+
+.karten {
+  display: grid;
+  gap: clamp(1rem, 1.8vw, 1.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+
+.karte {
+  background: var(--weiss);
+  border-radius: var(--rund);
+  padding: clamp(1.5rem, 2.4vw, 2.25rem);
+  box-shadow: var(--schatten);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.band--dunst .karte, .band--stein .karte { background: var(--weiss); }
+
+.karte__preis {
+  font-family: var(--display);
+  font-size: clamp(1.875rem, 3vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  margin-top: auto;
+  padding-top: 0.9rem;
+}
+
+.platzhalter {
+  background: rgba(30, 92, 72, 0.10);
+  box-shadow: inset 0 0 0 1.5px rgba(30, 92, 72, 0.38);
+  border-radius: 8px;
+  padding: 0.04em 0.3em;
+}
+
+/* ---------- Preisliste ohne Linien ---------- */
+
+.preise {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.preis {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: clamp(1rem, 1.6vw, 1.35rem) clamp(1.1rem, 2vw, 1.75rem);
+  border-radius: var(--rund-klein);
+  background: var(--weiss);
+  transition: background var(--schnell) var(--kurve);
+}
+
+.band--dunst .preis, .band--stein .preis { background: var(--weiss); }
+
+.preis__name {
+  font-family: var(--display);
+  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+  font-weight: 550;
+  letter-spacing: -0.015em;
+}
+
+.preis__zusatz {
+  display: block;
+  font-family: var(--text);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--grau);
+  letter-spacing: 0;
+  margin-top: 0.15rem;
+  max-width: 34ch;
+}
+
+.preis__wert {
+  font-family: var(--display);
+  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex: none;
+}
+
+/* ---------- Satzspiegel ---------- */
+
+.satz {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: center;
+}
+
+@media (min-width: 58rem) {
+  .satz--halb { grid-template-columns: 1fr 1fr; }
+  .satz--text-bild { grid-template-columns: 0.92fr 1.08fr; }
+  .satz--bild-text { grid-template-columns: 1.08fr 0.92fr; }
+  .satz--oben { align-items: start; }
+}
+
+.kopfzeile {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+@media (min-width: 58rem) {
+  .kopfzeile--geteilt {
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: end;
+    gap: clamp(2rem, 4vw, 4rem);
+  }
+}
+
+/* ---------- Gepinnte Bildsequenz ---------- */
+
+.szene { position: relative; }
+
+.szene__halter {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding-block: 3rem;
+  overflow: hidden;
+}
+
+.szene__bild {
+  width: min(100%, var(--spalte));
+  margin-inline: auto;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.szene__text {
+  position: absolute;
+  inset: auto 0 clamp(2rem, 6vw, 4.5rem) 0;
+  text-align: center;
+  padding-inline: var(--rand);
+  pointer-events: none;
+}
+
+/* ---------- Waagerechte Galerie ---------- */
+
+.galerie { overflow: hidden; }
+
+.galerie__bahn {
+  display: flex;
+  gap: clamp(1rem, 2vw, 1.75rem);
+  will-change: transform;
+}
+
+.galerie__stueck {
+  flex: none;
+  width: clamp(15rem, 34vw, 26rem);
+}
+
+.galerie__stueck .foto { height: 100%; }
+
+/* ---------- Oeffnungszeiten ---------- */
+
+.zeiten {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.zeit {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--rund-klein);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 1.0625rem;
+}
+
+.band--dunst .zeit, .band--stein .zeit { background: var(--weiss); }
+
+.zeit--heute { background: var(--akzent); color: var(--weiss); font-weight: 600; }
+.band--dunst .zeit--heute, .band--stein .zeit--heute { background: var(--akzent); color: var(--weiss); }
+
+.zeit__tag { font-weight: 500; }
+.zeit__wert { font-variant-numeric: tabular-nums; }
+
+/* ---------- Telefon gross ---------- */
+
+.telefon {
+  font-family: var(--display);
+  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+  transition: transform var(--ruhig) var(--kurve);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .telefon:hover { transform: scale(1.02); }
+}
+
+/* ---------- Karte ---------- */
+
+.landkarte {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: 30rem;
+  border-radius: var(--rund-gross);
+  overflow: hidden;
+  background: var(--stein);
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.landkarte iframe { width: 100%; height: 100%; border: 0; }
+
+/* ---------- Hinweiskasten fuer den Inhaber ---------- */
+
+.notiz {
+  background: rgba(30, 92, 72, 0.08);
+  border-radius: var(--rund);
+  padding: clamp(1.1rem, 2vw, 1.5rem);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--grau);
+  display: grid;
+  gap: 0.6rem;
+}
+
+.notiz b { color: var(--tinte); font-weight: 650; }
+.notiz code {
+  font-family: var(--text);
+  font-weight: 600;
+  background: rgba(30, 92, 72, 0.14);
+  padding: 0.05em 0.35em;
+  border-radius: 5px;
+}
+
+/* ---------- Rechtstexte ---------- */
+
+.recht { max-width: 62ch; display: grid; gap: 0.5rem; }
+.recht h2 { margin-top: 2.5rem; }
+.recht h2:first-of-type { margin-top: 0; }
+.recht ul { padding-left: 1.2rem; display: grid; gap: 0.45rem; }
+
+/* ---------- Fuss ---------- */
+
+.fuss {
+  background: var(--tinte);
+  color: var(--weiss);
+  padding-block: clamp(3.5rem, 7vw, 5.5rem) clamp(2rem, 4vw, 3rem);
+}
+
+.fuss__satz {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3rem);
+}
+
+@media (min-width: 52rem) {
+  .fuss__satz { grid-template-columns: 1.4fr 1fr 1fr; }
+}
+
+.fuss__marke {
+  font-family: var(--display);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  margin-bottom: 0.9rem;
+}
+
+.fuss h2 {
+  font-family: var(--text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 1rem;
+}
+
+.fuss ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
+.fuss a { color: rgba(255, 255, 255, 0.82); transition: color var(--schnell) var(--kurve); }
+
+@media (hover: hover) and (pointer: fine) {
+  .fuss a:hover { color: var(--weiss); }
+}
+
+.fuss__schluss {
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.75rem;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+address { font-style: normal; line-height: 1.75; }
+
+/* ---------- Bewegung ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .auf {
+      animation: auftauchen var(--kurve) both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 26%;
+    }
+    .reihe > * {
+      animation: auftauchen var(--kurve) both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 24%;
+    }
+    .reihe > *:nth-child(2) { animation-range: entry 7% cover 27%; }
+    .reihe > *:nth-child(3) { animation-range: entry 10% cover 30%; }
+    .reihe > *:nth-child(4) { animation-range: entry 13% cover 33%; }
+    .reihe > *:nth-child(n+5) { animation-range: entry 16% cover 36%; }
+  }
+}
+
+@keyframes auftauchen {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
