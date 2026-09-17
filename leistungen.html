@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Preise — Dilo's Friseursalon &amp; Barbershop Hemmingen</title>
-<meta name="description" content="Alle Preise auf einen Blick: Damen, Herren, Kinder und Bartpflege im Friseursalon und Barbershop in Hemmingen.">
+<title>Preise — Friseur Hemmingen — Dilo's</title>
+<meta name="description" content="Alle Preise auf einen Blick: Damen, Herren, Kinder und Bart. Startpreise, und was mehr kostet, sagen wir vor dem Schnitt.">
 <link rel="canonical" href="https://friseurmanufaktur.de/leistungen.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/onest.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/app.css">
 <script>
@@ -32,6 +32,7 @@
         <li><a href="index.html">Start</a></li>
         <li><a href="leistungen.html" aria-current="page">Preise</a></li>
         <li><a href="salon.html">Salon</a></li>
+        <li><a href="galerie.html">Galerie</a></li>
         <li><a href="kontakt.html">Kontakt</a></li>
       </ul>
     </nav>
@@ -51,163 +52,151 @@
 
   <section class="buehne">
     <div class="huelle">
-      <h1 class="riese" style="max-width:12ch">
-        <span class="maske"><span>Preise.</span></span>
+      <h1 class="riese" style="max-width:14ch">
+        <span class="maske"><span>Was es kostet.</span></span>
       </h1>
       <div class="buehne__unter" style="margin-top:clamp(1.5rem,3vw,2.25rem)">
         <p class="fuehrend">
-          Alles auf einen Blick. Die Angaben sind Startpreise — kostet es bei
-          Ihnen mehr, sagen wir das vor dem Schnitt.
+          Alles auf einen Blick, nichts versteckt. Die Angaben sind Startpreise —
+          kostet es bei Ihnen mehr, sagen wir das vor dem Schnitt und nicht danach.
         </p>
       </div>
     </div>
   </section>
 
-  <section class="band band--eng">
+  <section class="band band--eng" style="padding-top:0">
     <div class="huelle">
       <div class="notiz">
         <p><b>An den Inhaber:</b> Tragen Sie hier Ihre echten Preise ein. Die
-        Platzhalter sind grün markiert, damit keiner versehentlich online geht —
+        Platzhalter sind rot umrandet, damit keiner versehentlich online geht —
         die Markierung fällt weg, sobald Sie <code>&lt;span class="platzhalter"&gt;</code>
         um den Preis herum entfernen.</p>
-        <p>Streichen Sie außerdem, was Sie nicht anbieten. Die Liste ist ein
-        Vorschlag, keine Behauptung über Ihr Angebot. Diesen Kasten vor dem
-        Livegang löschen.</p>
+        <p>Streichen Sie, was Sie nicht anbieten. Die Liste ist ein Vorschlag,
+        keine Behauptung über Ihr Angebot. Diesen Kasten vor dem Livegang löschen.</p>
       </div>
     </div>
   </section>
 
-  <section class="band band--dunst band--eng">
+  <section class="band" style="padding-top:0">
     <div class="huelle">
-      <div class="kopfzeile kopfzeile--geteilt">
-        <h2 class="gross">Damen</h2>
-        <p class="fuehrend">Schneiden, Farbe und Styling.</p>
-      </div>
-      <ul class="preise">
-        <li class="preis">
-          <span class="preis__name">Waschen, Schneiden, Föhnen</span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-        <li class="preis">
-          <span class="preis__name">Schneiden ohne Föhnen</span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-        <li class="preis">
-          <span class="preis__name">Waschen und Föhnen</span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-        <li class="preis">
-          <span class="preis__name">Ansatzfarbe
-            <span class="preis__zusatz">Nur der nachgewachsene Ansatz.</span>
-          </span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-        <li class="preis">
-          <span class="preis__name">Komplettfarbe</span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-        <li class="preis">
-          <span class="preis__name">Strähnen
-            <span class="preis__zusatz">Preis hängt davon ab, wie viele gesetzt werden.</span>
-          </span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-        <li class="preis">
-          <span class="preis__name">Tönung</span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-      </ul>
+
+      <section class="preisgruppe auf" aria-labelledby="g-damen">
+        <div class="preisgruppe__kopf">
+          <h2 class="gross" id="g-damen">Damen</h2>
+          <p class="preisgruppe__unter">Schneiden, Farbe und Styling.</p>
+        </div>
+        <ul class="preise">
+          <li class="preis">
+            <span class="preis__name">Waschen, Schneiden, Föhnen</span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Schneiden ohne Föhnen</span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Waschen und Föhnen</span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Ansatzfarbe
+            <span class="preis__zusatz">Nur der nachgewachsene Ansatz.</span></span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Komplettfarbe
+            <span class="preis__zusatz">Hängt von der Haarlänge ab — wir sagen es vor dem Anrühren.</span></span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Strähnen
+            <span class="preis__zusatz">Hängt davon ab, wie viele Strähnen gesetzt werden.</span></span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Tönung</span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="preisgruppe auf" aria-labelledby="g-herren">
+        <div class="preisgruppe__kopf">
+          <h2 class="gross" id="g-herren">Herren</h2>
+          <p class="preisgruppe__unter">Vom kurzen Maschinenschnitt bis zum Schnitt mit Styling.</p>
+        </div>
+        <ul class="preise">
+          <li class="preis">
+            <span class="preis__name">Herrenhaarschnitt</span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Waschen, Schneiden, Styling</span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Maschinenschnitt
+            <span class="preis__zusatz">Eine Länge, ohne Übergang.</span></span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Konturen nachschneiden
+            <span class="preis__zusatz">Nacken und Kanten zwischen zwei Terminen.</span></span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="preisgruppe auf" aria-labelledby="g-kinder">
+        <div class="preisgruppe__kopf">
+          <h2 class="gross" id="g-kinder">Kinder</h2>
+          <p class="preisgruppe__unter">In dem Tempo, das das Kind braucht. Klappt es heute nicht, klappt es an einem anderen Tag.</p>
+        </div>
+        <ul class="preise">
+          <li class="preis">
+            <span class="preis__name">Kinderhaarschnitt
+            <span class="preis__zusatz">PLATZHALTER: bis zu welchem Alter gilt der Kinderpreis?</span></span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Jugendliche</span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="preisgruppe auf" aria-labelledby="g-bart">
+        <div class="preisgruppe__kopf">
+          <h2 class="gross" id="g-bart">Bart &amp; Barbershop</h2>
+          <p class="preisgruppe__unter">Schneiden, in Form bringen, Rasur mit dem Messer.</p>
+        </div>
+        <ul class="preise">
+          <li class="preis">
+            <span class="preis__name">Bart schneiden und in Form bringen</span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Rasur mit dem Messer</span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Haarschnitt und Bart zusammen
+            <span class="preis__zusatz">Zusammen günstiger als einzeln.</span></span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+          <li class="preis">
+            <span class="preis__name">Bart färben</span>
+            <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+          </li>
+        </ul>
+      </section>
     </div>
   </section>
 
-  <section class="band band--eng">
+  <section class="band band--keramik" style="text-align:center">
     <div class="huelle">
-      <div class="kopfzeile kopfzeile--geteilt">
-        <h2 class="gross">Herren</h2>
-        <p class="fuehrend">Vom kurzen Maschinenschnitt bis zum Schnitt mit Styling.</p>
-      </div>
-      <ul class="preise">
-        <li class="preis" style="background:var(--dunst)">
-          <span class="preis__name">Herrenhaarschnitt</span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-        <li class="preis" style="background:var(--dunst)">
-          <span class="preis__name">Waschen, Schneiden, Styling</span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-        <li class="preis" style="background:var(--dunst)">
-          <span class="preis__name">Maschinenschnitt
-            <span class="preis__zusatz">Eine Länge, ohne Übergang.</span>
-          </span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-        <li class="preis" style="background:var(--dunst)">
-          <span class="preis__name">Konturen nachschneiden
-            <span class="preis__zusatz">Nacken und Kanten zwischen zwei Terminen.</span>
-          </span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="band band--dunst band--eng">
-    <div class="huelle">
-      <div class="kopfzeile kopfzeile--geteilt">
-        <h2 class="gross">Kinder</h2>
-        <p class="fuehrend">
-          In dem Tempo, das das Kind braucht. Klappt es heute nicht, klappt es
-          an einem anderen Tag.
-        </p>
-      </div>
-      <ul class="preise">
-        <li class="preis">
-          <span class="preis__name">Kinderhaarschnitt
-            <span class="preis__zusatz">PLATZHALTER: bis zu welchem Alter gilt der Kinderpreis?</span>
-          </span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-        <li class="preis">
-          <span class="preis__name">Jugendliche</span>
-          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="band band--tinte">
-    <div class="huelle">
-      <div class="kopfzeile kopfzeile--geteilt">
-        <h2 class="gross">Bart &amp; Barbershop</h2>
-        <p class="fuehrend">Schneiden, in Form bringen, Rasur mit dem Messer.</p>
-      </div>
-      <ul class="preise">
-        <li class="preis" style="background:rgba(255,255,255,0.06)">
-          <span class="preis__name">Bart schneiden und in Form bringen</span>
-          <span class="preis__wert"><span class="platzhalter" style="background:rgba(62,143,115,0.2);box-shadow:inset 0 0 0 1.5px rgba(62,143,115,0.55)">ab XX €</span></span>
-        </li>
-        <li class="preis" style="background:rgba(255,255,255,0.06)">
-          <span class="preis__name">Rasur mit dem Messer</span>
-          <span class="preis__wert"><span class="platzhalter" style="background:rgba(62,143,115,0.2);box-shadow:inset 0 0 0 1.5px rgba(62,143,115,0.55)">ab XX €</span></span>
-        </li>
-        <li class="preis" style="background:rgba(255,255,255,0.06)">
-          <span class="preis__name">Haarschnitt und Bart zusammen
-            <span class="preis__zusatz" style="color:rgba(255,255,255,0.68)">Zusammen günstiger als einzeln.</span>
-          </span>
-          <span class="preis__wert"><span class="platzhalter" style="background:rgba(62,143,115,0.2);box-shadow:inset 0 0 0 1.5px rgba(62,143,115,0.55)">ab XX €</span></span>
-        </li>
-        <li class="preis" style="background:rgba(255,255,255,0.06)">
-          <span class="preis__name">Bart färben</span>
-          <span class="preis__wert"><span class="platzhalter" style="background:rgba(62,143,115,0.2);box-shadow:inset 0 0 0 1.5px rgba(62,143,115,0.55)">ab XX €</span></span>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="band">
-    <div class="huelle" style="text-align:center">
       <h2 class="gross">Nicht sicher, was Sie brauchen?</h2>
-      <p class="fuehrend" style="margin:1.5rem auto 0">
+      <p class="fuehrend" style="margin:1.25rem auto 0">
         Rufen Sie an und sagen Sie kurz, worum es geht. Wir sagen Ihnen, welche
         Leistung passt und was sie ungefähr kostet.
       </p>
@@ -235,6 +224,8 @@
         <ul>
           <li><a href="index.html">Start</a></li>
           <li><a href="salon.html">Salon</a></li>
+        <li><a href="galerie.html">Galerie</a></li>
+          <li><a href="galerie.html">Galerie</a></li>
           <li><a href="kontakt.html">Kontakt</a></li>
           <li><a href="https://www.instagram.com/salon.dilo/" rel="noopener">Instagram</a></li>
         </ul>

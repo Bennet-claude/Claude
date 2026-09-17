@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dilo's Friseursalon &amp; Barbershop — Friseur in Hemmingen</title>
+<title>Friseur &amp; Barbershop in Hemmingen — Dilo's</title>
 <meta name="description" content="Friseursalon und Barbershop in Hemmingen, direkt beim Kaufland. Damen, Herren, Kinder und Bartpflege. Montag bis Samstag 9:00 bis 18:30 Uhr.">
 <link rel="canonical" href="https://friseurmanufaktur.de/">
 <meta property="og:title" content="Dilo's Friseursalon &amp; Barbershop — Friseur in Hemmingen">
@@ -12,7 +12,7 @@
 <meta property="og:locale" content="de_DE">
 <meta property="og:image" content="https://friseurmanufaktur.de/bilder/vorschau.jpg">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/onest.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/app.css">
 <script>
@@ -24,6 +24,11 @@
     }, 1600);
   })();
 </script>
+<!-- An den Inhaber: Fuer besseres lokales Ranking hier zusaetzlich die
+     genauen Koordinaten eintragen. In Google Maps auf den Laden rechtsklicken,
+     die Zahlen kopieren und diesen Block direkt vor "hasMap" einfuegen:
+     "geo": { "@type": "GeoCoordinates", "latitude": 52.xxxxx, "longitude": 9.xxxxx },
+     Bewusst nicht geraten — falsche Koordinaten schaden mehr als fehlende. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -44,6 +49,9 @@
     "opens": "09:00",
     "closes": "18:30"
   }],
+  "hasMap": "https://www.google.com/maps/search/?api=1&query=Alfred-Bentz-Stra%C3%9Fe+1%2C+30966+Hemmingen",
+  "priceRange": "€€",
+  "areaServed": "Hemmingen, Region Hannover",
   "sameAs": ["https://www.instagram.com/salon.dilo/"]
 }
 </script>
@@ -60,6 +68,7 @@
         <li><a href="index.html" aria-current="page">Start</a></li>
         <li><a href="leistungen.html">Preise</a></li>
         <li><a href="salon.html">Salon</a></li>
+        <li><a href="galerie.html">Galerie</a></li>
         <li><a href="kontakt.html">Kontakt</a></li>
       </ul>
     </nav>
@@ -85,12 +94,8 @@
           <span class="maske"><span>jeder Schnitt.</span></span>
         </h1>
 
-        <svg class="schere" id="schere" viewBox="0 0 220 120" role="presentation" aria-hidden="true">
-          <circle data-strich cx="40" cy="30" r="15"/>
-          <circle data-strich cx="40" cy="90" r="15"/>
-          <path data-strich d="M52 38 L105 60 L206 33"/>
-          <path data-strich d="M52 82 L105 60 L206 87"/>
-          <circle data-strich cx="105" cy="60" r="4"/>
+        <svg class="strich" id="strich" viewBox="0 0 600 56" role="presentation" aria-hidden="true">
+          <path data-strich d="M6 38C54 22 96 43 152 34c56-9 92-16 146-6s94 17 150 9c50-7 88-15 122-10 10 1.5 18 3 23 5"/>
         </svg>
 
         <div class="buehne__unter" style="margin-top:clamp(1.5rem,3vw,2.25rem)">
@@ -114,7 +119,7 @@
     </div>
   </section>
 
-  <section class="band band--dunst">
+  <section class="band band--keramik">
     <div class="huelle">
       <div class="zahlen reihe">
         <div>
@@ -124,10 +129,6 @@
         <div>
           <span class="zahl__wert"><span data-zahl="90">90</span></span>
           <p class="zahl__text weich">Kundinnen und Kunden haben uns bewertet.</p>
-        </div>
-        <div>
-          <span class="zahl__wert"><span data-zahl="6">6</span></span>
-          <p class="zahl__text weich">Tage die Woche geöffnet, Montag bis Samstag.</p>
         </div>
       </div>
     </div>
@@ -158,28 +159,32 @@
         </p>
       </div>
 
-      <div class="karten reihe">
-        <article class="karte">
-          <h3 class="klein-titel">Damen</h3>
-          <p class="weich" style="font-size:0.9375rem">Schneiden, Farbe, Strähnen und Styling.</p>
-          <p class="karte__preis"><span class="platzhalter">ab XX €</span></p>
-        </article>
-        <article class="karte">
-          <h3 class="klein-titel">Herren</h3>
-          <p class="weich" style="font-size:0.9375rem">Vom Maschinenschnitt bis zum Schnitt mit Styling.</p>
-          <p class="karte__preis"><span class="platzhalter">ab XX €</span></p>
-        </article>
-        <article class="karte">
-          <h3 class="klein-titel">Kinder</h3>
-          <p class="weich" style="font-size:0.9375rem">In dem Tempo, das das Kind braucht.</p>
-          <p class="karte__preis"><span class="platzhalter">ab XX €</span></p>
-        </article>
-        <article class="karte">
-          <h3 class="klein-titel">Bart</h3>
-          <p class="weich" style="font-size:0.9375rem">Schneiden, in Form bringen, Rasur mit dem Messer.</p>
-          <p class="karte__preis"><span class="platzhalter">ab XX €</span></p>
-        </article>
-      </div>
+      <ul class="preise reihe">
+        <li class="preis">
+          <span class="preis__name">Damen
+            <span class="preis__zusatz">Schneiden, Farbe, Strähnen und Styling.</span>
+          </span>
+          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+        </li>
+        <li class="preis">
+          <span class="preis__name">Herren
+            <span class="preis__zusatz">Vom Maschinenschnitt bis zum Schnitt mit Styling.</span>
+          </span>
+          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+        </li>
+        <li class="preis">
+          <span class="preis__name">Kinder
+            <span class="preis__zusatz">In dem Tempo, das das Kind braucht.</span>
+          </span>
+          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+        </li>
+        <li class="preis">
+          <span class="preis__name">Bart
+            <span class="preis__zusatz">Schneiden, in Form bringen, Rasur mit dem Messer.</span>
+          </span>
+          <span class="preis__wert"><span class="platzhalter">ab XX €</span></span>
+        </li>
+      </ul>
 
       <p style="margin-top:clamp(2rem,4vw,3rem)">
         <a class="knopf knopf--gross" href="leistungen.html">Alle Preise ansehen</a>
@@ -187,7 +192,7 @@
     </div>
   </section>
 
-  <section class="band band--stein">
+  <section class="band band--keramik">
     <div class="huelle">
       <div class="satz satz--bild-text">
         <div class="auf">
@@ -209,7 +214,7 @@
     </div>
   </section>
 
-  <section class="band band--tinte">
+  <section class="band band--nuss">
     <div class="huelle" style="text-align:center">
       <p class="zart" style="font-size:1rem">Termine machen wir am Telefon</p>
       <p style="margin-top:0.75rem">
@@ -242,6 +247,8 @@
         <ul>
           <li><a href="leistungen.html">Preise</a></li>
           <li><a href="salon.html">Salon</a></li>
+        <li><a href="galerie.html">Galerie</a></li>
+          <li><a href="galerie.html">Galerie</a></li>
           <li><a href="kontakt.html">Kontakt</a></li>
           <li><a href="https://www.instagram.com/salon.dilo/" rel="noopener">Instagram</a></li>
         </ul>

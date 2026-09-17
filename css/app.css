@@ -1,8 +1,8 @@
 /* Dilo's Friseursalon & Barbershop — Hemmingen */
 
 @font-face {
-  font-family: 'Geist';
-  src: url('../fonts/geist.woff2') format('woff2-variations');
+  font-family: 'Fraunces';
+  src: url('../fonts/fraunces.woff2') format('woff2-variations');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -17,21 +17,21 @@
 }
 
 :root {
-  /* Hell und neutral. Der Akzent ist ein tiefes Gruen statt des ueblichen
-     warmen Sandtons — der Laden ist zur Haelfte Barbershop, eine Beauty-
-     Palette in Rosé oder Terrakotta wuerde die Haelfte der Kundschaft
-     ansprechen und die andere nicht. */
-  --weiss: #FFFFFF;
-  --dunst: #F5F4F2;
-  --stein: #EAE8E4;
-  --stein-tief: #DEDBD6;
-  --tinte: #16171A;
-  --grau: #6C6E73;
-  --zart: #A3A5AA;
-  --akzent: #1E5C48;
-  --akzent-hell: #3E8F73;
+  /* Aus Fotos des Ladens gemessen, nicht erfunden: die Moebel sind warmes
+     Nussbraun (#583A27 im Bild), Wand und Boden ein warmes Greige, und die
+     kraeftigste Farbe im Schaufensterbild ist das Rot von Schild und
+     Pendelleuchten. Nussbaum ist echtes Braun, kein getoentes Fast-Schwarz. */
+  --emaille: #FBF9F6;
+  --keramik: #F0EAE2;
+  --keramik-tief: #E4DACE;
+  --nussbaum: #33241D;
+  --nussbaum-matt: #6F5F54;
+  --barberpole: #B3262B;
 
-  --display: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Gemessen: Barberpole auf Nussbaum sind nur 2,29:1. Rot kommt deshalb
+     ausschliesslich auf helle Flaechen, nie auf das dunkle Braun. */
+
+  --display: 'Fraunces', Georgia, 'Times New Roman', serif;
   --text: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   --rund-gross: 32px;
@@ -45,8 +45,8 @@
   --spalte: 1240px;
   --rand: clamp(1.25rem, 4.5vw, 4rem);
 
-  --schatten: 0 2px 6px rgba(22, 23, 26, 0.04), 0 12px 32px rgba(22, 23, 26, 0.06);
-  --schatten-hoch: 0 4px 12px rgba(22, 23, 26, 0.06), 0 24px 60px rgba(22, 23, 26, 0.10);
+  --schatten: 0 2px 6px rgba(51, 36, 29, 0.04), 0 12px 32px rgba(51, 36, 29, 0.06);
+  --schatten-hoch: 0 4px 12px rgba(51, 36, 29, 0.06), 0 24px 60px rgba(51, 36, 29, 0.10);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -58,8 +58,8 @@ html {
 
 body {
   margin: 0;
-  background: var(--weiss);
-  color: var(--tinte);
+  background: var(--emaille);
+  color: var(--nussbaum);
   font-family: var(--text);
   font-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
   line-height: 1.65;
@@ -86,7 +86,7 @@ img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 
 :focus-visible {
-  outline: 2.5px solid var(--akzent);
+  outline: 2.5px solid var(--barberpole);
   outline-offset: 4px;
   border-radius: 6px;
 }
@@ -101,7 +101,7 @@ a { color: inherit; text-decoration: none; }
   position: fixed; top: 0; left: 50%;
   transform: translate(-50%, -150%);
   z-index: 200;
-  background: var(--tinte); color: var(--weiss);
+  background: var(--nussbaum); color: var(--emaille);
   padding: 0.85rem 1.5rem;
   border-radius: 0 0 var(--rund-klein) var(--rund-klein);
   font-weight: 600;
@@ -118,52 +118,55 @@ h1, h2, h3 {
 }
 
 .riese {
-  font-size: clamp(2.75rem, 7.2vw, 5.25rem);
-  font-weight: 700;
-  letter-spacing: -0.042em;
-  line-height: 0.94;
+  font-size: clamp(2.5rem, 6.6vw, 4.75rem);
+  font-weight: 600;
+  font-variation-settings: 'SOFT' 40, 'WONK' 1, 'opsz' 120;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
 }
 
 .gross {
-  font-size: clamp(2rem, 4.6vw, 3.5rem);
-  font-weight: 650;
-  letter-spacing: -0.038em;
-  line-height: 0.98;
+  font-size: clamp(1.875rem, 4.2vw, 3rem);
+  font-weight: 600;
+  font-variation-settings: 'SOFT' 30, 'WONK' 1, 'opsz' 60;
+  letter-spacing: -0.015em;
+  line-height: 1.06;
 }
 
 .mittel {
-  font-size: clamp(1.625rem, 3.4vw, 2.5rem);
+  font-size: clamp(1.5rem, 3vw, 2.125rem);
   font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
+  font-variation-settings: 'SOFT' 20, 'opsz' 36;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
 }
 
 .klein-titel {
-  font-family: var(--display);
+  font-family: var(--text);
   font-size: clamp(1.125rem, 1.6vw, 1.3125rem);
   font-weight: 600;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
   line-height: 1.25;
 }
 
 p { margin: 0; }
-.lauf { max-width: 46ch; }
+.lauf { max-width: 62ch; }
 .lauf p + p { margin-top: 1.1em; }
 
 .fuehrend {
   font-size: clamp(1.125rem, 1.5vw, 1.3125rem);
   line-height: 1.6;
-  color: var(--grau);
-  max-width: 44ch;
+  color: var(--nussbaum-matt);
+  max-width: 52ch;
 }
 
-.weich { color: var(--grau); }
-.zart { color: var(--zart); }
+.weich { color: var(--nussbaum-matt); }
+.zart { color: var(--nussbaum-matt); }
 /* Der helle Grauton erreicht auf Weiss nur 2,5:1. Er ist deshalb
    ausschliesslich fuer grosse Schrift zugelassen, nie fuer Fliesstext. */
 .zart:not(.mittel):not(.gross):not(.riese) { font-size: max(1.125rem, 1em); }
 
-.dunkel { color: var(--weiss); }
+.dunkel { color: var(--emaille); }
 .dunkel .weich { color: rgba(255, 255, 255, 0.72); }
 .dunkel .zart { color: rgba(255, 255, 255, 0.52); }
 .dunkel .fuehrend { color: rgba(255, 255, 255, 0.74); }
@@ -179,9 +182,8 @@ p { margin: 0; }
 
 .band { padding-block: clamp(4.5rem, 10vw, 9rem); scroll-margin-top: 6rem; }
 .band--eng { padding-block: clamp(3rem, 6vw, 5rem); }
-.band--dunst { background: var(--dunst); }
-.band--stein { background: var(--stein); }
-.band--tinte { background: var(--tinte); color: var(--weiss); }
+.band--keramik { background: var(--keramik); }
+.band--nuss { background: var(--nussbaum); color: var(--emaille); }
 
 /* ---------- Navigation ---------- */
 
@@ -227,14 +229,14 @@ p { margin: 0; }
   .nav a {
     font-size: 0.9375rem;
     font-weight: 500;
-    color: var(--grau);
+    color: var(--nussbaum-matt);
     transition: color var(--schnell) var(--kurve);
   }
-  .nav a[aria-current='page'] { color: var(--tinte); font-weight: 600; }
+  .nav a[aria-current='page'] { color: var(--nussbaum); font-weight: 600; }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .nav a:hover { color: var(--tinte); }
+  .nav a:hover { color: var(--nussbaum); }
 }
 
 .knopf {
@@ -249,15 +251,15 @@ p { margin: 0; }
   border: 0;
   cursor: pointer;
   white-space: nowrap;
-  background: var(--tinte);
-  color: var(--weiss);
+  background: var(--nussbaum);
+  color: var(--emaille);
   transition: transform var(--schnell) var(--kurve), background var(--schnell) var(--kurve);
 }
 
 .knopf svg { width: 15px; height: 15px; flex: none; }
 
-.knopf--hell { background: var(--weiss); color: var(--tinte); }
-.knopf--akzent { background: var(--akzent); color: var(--weiss); }
+.knopf--hell { background: var(--emaille); color: var(--nussbaum); }
+.knopf--akzent { background: var(--barberpole); color: var(--emaille); }
 
 .knopf--gross {
   font-size: clamp(1rem, 1.3vw, 1.125rem);
@@ -266,7 +268,7 @@ p { margin: 0; }
 
 @media (hover: hover) and (pointer: fine) {
   .knopf:hover { transform: translateY(-2px); }
-  .knopf--hell:hover { background: var(--stein); }
+  .knopf--hell:hover { background: var(--keramik); }
 }
 
 /* Auf Mobil bleibt die Nummer ueber der Daumenzone erreichbar. */
@@ -291,9 +293,9 @@ p { margin: 0; }
   position: relative;
   border-radius: var(--rund-gross);
   overflow: hidden;
-  background: var(--stein);
+  background: var(--keramik);
   isolation: isolate;
-  box-shadow: inset 0 0 0 1px rgba(22,23,26,0.05), inset 0 -60px 90px -50px rgba(22,23,26,0.28);
+  box-shadow: inset 0 0 0 1px rgba(51,36,29,0.06), inset 0 -60px 90px -50px rgba(51,36,29,0.30);
 }
 
 .foto img { width: 100%; height: 100%; object-fit: cover; }
@@ -304,9 +306,9 @@ p { margin: 0; }
   inset: 0;
   background:
     radial-gradient(120% 100% at 30% -5%, #FFFFFF 0%, rgba(255,255,255,0) 46%),
-    radial-gradient(85% 85% at 82% 18%, #C6D4CD 0%, rgba(0,0,0,0) 56%),
-    radial-gradient(130% 115% at 15% 105%, #8EA79B 0%, rgba(0,0,0,0) 62%),
-    linear-gradient(155deg, #E9EDEB 0%, #A5BAB0 100%);
+    radial-gradient(85% 85% at 82% 18%, #E3D6C6 0%, rgba(0,0,0,0) 56%),
+    radial-gradient(130% 115% at 15% 105%, #8E6B4E 0%, rgba(0,0,0,0) 62%),
+    linear-gradient(155deg, #F2ECE4 0%, #C2A98E 100%);
   z-index: -2;
 }
 
@@ -326,25 +328,25 @@ p { margin: 0; }
 .foto--b::before {
   background:
     radial-gradient(120% 100% at 30% -5%, #FFFFFF 0%, rgba(255,255,255,0) 46%),
-    radial-gradient(85% 85% at 82% 18%, #CFD8D4 0%, rgba(0,0,0,0) 56%),
-    radial-gradient(130% 115% at 15% 105%, #7E9AAA 0%, rgba(0,0,0,0) 62%),
-    linear-gradient(200deg, #E9EDEB 0%, #9FB4BE 100%);
+    radial-gradient(85% 85% at 82% 18%, #DCD2C6 0%, rgba(0,0,0,0) 56%),
+    radial-gradient(130% 115% at 15% 105%, #6B4A33 0%, rgba(0,0,0,0) 62%),
+    linear-gradient(200deg, #F2ECE4 0%, #A98C70 100%);
 }
 
 .foto--c::before {
   background:
     radial-gradient(120% 100% at 30% -5%, #FFFFFF 0%, rgba(255,255,255,0) 46%),
-    radial-gradient(85% 85% at 82% 18%, #D3D7CE 0%, rgba(0,0,0,0) 56%),
-    radial-gradient(130% 115% at 15% 105%, #93A188 0%, rgba(0,0,0,0) 62%),
-    linear-gradient(140deg, #E9EDEB 0%, #AFB9A6 100%);
+    radial-gradient(85% 85% at 82% 18%, #E8DCCB 0%, rgba(0,0,0,0) 56%),
+    radial-gradient(130% 115% at 15% 105%, #A98460 0%, rgba(0,0,0,0) 62%),
+    linear-gradient(140deg, #F2ECE4 0%, #CDB699 100%);
 }
 
 .foto--d::before {
   background:
     radial-gradient(120% 100% at 30% -5%, #FFFFFF 0%, rgba(255,255,255,0) 46%),
-    radial-gradient(85% 85% at 82% 18%, #CBD3D9 0%, rgba(0,0,0,0) 56%),
-    radial-gradient(130% 115% at 15% 105%, #8B929B 0%, rgba(0,0,0,0) 62%),
-    linear-gradient(175deg, #E9EDEB 0%, #A6AEB6 100%);
+    radial-gradient(85% 85% at 82% 18%, #DED3C4 0%, rgba(0,0,0,0) 56%),
+    radial-gradient(130% 115% at 15% 105%, #7C5A40 0%, rgba(0,0,0,0) 62%),
+    linear-gradient(175deg, #F2ECE4 0%, #B59A7C 100%);
 }
 
 .foto__hinweis {
@@ -353,7 +355,7 @@ p { margin: 0; }
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  color: var(--grau);
+  color: var(--nussbaum-matt);
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.4rem 0.8rem;
@@ -372,9 +374,9 @@ p { margin: 0; }
   padding-top: clamp(6rem, 11vw, 8.5rem);
   padding-bottom: clamp(2.5rem, 5vw, 4rem);
   background:
-    radial-gradient(70% 55% at 78% 8%, #EBF0ED 0%, rgba(235,240,237,0) 62%),
-    radial-gradient(60% 50% at 8% 34%, #F3F4F3 0%, rgba(243,244,243,0) 58%),
-    var(--weiss);
+    radial-gradient(70% 55% at 78% 8%, #F5EDE2 0%, rgba(245,237,226,0) 62%),
+    radial-gradient(60% 50% at 8% 34%, #F7F3ED 0%, rgba(247,243,237,0) 58%),
+    var(--emaille);
   overflow: hidden;
 }
 
@@ -391,18 +393,18 @@ p { margin: 0; }
 .maske { display: block; overflow: hidden; padding-block: 0.06em; }
 .maske > span { display: block; }
 
-.schere {
+.strich {
   display: block;
-  width: min(100%, 13rem);
+  width: min(100%, 34rem);
   height: auto;
-  margin-block: clamp(0.75rem, 1.6vw, 1.25rem) clamp(0.25rem, 1vw, 0.75rem);
+  margin-block: clamp(0.5rem, 1.2vw, 0.9rem) clamp(0.5rem, 1.4vw, 1rem);
   overflow: visible;
 }
 
-.schere path, .schere circle, .schere line {
+.strich path {
   fill: none;
-  stroke: var(--akzent);
-  stroke-width: 5;
+  stroke: var(--barberpole);
+  stroke-width: 3.2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -446,7 +448,7 @@ p { margin: 0; }
 }
 
 .karte {
-  background: var(--weiss);
+  background: var(--emaille);
   border-radius: var(--rund);
   padding: clamp(1.5rem, 2.4vw, 2.25rem);
   box-shadow: var(--schatten);
@@ -455,7 +457,7 @@ p { margin: 0; }
   gap: 0.7rem;
 }
 
-.band--dunst .karte, .band--stein .karte { background: var(--weiss); }
+.band--keramik .karte { background: var(--emaille); }
 
 .karte__preis {
   font-family: var(--display);
@@ -469,60 +471,83 @@ p { margin: 0; }
 }
 
 .platzhalter {
-  background: rgba(30, 92, 72, 0.10);
-  box-shadow: inset 0 0 0 1.5px rgba(30, 92, 72, 0.38);
+  background: rgba(179, 38, 43, 0.10);
+  box-shadow: inset 0 0 0 1.5px rgba(179, 38, 43, 0.35);
   border-radius: 8px;
   padding: 0.04em 0.3em;
 }
 
-/* ---------- Preisliste ohne Linien ---------- */
+/* ---------- Preisliste ----------
+   Keine Karten, keine Container. Hierarchie entsteht aus Groesse und
+   Abstand, die Zeilen trennt eine Haarlinie. */
+
+.preisgruppe + .preisgruppe { margin-top: clamp(3.5rem, 8vw, 6.5rem); }
+
+.preisgruppe__kopf { margin-bottom: clamp(1.25rem, 2.5vw, 2rem); }
+
+.preisgruppe__unter {
+  color: var(--nussbaum-matt);
+  margin-top: 0.5rem;
+  max-width: 48ch;
+}
 
 .preise {
   list-style: none;
-  margin: 0; padding: 0;
-  display: grid;
-  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
 }
 
 .preis {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1.5rem;
-  padding: clamp(1rem, 1.6vw, 1.35rem) clamp(1.1rem, 2vw, 1.75rem);
-  border-radius: var(--rund-klein);
-  background: var(--weiss);
-  transition: background var(--schnell) var(--kurve);
+  gap: clamp(1.25rem, 4vw, 3rem);
+  padding-block: clamp(0.95rem, 1.7vw, 1.3rem);
+  border-bottom: 1px solid rgba(51, 36, 29, 0.11);
 }
 
-.band--dunst .preis, .band--stein .preis { background: var(--weiss); }
+.preise .preis:first-child { border-top: 1px solid rgba(51, 36, 29, 0.11); }
+
+.band--nuss .preis { border-bottom-color: rgba(251, 249, 246, 0.16); }
+.band--nuss .preise .preis:first-child { border-top-color: rgba(251, 249, 246, 0.16); }
 
 .preis__name {
-  font-family: var(--display);
-  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
-  font-weight: 550;
-  letter-spacing: -0.015em;
+  font-size: clamp(1.0625rem, 1.5vw, 1.1875rem);
+  font-weight: 500;
+  line-height: 1.35;
 }
 
 .preis__zusatz {
   display: block;
-  font-family: var(--text);
   font-size: 0.875rem;
   font-weight: 400;
-  color: var(--grau);
-  letter-spacing: 0;
-  margin-top: 0.15rem;
-  max-width: 34ch;
+  color: var(--nussbaum-matt);
+  line-height: 1.45;
+  margin-top: 0.2rem;
+  max-width: 42ch;
 }
 
+.band--nuss .preis__zusatz { color: rgba(251, 249, 246, 0.66); }
+
 .preis__wert {
-  font-family: var(--display);
-  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  flex: none;
+  font-family: var(--text);
+  font-size: clamp(1.0625rem, 1.5vw, 1.1875rem);
+  font-weight: 650;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  flex: none;
+}
+
+.platzhalter {
+  background: rgba(179, 38, 43, 0.1);
+  box-shadow: inset 0 0 0 1.5px rgba(179, 38, 43, 0.35);
+  border-radius: 7px;
+  padding: 0.06em 0.42em;
+}
+
+.band--nuss .platzhalter {
+  background: rgba(251, 249, 246, 0.14);
+  box-shadow: inset 0 0 0 1.5px rgba(251, 249, 246, 0.34);
 }
 
 /* ---------- Satzspiegel ---------- */
@@ -581,6 +606,23 @@ p { margin: 0; }
   pointer-events: none;
 }
 
+/* ---------- Galerie-Raster ---------- */
+
+.raster {
+  display: grid;
+  gap: clamp(1rem, 2.2vw, 1.75rem);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+
+.kachel { margin: 0; }
+
+.kachel__text {
+  margin-top: 0.7rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--nussbaum-matt);
+}
+
 /* ---------- Waagerechte Galerie ---------- */
 
 .galerie { overflow: hidden; }
@@ -617,10 +659,10 @@ p { margin: 0; }
   font-size: 1.0625rem;
 }
 
-.band--dunst .zeit, .band--stein .zeit { background: var(--weiss); }
+.band--keramik .zeit { background: var(--emaille); }
 
-.zeit--heute { background: var(--akzent); color: var(--weiss); font-weight: 600; }
-.band--dunst .zeit--heute, .band--stein .zeit--heute { background: var(--akzent); color: var(--weiss); }
+.zeit--heute { background: var(--barberpole); color: var(--emaille); font-weight: 600; }
+.band--keramik .zeit--heute { background: var(--barberpole); color: var(--emaille); }
 
 .zeit__tag { font-weight: 500; }
 .zeit__wert { font-variant-numeric: tabular-nums; }
@@ -650,7 +692,7 @@ p { margin: 0; }
   max-height: 30rem;
   border-radius: var(--rund-gross);
   overflow: hidden;
-  background: var(--stein);
+  background: var(--keramik);
   display: grid;
   place-items: center;
   padding: 2rem;
@@ -662,21 +704,21 @@ p { margin: 0; }
 /* ---------- Hinweiskasten fuer den Inhaber ---------- */
 
 .notiz {
-  background: rgba(30, 92, 72, 0.08);
+  background: rgba(179, 38, 43, 0.06);
   border-radius: var(--rund);
   padding: clamp(1.1rem, 2vw, 1.5rem);
   font-size: 0.9375rem;
   line-height: 1.55;
-  color: var(--grau);
+  color: var(--nussbaum-matt);
   display: grid;
   gap: 0.6rem;
 }
 
-.notiz b { color: var(--tinte); font-weight: 650; }
+.notiz b { color: var(--nussbaum); font-weight: 650; }
 .notiz code {
   font-family: var(--text);
   font-weight: 600;
-  background: rgba(30, 92, 72, 0.14);
+  background: rgba(179, 38, 43, 0.12);
   padding: 0.05em 0.35em;
   border-radius: 5px;
 }
@@ -691,8 +733,8 @@ p { margin: 0; }
 /* ---------- Fuss ---------- */
 
 .fuss {
-  background: var(--tinte);
-  color: var(--weiss);
+  background: var(--nussbaum);
+  color: var(--emaille);
   padding-block: clamp(3.5rem, 7vw, 5.5rem) clamp(2rem, 4vw, 3rem);
 }
 
@@ -727,7 +769,7 @@ p { margin: 0; }
 .fuss a { color: rgba(255, 255, 255, 0.82); transition: color var(--schnell) var(--kurve); }
 
 @media (hover: hover) and (pointer: fine) {
-  .fuss a:hover { color: var(--weiss); }
+  .fuss a:hover { color: var(--emaille); }
 }
 
 .fuss__schluss {

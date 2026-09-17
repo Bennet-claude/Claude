@@ -25,8 +25,18 @@
 
   /* ---------- Startbild ---------- */
 
+  /* ---------- Der Signature-Moment ----------
+     Ein handgezeichneter Kamm-Strich zieht sich durch und legt dabei die
+     Headline frei.
+
+     Abweichung von der Vorgabe, bewusst: Bei reinem scrub stuende die
+     Zeitleiste bei Scroll-Position 0 auf null und der erste Bildschirm
+     waere leer, bis jemand scrollt. Deshalb zieht sich der Strich beim
+     Laden auf 45 Prozent und legt dabei die Headline frei; den Rest
+     uebernimmt scrub beim Scrollen. */
+
   var zeilen = document.querySelectorAll('.buehne .maske > span');
-  var schere = document.getElementById('schere');
+  var strichSvg = document.getElementById('strich');
   var neben = document.querySelectorAll('.buehne__neben, .buehne__unter');
 
   if (zeilen.length) {
@@ -36,25 +46,45 @@
     gsap.set(zeilen, { y: 0, yPercent: 104 });
     gsap.set(neben, { opacity: 0, y: 24 });
 
-    var start = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    var linie = strichSvg && strichSvg.querySelector('[data-strich]');
+    var laenge = 0, halt = 0;
 
-    start.to(zeilen, { yPercent: 0, duration: 0.95, stagger: 0.075 }, 0);
-
-    if (schere) {
-      var striche = schere.querySelectorAll('[data-strich]');
-      striche.forEach(function (el) {
-        var l = el.getTotalLength();
-        gsap.set(el, { strokeDasharray: l, strokeDashoffset: l });
-      });
-      start.to(striche, {
-        strokeDashoffset: 0,
-        duration: 0.85,
-        stagger: 0.09,
-        ease: 'power2.inOut'
-      }, 0.35);
+    if (linie) {
+      laenge = linie.getTotalLength();
+      halt = laenge * 0.55; /* Rest-Versatz nach dem Vorlauf */
+      gsap.set(linie, { strokeDasharray: laenge, strokeDashoffset: laenge });
     }
 
-    start.to(neben, { opacity: 1, y: 0, duration: 0.8, stagger: 0.12 }, 0.5);
+    var start = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+    if (linie) {
+      start.to(linie, {
+        strokeDashoffset: halt,
+        duration: 0.9,
+        ease: 'power2.inOut'
+      }, 0);
+    }
+
+    start.to(zeilen, { yPercent: 0, duration: 0.95, stagger: 0.08 }, 0.12);
+    start.to(neben, { opacity: 1, y: 0, duration: 0.8, stagger: 0.12 }, 0.55);
+
+    /* Den Rest des Strichs zieht das Scrollen. Erst nach dem Vorlauf
+       anlegen, sonst streiten sich beide Tweens um denselben Wert. */
+    if (linie) {
+      start.eventCallback('onComplete', function () {
+        gsap.to(linie, {
+          strokeDashoffset: 0,
+          ease: 'none',
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: '.buehne',
+            start: 'top top',
+            end: 'bottom 40%',
+            scrub: true
+          }
+        });
+      });
+    }
   }
 
   /* ---------- Gepinnte Bildszene ----------
