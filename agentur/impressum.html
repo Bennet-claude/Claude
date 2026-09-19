@@ -10,7 +10,14 @@
 <link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/agentur.css">
-<script>document.documentElement.classList.add('js');</script>
+<script>
+/* Wenn GSAP oder das Bewegungsskript nicht laedt, faellt die Seite nach
+   2,5 Sekunden in den sichtbaren Grundzustand zurueck. */
+document.documentElement.classList.add('js');
+setTimeout(function () {
+  if (!window.__bewegung) { document.documentElement.classList.remove('js'); }
+}, 2500);
+</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",

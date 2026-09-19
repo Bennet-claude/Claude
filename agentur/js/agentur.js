@@ -17,6 +17,7 @@
   }
 
   if (!window.gsap || !window.ScrollTrigger) { notbremse(); return; }
+  window.__bewegung = true;
   if (ruhig) { /* Endzustand direkt, siehe unten */ }
 
   gsap.registerPlugin(ScrollTrigger);
