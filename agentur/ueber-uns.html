@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070A0D">
 <title>Über uns — Studio Leine</title>
 <meta name="description" content="Zwei Gründer aus der Region Hannover. Wie wir arbeiten, was ein Projekt dauert und wer bei Rückfragen ans Telefon geht.">
 <link rel="canonical" href="https://studio-leine.de/ueber-uns.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/agentur.css">
 <script>
 /* Wenn GSAP oder das Bewegungsskript nicht laedt, faellt die Seite nach
@@ -48,6 +49,8 @@ setTimeout(function () {
 
 <a class="springen" href="#inhalt">Zum Inhalt springen</a>
 
+<div class="aura" aria-hidden="true"><span class="aura__a"></span><span class="aura__b"></span></div>
+<div class="koerner" aria-hidden="true"></div>
 <header class="kopf">
   <nav class="leiste" aria-label="Hauptnavigation">
     <a class="marke" href="index.html">Studio Leine</a>
@@ -65,7 +68,7 @@ setTimeout(function () {
 
   <section class="bahn seitenkopf">
     <h1 class="aussage-gross" data-zeilen>Zwei Leute. Kein Zwischenbüro.</h1>
-    <p class="vorspann">Sie sprechen mit dem, der die Seite baut. Das ist kein Prinzip, sondern schlicht unsere Größe — und der Grund, warum eine Rückfrage bei uns meistens am selben Tag beantwortet ist.</p>
+    <p class="vorspann">Sie sprechen mit dem, der die Seite baut. Hier steht, wer wir sind, wie wir arbeiten, wie wir über Geld reden und was wir nicht können.</p>
   </section>
 
   <section class="bahn abschnitt--eng">
@@ -80,7 +83,7 @@ setTimeout(function () {
           <h2 class="ueberschrift">Bennet</h2>
           <p class="rolle">Design und Umsetzung</p>
           <!-- ERSETZEN: mit eigenen Worten schreiben, geliehene Sätze merkt man. -->
-          <p class="fliess" style="margin-top: 1rem">Ich entwerfe die Seiten und baue sie anschließend selbst. Das heißt, es gibt keinen Entwurf, der in der Umsetzung stillschweigend anders wird, und keine Schnittstelle, an der etwas verloren geht.</p>
+          <p class="fliess" style="margin-top: 1.1rem">Ich entwerfe die Seiten und baue sie anschließend selbst. Das heißt, es gibt keinen Entwurf, der in der Umsetzung stillschweigend anders wird, und keine Schnittstelle, an der etwas verloren geht.</p>
           <p class="fliess" style="margin-top: 0.9rem">Woran ich eine Seite messe: wie viele von den Leuten, die darauf landen, danach tatsächlich anrufen oder vorbeikommen. Alles andere ist Geschmack.</p>
         </div>
       </article>
@@ -93,7 +96,7 @@ setTimeout(function () {
         <div>
           <h2 class="ueberschrift">[Name Gründer 2]</h2>
           <p class="rolle">[Rolle eintragen, zum Beispiel: Technik und Betreuung]</p>
-          <p class="fliess" style="margin-top: 1rem">[Zwei bis drei Sätze: was diese Person im Projekt übernimmt und woran man sie misst.]</p>
+          <p class="fliess" style="margin-top: 1.1rem">[Zwei bis drei Sätze: was diese Person im Projekt übernimmt und woran man sie misst.]</p>
           <p class="fliess" style="margin-top: 0.9rem">[Ein Satz, der etwas über die Person verrät, ohne privat zu werden.]</p>
         </div>
       </article>
@@ -102,8 +105,20 @@ setTimeout(function () {
   </section>
 
   <section class="bahn abschnitt">
+    <div class="paar">
+      <h2 class="ueberschrift auf">Wie wir angefangen haben</h2>
+      <div>
+        <!-- ERSETZEN: Das hier ist ein Gerüst. Eure echte Geschichte ist besser
+         als jede, die wir uns ausdenken — und Kunden merken den Unterschied. -->
+    <p class="fliess auf" style="margin-top: 1.5rem">[Wie seid ihr auf die Idee gekommen? Zwei bis vier Sätze. Gab es einen konkreten Auslöser — eine Seite, die ihr für jemanden gebaut habt, ein Betrieb in der Familie, ein Auftrag, der gut lief?]</p>
+    <p class="fliess auf" style="margin-top: 1.05em">[Was hat euch dabei geärgert oder überrascht? Ein ehrlicher Satz daraus wirkt mehr als drei Absätze über Leidenschaft.]</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bahn abschnitt">
     <h2 class="ueberschrift auf">Wie ein Projekt abläuft</h2>
-    <ol class="ablauf auf" style="margin-top: 2rem">
+    <ol class="ablauf auf" style="margin-top: clamp(2rem, 4vw, 3rem)">
       <li>
         <p class="ablauf__dauer">45 Minuten</p>
         <div>
@@ -143,8 +158,43 @@ setTimeout(function () {
   </section>
 
   <section class="bahn abschnitt">
-    <h2 class="ueberschrift auf">Wo wir arbeiten</h2>
-    <p class="fliess auf" style="margin-top: 1.3rem">Region Hannover und was in einer guten halben Stunde Fahrt erreichbar ist. Wir kommen für das Erstgespräch in den Betrieb, weil man dort in zwanzig Minuten mehr versteht als in drei Telefonaten. Alles Weitere geht auch per Video.</p>
+    <div class="paar">
+      <p class="gross-zitat auf">Über Geld reden wir am Anfang, nicht am Ende.</p>
+      <div>
+        <p class="fliess auf" style="margin-top: 1.6rem">Sie bekommen vor dem ersten Handgriff einen festen Preis, und der steht dann auch auf der Rechnung. Wenn unterwegs etwas dazukommt, das wir vorher nicht besprochen haben, sagen wir es Ihnen, bevor wir es bauen — nicht danach.</p>
+    <p class="fliess auf" style="margin-top: 1.05em">Was wir nicht tun: Stundenzettel schreiben, die niemand nachprüfen kann. Sie zahlen für ein Ergebnis, nicht für unsere Zeit. <a class="textlink" href="leistungen.html">Die Preisrahmen stehen offen auf der Leistungsseite.</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bahn abschnitt">
+    <div class="paar">
+      <h2 class="ueberschrift auf">Was wir nicht können</h2>
+      <div>
+        <p class="fliess auf" style="margin-top: 1.5rem">Das hier steht bewusst auf der Seite und nicht erst im Gespräch. Wenn Sie eines dieser Dinge brauchen, sind wir die Falschen — und es ist besser, wenn Sie das jetzt erfahren statt in drei Wochen.</p>
+    <ul class="liste-haken auf">
+      <li>Große Online-Shops mit Lager, Versand und Zahlungsabwicklung</li>
+      <li>Laufende Werbung: Google Ads, Social Media, Newsletter-Betreuung</li>
+      <li>Fotografie. Wir können sagen, welche Bilder fehlen, aber nicht sie machen.</li>
+      <li>Komplette Markenentwicklung mit Logo, Geschäftsausstattung und Handbuch</li>
+      <li>Vier Projekte gleichzeitig. Wir sind zu zweit, das ist die Obergrenze.</li>
+    </ul>
+    <p class="fliess auf" style="margin-top: 1.6rem">Für die ersten vier Punkte kennen wir Leute in der Region und geben den Kontakt gern weiter, auch wenn Sie nicht bei uns bauen.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bahn abschnitt">
+    <div class="paar">
+      <h2 class="ueberschrift auf">Wo wir arbeiten</h2>
+      <div>
+        <p class="fliess auf" style="margin-top: 1.5rem">Region Hannover und was in einer guten halben Stunde Fahrt erreichbar ist. Wir kommen für das Erstgespräch in den Betrieb, weil man dort in zwanzig Minuten mehr versteht als in drei Telefonaten. Alles Weitere geht auch per Video.</p>
+    <div class="knopf-reihe auf">
+      <a class="knopf" href="https://cal.com/DEIN-NUTZERNAME" target="_blank" rel="noopener noreferrer">Termin buchen<span class="nurlesen"> (öffnet in einem neuen Tab)</span></a>
+      <a class="knopf knopf--still" href="kontakt.html">Kontakt</a>
+    </div>
+      </div>
+    </div>
   </section>
 
 </main>
@@ -182,6 +232,7 @@ setTimeout(function () {
   </div>
 </footer>
 
+<script src="vendor/lenis.min.js"></script>
 <script src="vendor/gsap.min.js"></script>
 <script src="vendor/ScrollTrigger.min.js"></script>
 <script src="vendor/SplitText.min.js"></script>

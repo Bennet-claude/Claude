@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070A0D">
 <title>Leistungen und Preise — Studio Leine</title>
 <meta name="description" content="Was eine Website kostet: einzelne Seite ab 1.800 Euro, komplette Website ab 3.400 Euro, Überarbeitung ab 900 Euro. Studio Leine, Region Hannover.">
 <link rel="canonical" href="https://studio-leine.de/leistungen.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/agentur.css">
 <script>
 /* Wenn GSAP oder das Bewegungsskript nicht laedt, faellt die Seite nach
@@ -48,6 +49,8 @@ setTimeout(function () {
 
 <a class="springen" href="#inhalt">Zum Inhalt springen</a>
 
+<div class="aura" aria-hidden="true"><span class="aura__a"></span><span class="aura__b"></span></div>
+<div class="koerner" aria-hidden="true"></div>
 <header class="kopf">
   <nav class="leiste" aria-label="Hauptnavigation">
     <a class="marke" href="index.html">Studio Leine</a>
@@ -90,8 +93,10 @@ setTimeout(function () {
   </section>
 
   <section class="bahn abschnitt">
-    <h2 class="ueberschrift auf">Was immer dabei ist</h2>
-    <ul class="liste-haken auf">
+    <div class="paar">
+      <h2 class="ueberschrift auf">Was immer dabei ist</h2>
+      <div>
+        <ul class="liste-haken auf">
       <li>Aufbau und Texte gemeinsam erarbeitet, nicht von uns erfunden</li>
       <li>Für das Handy gebaut, nicht nachträglich zusammengeschoben</li>
       <li>Eintrag bei Google Business und die passenden Angaben im Quelltext</li>
@@ -99,6 +104,8 @@ setTimeout(function () {
       <li>Eine Einweisung, mit der Sie Texte danach selbst ändern können</li>
       <li>Domain und Hosting eingerichtet und auf Ihren Namen übergeben</li>
     </ul>
+      </div>
+    </div>
   </section>
 
   <section class="bahn abschnitt">
@@ -118,21 +125,29 @@ setTimeout(function () {
   </section>
 
   <section class="bahn abschnitt">
-    <h2 class="ueberschrift auf">Was nicht dabei ist</h2>
-    <ul class="liste-haken liste-haken--offen auf">
+    <div class="paar">
+      <h2 class="ueberschrift auf">Was nicht dabei ist</h2>
+      <div>
+        <ul class="liste-haken liste-haken--offen auf">
       <li>Professionelle Fotos vom Betrieb. Wir empfehlen sie ausdrücklich, aber sie kosten beim Fotografen extra.</li>
       <li>Online-Shop mit Zahlung, Versand und Lager</li>
       <li>Google Ads, Social Media und laufende Werbebetreuung</li>
       <li>Logo und komplette Markenentwicklung</li>
     </ul>
     <p class="fliess auf" style="margin-top: 1.6rem">Für die ersten drei Punkte kennen wir Leute in der Region und geben den Kontakt gern weiter. <a class="textlink" href="kontakt.html">Fragen Sie einfach.</a></p>
+      </div>
+    </div>
   </section>
 
   <section class="bahn abschnitt">
-    <h2 class="ueberschrift auf">Welcher Weg für Sie passt, sagen wir Ihnen im Gespräch.</h2>
-    <div class="knopf-reihe auf">
+    <div class="paar">
+      <h2 class="ueberschrift auf">Welcher Weg für Sie passt, sagen wir Ihnen im Gespräch.</h2>
+      <div>
+        <div class="knopf-reihe auf">
       <a class="knopf" href="https://cal.com/DEIN-NUTZERNAME" target="_blank" rel="noopener noreferrer">Termin buchen<span class="nurlesen"> (öffnet in einem neuen Tab)</span></a>
       <a class="knopf knopf--still" href="tel:+495111234567">0511 123 45 67</a>
+    </div>
+      </div>
     </div>
   </section>
 
@@ -171,6 +186,7 @@ setTimeout(function () {
   </div>
 </footer>
 
+<script src="vendor/lenis.min.js"></script>
 <script src="vendor/gsap.min.js"></script>
 <script src="vendor/ScrollTrigger.min.js"></script>
 <script src="vendor/SplitText.min.js"></script>

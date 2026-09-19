@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070A0D">
 <title>Datenschutz — Studio Leine</title>
 <meta name="description" content="Datenschutzerklärung von Studio Leine. Gerüst mit den technischen Angaben zu dieser Website.">
 <link rel="canonical" href="https://studio-leine.de/datenschutz.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/agentur.css">
 <script>
 /* Wenn GSAP oder das Bewegungsskript nicht laedt, faellt die Seite nach
@@ -48,6 +49,8 @@ setTimeout(function () {
 
 <a class="springen" href="#inhalt">Zum Inhalt springen</a>
 
+<div class="aura" aria-hidden="true"><span class="aura__a"></span><span class="aura__b"></span></div>
+<div class="koerner" aria-hidden="true"></div>
 <header class="kopf">
   <nav class="leiste" aria-label="Hauptnavigation">
     <a class="marke" href="index.html">Studio Leine</a>
@@ -137,6 +140,7 @@ setTimeout(function () {
   </div>
 </footer>
 
+<script src="vendor/lenis.min.js"></script>
 <script src="vendor/gsap.min.js"></script>
 <script src="vendor/ScrollTrigger.min.js"></script>
 <script src="vendor/SplitText.min.js"></script>

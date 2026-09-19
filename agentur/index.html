@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070A0D">
 <title>Studio Leine — Websites für Betriebe in der Region Hannover</title>
 <meta name="description" content="Zwei Leute aus der Region Hannover bauen Websites für Handwerk, Praxen, Gastronomie und lokale Dienstleister. Keine Baukasten-Vorlage, kein Agentur-Apparat.">
 <link rel="canonical" href="https://studio-leine.de/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/agentur.css">
 <script>
 /* Wenn GSAP oder das Bewegungsskript nicht laedt, faellt die Seite nach
@@ -48,6 +49,8 @@ setTimeout(function () {
 
 <a class="springen" href="#inhalt">Zum Inhalt springen</a>
 
+<div class="aura" aria-hidden="true"><span class="aura__a"></span><span class="aura__b"></span></div>
+<div class="koerner" aria-hidden="true"></div>
 <header class="kopf">
   <nav class="leiste" aria-label="Hauptnavigation">
     <a class="marke" href="index.html" aria-current="page">Studio Leine</a>
@@ -69,6 +72,25 @@ setTimeout(function () {
     <div class="knopf-reihe">
       <a class="knopf" href="https://cal.com/DEIN-NUTZERNAME" target="_blank" rel="noopener noreferrer">Termin buchen<span class="nurlesen"> (öffnet in einem neuen Tab)</span></a>
       <a class="knopf knopf--still" href="leistungen.html">Was das kostet</a>
+    </div>
+  </section>
+
+  <section class="bahn abschnitt--eng">
+    <h2 class="ueberschrift auf">Was wir eigentlich machen</h2>
+    <p class="fliess auf" style="margin-top: 1.5rem">Wir bauen die Seite, auf der jemand landet, der Ihren Namen gehört hat und wissen will, ob er bei Ihnen anrufen soll. Diese eine Seite entscheidet öfter über einen Auftrag als jede Anzeige — und sie ist bei den meisten Betrieben das Einzige, worum sich niemand kümmert.</p>
+    <div class="zeilen auf" style="margin-top: clamp(2rem, 4vw, 3rem)">
+      <article class="zeile">
+        <h3 class="zeile__titel">Wir bauen</h3>
+        <p class="zeile__text">Neue Website oder Überarbeitung der bestehenden. Von Hand geschrieben, keine gekaufte Vorlage, in die Ihr Betrieb nachträglich hineingepresst wird.</p>
+      </article>
+      <article class="zeile">
+        <h3 class="zeile__titel">Wir sorgen dafür, dass man Sie findet</h3>
+        <p class="zeile__text">Google-Business-Eintrag, saubere Technik, kurze Ladezeiten und die Angaben, die eine Suchmaschine braucht, um zu verstehen, was Sie wo anbieten.</p>
+      </article>
+      <article class="zeile">
+        <h3 class="zeile__titel">Wir übergeben alles</h3>
+        <p class="zeile__text">Domain, Zugänge, Dateien und eine Anleitung, mit der Sie Texte selbst ändern. Kein Abo, aus dem man nicht mehr herauskommt.</p>
+      </article>
     </div>
   </section>
 
@@ -105,16 +127,16 @@ setTimeout(function () {
 
   <section class="bahn abschnitt">
     <h2 class="ueberschrift auf">Woran Sie merken, dass eine Seite nicht arbeitet</h2>
-    <div class="zeilen" style="margin-top: 2.5rem">
-      <article class="zeile auf">
+    <div class="zeilen auf" style="margin-top: clamp(2rem, 4vw, 3rem)">
+      <article class="zeile">
         <h3 class="zeile__titel">Sie steht bei Google auf Seite zwei</h3>
         <p class="zeile__text">Wer in Ihrer Stadt nach Ihrem Gewerk sucht, sieht drei andere zuerst. Das ist selten eine Frage des Budgets und meistens eine von Struktur, Ladezeit und den richtigen Angaben an der richtigen Stelle.</p>
       </article>
-      <article class="zeile auf">
+      <article class="zeile">
         <h3 class="zeile__titel">Auf dem Handy muss man zoomen</h3>
         <p class="zeile__text">Die meisten Ihrer Besucher kommen vom Telefon. Wenn Öffnungszeiten, Adresse und Telefonnummer dort nicht sofort zu greifen sind, rufen die Leute beim nächsten an.</p>
       </article>
-      <article class="zeile auf">
+      <article class="zeile">
         <h3 class="zeile__titel">Sie können nichts selbst ändern</h3>
         <p class="zeile__text">Neuer Preis, neue Öffnungszeit, neue Kollegin. Wenn dafür jedes Mal jemand anders gebraucht wird, bleibt die Seite irgendwann einfach stehen.</p>
       </article>
@@ -122,19 +144,39 @@ setTimeout(function () {
   </section>
 
   <section class="bahn abschnitt">
-    <h2 class="ueberschrift auf">Für wen wir das machen</h2>
-    <div class="auf" style="margin-top: 1.8rem">
+    <div class="paar">
+      <h2 class="ueberschrift auf">Für wen wir das machen</h2>
+      <div>
+        <div class="auf" style="margin-top: 1.6rem">
       <p class="fliess">Betriebe mit einem bis ungefähr dreißig Leuten, die ihre Kunden aus der Umgebung bekommen. Dachdecker, Physiotherapie, Steuerkanzlei, Restaurant, Fahrschule. Die Aufgabe ist jedes Mal dieselbe: Jemand sucht etwas Konkretes, und Ihre Seite muss diese eine Sache in wenigen Sekunden beantworten.</p>
-      <p class="fliess" style="margin-top: 1.1em">Was wir nicht machen: große Online-Shops, Konzern-Portale, Social-Media-Betreuung. Dafür gibt es Leute, die das besser können. <a class="textlink" href="leistungen.html">Alle Leistungen und Preise</a></p>
+      <p class="fliess" style="margin-top: 1.05em">Was wir nicht machen: große Online-Shops, Konzern-Portale, Social-Media-Betreuung. Dafür gibt es Leute, die das besser können. <a class="textlink" href="leistungen.html">Alle Leistungen und Preise</a></p>
+    </div>
+      </div>
     </div>
   </section>
 
   <section class="bahn abschnitt">
-    <h2 class="ueberschrift auf">Fünfundvierzig Minuten kosten nichts.</h2>
-    <p class="vorspann auf" style="margin-top: 1.2rem">Im ersten Gespräch schauen wir uns an, was Sie schon haben, und sagen Ihnen ehrlich, ob sich eine neue Seite für Sie überhaupt lohnt. Manchmal lautet die Antwort nein.</p>
+    <div class="paar">
+      <p class="gross-zitat auf">Sie reden vom ersten Telefonat bis zur Übergabe mit denselben zwei Leuten.</p>
+      <div>
+        <p class="fliess auf" style="margin-top: 1.6rem">Bei uns gibt es keinen Vertrieb, der etwas verspricht, und keine Produktion, die es später anders baut. Das ist kein Prinzip, sondern unsere Größe — und der Grund, warum eine Rückfrage bei uns meistens am selben Tag beantwortet ist.</p>
+    <div class="knopf-reihe auf">
+      <a class="knopf knopf--still" href="ueber-uns.html">Wer wir sind</a>
+    </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bahn abschnitt">
+    <div class="paar">
+      <h2 class="ueberschrift auf">Fünfundvierzig Minuten kosten nichts.</h2>
+      <div>
+        <p class="vorspann auf">Im ersten Gespräch schauen wir uns an, was Sie schon haben, und sagen Ihnen ehrlich, ob sich eine neue Seite für Sie überhaupt lohnt. Manchmal lautet die Antwort nein.</p>
     <div class="knopf-reihe auf">
       <a class="knopf" href="https://cal.com/DEIN-NUTZERNAME" target="_blank" rel="noopener noreferrer">Termin buchen<span class="nurlesen"> (öffnet in einem neuen Tab)</span></a>
       <a class="knopf knopf--still" href="tel:+495111234567">0511 123 45 67</a>
+    </div>
+      </div>
     </div>
   </section>
 
@@ -173,6 +215,7 @@ setTimeout(function () {
   </div>
 </footer>
 
+<script src="vendor/lenis.min.js"></script>
 <script src="vendor/gsap.min.js"></script>
 <script src="vendor/ScrollTrigger.min.js"></script>
 <script src="vendor/SplitText.min.js"></script>

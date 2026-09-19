@@ -31,6 +31,8 @@ Impressum/Datenschutz: der Anbieter muss dort benannt werden.
 |---|---|
 | `ueber-uns.html` | Text über Bennet — Entwurf drin, mit eigenen Worten ersetzen |
 | `ueber-uns.html` | `[Name Gründer 2]`, `[Rolle]` und beide Absätze |
+| `ueber-uns.html` | Abschnitt „Wie wir angefangen haben" — komplett, das ist eure Geschichte |
+| `ueber-uns.html` | Abschnitt „Was wir nicht können" — prüfen, ob die fünf Punkte stimmen |
 | `arbeiten.html` | drei Referenzen: Name, Aufgabe, Ergebnis, Link |
 | `leistungen.html` | Preise prüfen: 1.800 / 3.400 / 900 € sind geraten |
 | `kontakt.html` | Erreichbarkeitszeiten prüfen |
