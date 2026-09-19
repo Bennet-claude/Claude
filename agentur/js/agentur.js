@@ -13,6 +13,18 @@
 
   function notbremse() { wurzel.classList.remove('js'); }
 
+  /* Preisschalter. Steht bewusst vor der GSAP-Pruefung: wenn die
+     Bewegungsbibliothek ausfaellt, muss der Schalter trotzdem gehen. */
+  var schalter = document.querySelector('.schalter');
+  if (schalter) {
+    var tarife = document.querySelector('.tarife');
+    schalter.addEventListener('click', function () {
+      var an = schalter.getAttribute('aria-pressed') === 'true';
+      schalter.setAttribute('aria-pressed', an ? 'false' : 'true');
+      if (tarife) { tarife.setAttribute('data-pflege', an ? 'aus' : 'an'); }
+    });
+  }
+
   if (!window.gsap || !window.ScrollTrigger) { notbremse(); return; }
   window.__bewegung = true;
 

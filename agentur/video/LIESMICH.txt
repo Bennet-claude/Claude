@@ -1,0 +1,13 @@
+Hier gehoert euer Hintergrundvideo hin, als hintergrund.mp4.
+
+Empfehlung, damit die Seite schnell bleibt:
+- hoechstens 6 Sekunden, nahtlos geschnitten
+- 1920 x 1080, H.264, kein Ton
+- unter 2 MB. Alles darueber kostet mehr, als das Video bringt.
+- ruhiges Motiv ohne harte Schnitte: Licht, Struktur, Bewegung in einer Richtung
+
+Was ihr NICHT nehmen solltet: fremde CDN-Links. Die Datei kann jederzeit
+verschwinden, und ihr wisst nicht, ob ihr sie verwenden duerft.
+
+Solange hier nichts liegt, bleibt die Videoebene leer und die
+Farbfelder im Hintergrund uebernehmen. Die Seite funktioniert vollstaendig.

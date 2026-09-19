@@ -50,9 +50,35 @@ setTimeout(function () {
 </head>
 <body>
 
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <filter id="korn-fein">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+    <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0" />
+    <feComposite in2="SourceGraphic" operator="in" result="korn" />
+    <feBlend in="SourceGraphic" in2="korn" mode="multiply" />
+  </filter>
+  <filter id="korn-grob">
+    <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" stitchTiles="stitch" />
+    <feComponentTransfer><feFuncA type="linear" slope="0.075" /></feComponentTransfer>
+    <feComposite in2="SourceGraphic" operator="in" result="korn" />
+    <feBlend in="SourceGraphic" in2="korn" mode="overlay" />
+  </filter>
+</svg>
+
 <a class="springen" href="#inhalt">Zum Inhalt springen</a>
 
-<div class="aura" aria-hidden="true"><span class="aura__a"></span><span class="aura__b"></span></div>
+<div class="aura" aria-hidden="true">
+  <!-- Eigenes Video unter video/hintergrund.mp4 ablegen. Fehlt die Datei,
+       bleibt die Ebene leer und die Farbfelder uebernehmen. -->
+  <video class="film" autoplay loop muted playsinline preload="none">
+    <source src="video/hintergrund.mp4" type="video/mp4">
+  </video>
+  <div class="schleier"></div>
+  <span class="aura__a"></span>
+  <span class="aura__b"></span>
+</div>
+<div class="fuehrung fuehrung--links" aria-hidden="true"></div>
+<div class="fuehrung fuehrung--rechts" aria-hidden="true"></div>
 <div class="koerner" aria-hidden="true"></div>
 <header class="kopf">
   <nav class="leiste" aria-label="Hauptnavigation">
@@ -70,7 +96,7 @@ setTimeout(function () {
 <main id="inhalt">
 
   <section class="bahn seitenkopf">
-    <h1 class="aussage-gross" data-zeilen>Die meisten Kunden entscheiden sich, bevor sie anrufen.</h1>
+    <h1 class="aussage-gross" data-zeilen style="max-width: 22ch">Die meisten Kunden<br><span class="glanz">entscheiden sich vorher.</span></h1>
     <p class="vorspann">Wir sind zwei Leute aus der Region Hannover und bauen Websites für Handwerksbetriebe, Praxen, Gastronomie und lokale Dienstleister. Keine Baukasten-Vorlage, kein Agentur-Apparat dazwischen.</p>
     <div class="knopf-reihe">
       <a class="knopf" href="https://cal.com/DEIN-NUTZERNAME" target="_blank" rel="noopener noreferrer">Termin buchen<span class="nurlesen"> (öffnet in einem neuen Tab)</span></a>
@@ -171,14 +197,13 @@ setTimeout(function () {
   </section>
 
   <section class="bahn abschnitt">
-    <div class="paar">
-      <h2 class="ueberschrift auf">Fünfundvierzig Minuten kosten nichts.</h2>
-      <div>
-        <p class="vorspann auf">Im ersten Gespräch schauen wir uns an, was Sie schon haben, und sagen Ihnen ehrlich, ob sich eine neue Seite für Sie überhaupt lohnt. Manchmal lautet die Antwort nein.</p>
-    <div class="knopf-reihe auf">
-      <a class="knopf" href="https://cal.com/DEIN-NUTZERNAME" target="_blank" rel="noopener noreferrer">Termin buchen<span class="nurlesen"> (öffnet in einem neuen Tab)</span></a>
-      <a class="knopf knopf--still" href="tel:+495111234567">0511 123 45 67</a>
-    </div>
+    <div class="glas schluss auf">
+      <div class="schluss__licht"></div>
+      <h2 class="aussage-gross" style="max-width: 20ch; margin-inline: auto">Fünfundvierzig Minuten kosten nichts.</h2>
+      <p class="vorspann" style="margin-inline: auto">Im ersten Gespräch schauen wir uns an, was Sie schon haben, und sagen Ihnen ehrlich, ob sich eine neue Seite für Sie überhaupt lohnt. Manchmal lautet die Antwort nein.</p>
+      <div class="knopf-reihe" style="justify-content: center">
+        <a class="knopf" href="https://cal.com/DEIN-NUTZERNAME" target="_blank" rel="noopener noreferrer">Termin buchen<span class="nurlesen"> (öffnet in einem neuen Tab)</span></a>
+        <a class="knopf knopf--still" href="tel:+495111234567">0511 123 45 67</a>
       </div>
     </div>
   </section>

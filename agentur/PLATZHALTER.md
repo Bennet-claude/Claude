@@ -34,8 +34,23 @@ Impressum/Datenschutz: der Anbieter muss dort benannt werden.
 | `ueber-uns.html` | Abschnitt „Wie wir angefangen haben" — komplett, das ist eure Geschichte |
 | `ueber-uns.html` | Abschnitt „Was wir nicht können" — prüfen, ob die fünf Punkte stimmen |
 | `arbeiten.html` | drei Referenzen: Name, Aufgabe, Ergebnis, Link |
+| `arbeiten.html` | drei Kundenstimmen — nach der Übergabe erfragen, schriftlich freigeben lassen |
 | `leistungen.html` | Preise prüfen: 1.800 / 3.400 / 900 € sind geraten |
 | `kontakt.html` | Erreichbarkeitszeiten prüfen |
+
+## 3b. Hintergrundvideo (optional)
+
+`video/hintergrund.mp4` fehlt noch. Solange die Datei nicht da ist, bleibt
+die Videoebene leer und die Farbfelder übernehmen — die Seite funktioniert
+vollständig. Vorgaben stehen in `video/LIESMICH.txt`.
+
+**Überlegt euch das gut.** Ihr verkauft kurze Ladezeiten. Ein
+Hintergrundvideo ist das Schwerste, was eine Seite laden kann. Unter 2 MB
+ist es vertretbar, darüber widersprecht ihr eurem eigenen Verkaufsargument.
+Auf dem Handy lädt es wegen `preload="none"` erst beim Abspielen.
+
+Nehmt **keinen** fremden CDN-Link. Die Datei kann verschwinden und ihr wisst
+nicht, ob ihr sie verwenden dürft.
 
 ## 4. Bilder
 

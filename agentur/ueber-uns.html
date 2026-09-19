@@ -50,9 +50,35 @@ setTimeout(function () {
 </head>
 <body>
 
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <filter id="korn-fein">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+    <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0" />
+    <feComposite in2="SourceGraphic" operator="in" result="korn" />
+    <feBlend in="SourceGraphic" in2="korn" mode="multiply" />
+  </filter>
+  <filter id="korn-grob">
+    <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" stitchTiles="stitch" />
+    <feComponentTransfer><feFuncA type="linear" slope="0.075" /></feComponentTransfer>
+    <feComposite in2="SourceGraphic" operator="in" result="korn" />
+    <feBlend in="SourceGraphic" in2="korn" mode="overlay" />
+  </filter>
+</svg>
+
 <a class="springen" href="#inhalt">Zum Inhalt springen</a>
 
-<div class="aura" aria-hidden="true"><span class="aura__a"></span><span class="aura__b"></span></div>
+<div class="aura" aria-hidden="true">
+  <!-- Eigenes Video unter video/hintergrund.mp4 ablegen. Fehlt die Datei,
+       bleibt die Ebene leer und die Farbfelder uebernehmen. -->
+  <video class="film" autoplay loop muted playsinline preload="none">
+    <source src="video/hintergrund.mp4" type="video/mp4">
+  </video>
+  <div class="schleier"></div>
+  <span class="aura__a"></span>
+  <span class="aura__b"></span>
+</div>
+<div class="fuehrung fuehrung--links" aria-hidden="true"></div>
+<div class="fuehrung fuehrung--rechts" aria-hidden="true"></div>
 <div class="koerner" aria-hidden="true"></div>
 <header class="kopf">
   <nav class="leiste" aria-label="Hauptnavigation">
@@ -77,7 +103,7 @@ setTimeout(function () {
   <section class="bahn abschnitt--eng">
     <div class="leute">
 
-      <article class="person auf">
+      <article class="person glas glas--karte auf">
         <div class="platzhalter platzhalter--hoch">
           <b>Platzhalter: Porträt Bennet</b>
           <span>Hochformat 4:5, mindestens 900 px breit. Ein echtes Foto, kein Symbolbild.</span>
@@ -91,7 +117,7 @@ setTimeout(function () {
         </div>
       </article>
 
-      <article class="person auf">
+      <article class="person glas glas--karte auf">
         <div class="platzhalter platzhalter--hoch">
           <b>Platzhalter: Porträt Gründer 2</b>
           <span>Hochformat 4:5, mindestens 900 px breit. Gleiche Lichtsituation wie das erste Porträt.</span>

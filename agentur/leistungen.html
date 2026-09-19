@@ -50,9 +50,35 @@ setTimeout(function () {
 </head>
 <body>
 
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <filter id="korn-fein">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+    <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0" />
+    <feComposite in2="SourceGraphic" operator="in" result="korn" />
+    <feBlend in="SourceGraphic" in2="korn" mode="multiply" />
+  </filter>
+  <filter id="korn-grob">
+    <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" stitchTiles="stitch" />
+    <feComponentTransfer><feFuncA type="linear" slope="0.075" /></feComponentTransfer>
+    <feComposite in2="SourceGraphic" operator="in" result="korn" />
+    <feBlend in="SourceGraphic" in2="korn" mode="overlay" />
+  </filter>
+</svg>
+
 <a class="springen" href="#inhalt">Zum Inhalt springen</a>
 
-<div class="aura" aria-hidden="true"><span class="aura__a"></span><span class="aura__b"></span></div>
+<div class="aura" aria-hidden="true">
+  <!-- Eigenes Video unter video/hintergrund.mp4 ablegen. Fehlt die Datei,
+       bleibt die Ebene leer und die Farbfelder uebernehmen. -->
+  <video class="film" autoplay loop muted playsinline preload="none">
+    <source src="video/hintergrund.mp4" type="video/mp4">
+  </video>
+  <div class="schleier"></div>
+  <span class="aura__a"></span>
+  <span class="aura__b"></span>
+</div>
+<div class="fuehrung fuehrung--links" aria-hidden="true"></div>
+<div class="fuehrung fuehrung--rechts" aria-hidden="true"></div>
 <div class="koerner" aria-hidden="true"></div>
 <header class="kopf">
   <nav class="leiste" aria-label="Hauptnavigation">
@@ -74,25 +100,64 @@ setTimeout(function () {
     <p class="vorspann">Die Preise unten sind Ausgangspunkte, keine Pakete, die Sie kaufen müssen. Was am Ende darin steckt, steht schriftlich fest, bevor jemand anfängt zu arbeiten.</p>
   </section>
 
-  <section class="bahn abschnitt--eng">
-    <div class="zeilen">
-      <article class="zeile auf">
-        <h2 class="zeile__titel">Eine Seite</h2>
-        <p class="zeile__text">Für Betriebe, die vor allem gefunden werden müssen: Leistungen, Öffnungszeiten, Anfahrt, Telefonnummer. Alles auf einer Seite, gebaut für das Handy.</p>
-        <p class="zeile__preis">ab 1.800 €</p>
+  <section class="abschnitt--eng">
+    <div class="wasserzeichen" aria-hidden="true">
+      <div class="wasserzeichen__satz">
+        <span class="wasserzeichen__eins">Feste</span>
+        <span class="wasserzeichen__zwei">Preise.</span>
+      </div>
+    </div>
+    <div class="tarife" data-pflege="aus">
+      <article class="tarif">
+        <p class="tarif__stufe">Eine Seite</p>
+        <p class="tarif__preis">ab 1.800 €</p>
+        <p class="tarif__pflege">zzgl. 80 € im Monat</p>
+        <p class="tarif__text">Für Betriebe, die vor allem gefunden werden müssen.</p>
+        <ul class="tarif__liste">
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Alles auf einer Seite, gebaut fürs Handy</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Leistungen, Öffnungszeiten, Anfahrt, Telefon</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Google-Business-Eintrag eingerichtet</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Geprüft auf Ladezeit und Kontraste</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Domain und Hosting auf Ihren Namen</span></li>
+        </ul>
+        <a class="tarif__knopf" href="https://cal.com/DEIN-NUTZERNAME" target="_blank" rel="noopener noreferrer">Termin buchen</a>
       </article>
-      <article class="zeile auf">
-        <h2 class="zeile__titel">Komplette Website</h2>
-        <p class="zeile__text">Fünf bis acht Unterseiten, damit jede Leistung ihre eigene Seite bekommt und einzeln bei Google auftauchen kann. Dazu eine Struktur, die mitwächst, wenn etwas dazukommt.</p>
-        <p class="zeile__preis">ab 3.400 €</p>
+      <article class="tarif tarif--stark">
+        <p class="tarif__stufe">Komplette Website</p>
+        <p class="tarif__preis">ab 3.400 €</p>
+        <p class="tarif__pflege">zzgl. 80 € im Monat</p>
+        <p class="tarif__text">Für Betriebe, deren Leistungen einzeln gefunden werden sollen.</p>
+        <ul class="tarif__liste">
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Fünf bis acht Unterseiten</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Jede Leistung mit eigener Seite bei Google</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Struktur, die mitwächst</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Aufbau und Texte gemeinsam erarbeitet</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Einweisung, um Texte selbst zu ändern</span></li>
+        </ul>
+        <a class="tarif__knopf" href="https://cal.com/DEIN-NUTZERNAME" target="_blank" rel="noopener noreferrer">Termin buchen</a>
       </article>
-      <article class="zeile auf">
-        <h2 class="zeile__titel">Bestehende Seite überarbeiten</h2>
-        <p class="zeile__text">Ihre Seite trägt im Kern, wirkt aber alt oder ist auf dem Handy unbrauchbar. Wir behalten, was funktioniert, und bauen den Rest neu.</p>
-        <p class="zeile__preis">ab 900 €</p>
+      <article class="tarif">
+        <p class="tarif__stufe">Überarbeitung</p>
+        <p class="tarif__preis">ab 900 €</p>
+        <p class="tarif__pflege">zzgl. 80 € im Monat</p>
+        <p class="tarif__text">Für Seiten, die im Kern tragen, aber alt wirken.</p>
+        <ul class="tarif__liste">
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Bestandsaufnahme der jetzigen Seite</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Wir behalten, was funktioniert</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Neuer Aufbau für das Handy</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Technik und Ladezeit geradegezogen</span></li>
+          <li><span class="haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span>Ohne Umzug Ihrer Domain</span></li>
+        </ul>
+        <a class="tarif__knopf" href="https://cal.com/DEIN-NUTZERNAME" target="_blank" rel="noopener noreferrer">Termin buchen</a>
       </article>
     </div>
-    <p class="fliess auf" style="margin-top: 1.6rem; font-size: 0.95rem">Alle Preise ohne Umsatzsteuer. Der Festpreis steht im Angebot, nicht in der Rechnung überraschend höher.</p>
+    <div class="schalter-reihe">
+      <span id="pflege-schild">Mit laufender Pflege rechnen</span>
+      <button class="schalter" type="button" aria-pressed="false" aria-labelledby="pflege-schild">
+        <span class="schalter__knopf"></span>
+      </button>
+    </div>
+    <p class="bahn fliess" style="margin-top: 2.5rem; font-size: 0.95rem">Alle Preise ohne Umsatzsteuer. Der Festpreis steht im Angebot, nicht in der Rechnung überraschend höher.</p>
   </section>
 
   <section class="bahn abschnitt">
