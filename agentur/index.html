@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#070A0D">
+<meta name="theme-color" content="#13171C">
 <title>Studio Leine — Websites für Betriebe in der Region Hannover</title>
 <meta name="description" content="Zwei Leute aus der Region Hannover bauen Websites für Handwerk, Praxen, Gastronomie und lokale Dienstleister. Keine Baukasten-Vorlage, kein Agentur-Apparat.">
 <link rel="canonical" href="https://studio-leine.de/">
@@ -14,6 +14,9 @@
 <script>
 /* Wenn GSAP oder das Bewegungsskript nicht laedt, faellt die Seite nach
    2,5 Sekunden in den sichtbaren Grundzustand zurueck. */
+/* Beim Seitenwechsel oben anfangen. Ohne das stellt der Browser die
+   alte Scrollposition wieder her und man landet mitten im Text. */
+if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
 document.documentElement.classList.add('js');
 setTimeout(function () {
   if (!window.__bewegung) { document.documentElement.classList.remove('js'); }
@@ -157,7 +160,7 @@ setTimeout(function () {
 
   <section class="bahn abschnitt">
     <div class="paar">
-      <p class="gross-zitat auf">Sie reden vom ersten Telefonat bis zur Übergabe mit denselben zwei Leuten.</p>
+      <p class="gross-zitat auf hell"><span class="wort" style="--i:0">Sie</span> <span class="wort" style="--i:1">reden</span> <span class="wort" style="--i:2">vom</span> <span class="wort" style="--i:3">ersten</span> <span class="wort" style="--i:4">Telefonat</span> <span class="wort" style="--i:5">bis</span> <span class="wort" style="--i:6">zur</span> <span class="wort" style="--i:7">Übergabe</span> <span class="wort" style="--i:8">mit</span> <span class="wort" style="--i:9">denselben</span> <span class="wort" style="--i:10">zwei</span> <span class="wort" style="--i:11">Leuten.</span></p>
       <div>
         <p class="fliess auf" style="margin-top: 1.6rem">Bei uns gibt es keinen Vertrieb, der etwas verspricht, und keine Produktion, die es später anders baut. Das ist kein Prinzip, sondern unsere Größe — und der Grund, warum eine Rückfrage bei uns meistens am selben Tag beantwortet ist.</p>
     <div class="knopf-reihe auf">

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#070A0D">
+<meta name="theme-color" content="#13171C">
 <title>Über uns — Studio Leine</title>
 <meta name="description" content="Zwei Gründer aus der Region Hannover. Wie wir arbeiten, was ein Projekt dauert und wer bei Rückfragen ans Telefon geht.">
 <link rel="canonical" href="https://studio-leine.de/ueber-uns.html">
@@ -14,6 +14,9 @@
 <script>
 /* Wenn GSAP oder das Bewegungsskript nicht laedt, faellt die Seite nach
    2,5 Sekunden in den sichtbaren Grundzustand zurueck. */
+/* Beim Seitenwechsel oben anfangen. Ohne das stellt der Browser die
+   alte Scrollposition wieder her und man landet mitten im Text. */
+if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
 document.documentElement.classList.add('js');
 setTimeout(function () {
   if (!window.__bewegung) { document.documentElement.classList.remove('js'); }
@@ -159,7 +162,7 @@ setTimeout(function () {
 
   <section class="bahn abschnitt">
     <div class="paar">
-      <p class="gross-zitat auf">Über Geld reden wir am Anfang, nicht am Ende.</p>
+      <p class="gross-zitat auf hell"><span class="wort" style="--i:0">Über</span> <span class="wort" style="--i:1">Geld</span> <span class="wort" style="--i:2">reden</span> <span class="wort" style="--i:3">wir</span> <span class="wort" style="--i:4">am</span> <span class="wort" style="--i:5">Anfang,</span> <span class="wort" style="--i:6">nicht</span> <span class="wort" style="--i:7">am</span> <span class="wort" style="--i:8">Ende.</span></p>
       <div>
         <p class="fliess auf" style="margin-top: 1.6rem">Sie bekommen vor dem ersten Handgriff einen festen Preis, und der steht dann auch auf der Rechnung. Wenn unterwegs etwas dazukommt, das wir vorher nicht besprochen haben, sagen wir es Ihnen, bevor wir es bauen — nicht danach.</p>
     <p class="fliess auf" style="margin-top: 1.05em">Was wir nicht tun: Stundenzettel schreiben, die niemand nachprüfen kann. Sie zahlen für ein Ergebnis, nicht für unsere Zeit. <a class="textlink" href="leistungen.html">Die Preisrahmen stehen offen auf der Leistungsseite.</a></p>

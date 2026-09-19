@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#070A0D">
+<meta name="theme-color" content="#13171C">
 <title>Leistungen und Preise — Studio Leine</title>
 <meta name="description" content="Was eine Website kostet: einzelne Seite ab 1.800 Euro, komplette Website ab 3.400 Euro, Überarbeitung ab 900 Euro. Studio Leine, Region Hannover.">
 <link rel="canonical" href="https://studio-leine.de/leistungen.html">
@@ -14,6 +14,9 @@
 <script>
 /* Wenn GSAP oder das Bewegungsskript nicht laedt, faellt die Seite nach
    2,5 Sekunden in den sichtbaren Grundzustand zurueck. */
+/* Beim Seitenwechsel oben anfangen. Ohne das stellt der Browser die
+   alte Scrollposition wieder her und man landet mitten im Text. */
+if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
 document.documentElement.classList.add('js');
 setTimeout(function () {
   if (!window.__bewegung) { document.documentElement.classList.remove('js'); }

@@ -24,15 +24,16 @@
 :root {
   color-scheme: dark;
 
-  /* Gemessen gegen den Grund: Nebel 17,1:1 — Nebel-2 6,5:1 —
-     Signal 11,9:1. Dunkler Text auf Signal ebenfalls 11,9:1. */
-  --tief:    #070A0D;
-  --tief-2:  #0E141A;
-  --nebel:   #EDF3F7;
-  --nebel-2: #8795A1;
-  --linie:   rgba(237, 243, 247, 0.09);
-  --signal:  #45E3A6;
-  --flut:    #1C6E8C;
+  /* Schiefer statt Schwarz, Messing statt Neon. Gemessen gegen den
+     Grund: Kreide 14,9:1 — Kreide-2 6,0:1 — Messing 9,8:1.
+     Dunkler Text auf Messing ebenfalls 9,8:1. */
+  --tief:     #13171C;
+  --tief-2:   #1B212A;
+  --nebel:    #EAEBE6;
+  --nebel-2:  #8E969E;
+  --linie:    rgba(234, 235, 230, 0.12);
+  --signal:   #E8B96B;
+  --flut:     #2C3A46;
 
   /* Bricolage traegt die Aussagen, Archivo die Oberflaeche. */
   --aussage: 'Bricolage', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -125,17 +126,17 @@ a { color: inherit; }
 }
 
 .aura__a {
-  width: 95vmax; height: 95vmax;
-  left: -38vmax; top: -34vmax;
+  width: min(80vmax, 780px); height: min(80vmax, 780px);
+  left: -22vmax; top: -24vmax;
   background: radial-gradient(circle closest-side,
-    rgba(69, 227, 166, 0.30), rgba(69, 227, 166, 0.09) 42%, rgba(69, 227, 166, 0) 70%);
+    rgba(232, 185, 107, 0.11), rgba(232, 185, 107, 0.035) 44%, rgba(232, 185, 107, 0) 72%);
 }
 
 .aura__b {
-  width: 110vmax; height: 110vmax;
-  right: -46vmax; top: 6vmax;
+  width: min(94vmax, 900px); height: min(94vmax, 900px);
+  right: -30vmax; top: 4vmax;
   background: radial-gradient(circle closest-side,
-    rgba(28, 110, 140, 0.50), rgba(28, 110, 140, 0.15) 45%, rgba(28, 110, 140, 0) 72%);
+    rgba(72, 94, 112, 0.58), rgba(72, 94, 112, 0.18) 46%, rgba(72, 94, 112, 0) 72%);
 }
 
 @keyframes aura-a {
@@ -161,9 +162,9 @@ a { color: inherit; }
 .koerner {
   position: fixed;
   inset: 0;
-  z-index: 90;
+  z-index: 1;
   pointer-events: none;
-  opacity: 0.032;
+  opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -253,7 +254,7 @@ a { color: inherit; }
 .knopf--still {
   background: transparent;
   color: var(--nebel);
-  border-color: rgba(237, 243, 247, 0.18);
+  border-color: rgba(234, 235, 230, 0.2);
 }
 
 .knopf-reihe {
@@ -264,7 +265,7 @@ a { color: inherit; }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .knopf:hover { background: #63ECBA; }
+  .knopf:hover { background: #F2CB8A; }
   .knopf--still:hover { border-color: var(--signal); color: var(--signal); }
   .textlink:hover { text-decoration-color: currentColor; }
 }
@@ -275,7 +276,7 @@ a { color: inherit; }
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 5px;
-  text-decoration-color: rgba(69, 227, 166, 0.35);
+  text-decoration-color: rgba(232, 185, 107, 0.4);
   transition: text-decoration-color var(--kurz) var(--ease);
 }
 
@@ -302,15 +303,15 @@ a { color: inherit; }
   gap: 18px;
   padding: 8px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(237, 243, 247, 0.10);
-  background: rgba(10, 14, 18, 0.92);
+  border: 1px solid rgba(234, 235, 230, 0.11);
+  background: rgba(19, 23, 28, 0.93);
 }
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .leiste {
-    background: rgba(12, 17, 22, 0.55);
-    -webkit-backdrop-filter: blur(20px) saturate(1.5);
-    backdrop-filter: blur(20px) saturate(1.5);
+    background: rgba(21, 26, 32, 0.62);
+    -webkit-backdrop-filter: blur(13px) saturate(1.4);
+    backdrop-filter: blur(13px) saturate(1.4);
   }
 }
 
@@ -474,9 +475,9 @@ a { color: inherit; }
   gap: 6px;
   text-align: center;
   padding: 24px;
-  border: 1px dashed rgba(237, 243, 247, 0.2);
+  border: 1px dashed rgba(234, 235, 230, 0.22);
   border-radius: 16px;
-  background: rgba(237, 243, 247, 0.03);
+  background: rgba(234, 235, 230, 0.03);
   color: var(--nebel-2);
   aspect-ratio: 16 / 10;
 }
@@ -585,11 +586,20 @@ a { color: inherit; }
   position: absolute;
   inset: 0;
   border-radius: 14px;
-  border: 1px solid rgba(237, 243, 247, 0.14);
-  background: linear-gradient(150deg, #18222B, #0D1319);
-  box-shadow: 0 20px 44px -22px rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(234, 235, 230, 0.13);
+  background: #1B212A;
   transform: translate3d(0px, 0px, 0px);
 }
+
+/* Kein box-shadow. Gemessen: die Schatten auf den fuenf Platten allein
+   kosten im gepinnten Abschnitt die halbe Bildzeit, weil Chrome bei
+   preserve-3d die ganze Szene pro Bild neu malt und Schatten dabei
+   jedes Mal neu rastert. Die Tiefe kommt stattdessen aus gestaffelter
+   Helligkeit — wie bei einem echten Stapel, der Licht faengt. */
+.schicht:nth-child(1) { background: #161B22; }
+.schicht:nth-child(2) { background: #1A2028; }
+.schicht:nth-child(3) { background: #1E252E; }
+.schicht:nth-child(4) { background: #232B35; }
 
 .schicht:nth-child(2) { transform: translate3d(0px, 0px, 52px); }
 .schicht:nth-child(3) { transform: translate3d(0px, 0px, 104px); }
@@ -598,24 +608,21 @@ a { color: inherit; }
 
 .js .schicht { transform: translate3d(0px, 0px, 0px); }
 
-/* Glas. Darauf steht kein Fliesstext, nur abstrakte Balken. */
+/* Kein backdrop-filter. Gemessen: auf einer Platte, die sich im
+   3D-Raum dreht, kostet er auf dem Desktop 50 ms pro Bild — der
+   Browser muss alles dahinter in jedem Einzelbild neu weichzeichnen.
+   Die Lichtkante oben verkauft das Glas ohnehin besser als Unschaerfe. */
 .schicht--glas {
-  background: rgba(24, 34, 43, 0.72);
-  border-color: rgba(69, 227, 166, 0.28);
-  box-shadow: 0 30px 70px -28px rgba(0, 0, 0, 1), 0 0 60px -20px rgba(69, 227, 166, 0.25);
-}
-
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .schicht--glas {
-    background: rgba(20, 30, 38, 0.42);
-    -webkit-backdrop-filter: blur(14px) saturate(1.4);
-    backdrop-filter: blur(14px) saturate(1.4);
-  }
+  background:
+    linear-gradient(152deg, rgba(234, 235, 230, 0.10), rgba(234, 235, 230, 0.02) 42%, rgba(232, 185, 107, 0.06)),
+    linear-gradient(152deg, #242C36, #161B22);
+  border-color: rgba(232, 185, 107, 0.34);
+  box-shadow: inset 0 1px 0 rgba(234, 235, 230, 0.18);
 }
 
 .riss { position: absolute; inset: 13% 11%; display: grid; align-content: start; gap: 7px; }
-.riss i { display: block; height: 7px; border-radius: 4px; background: rgba(237, 243, 247, 0.16); }
-.riss i:nth-child(1) { width: 46%; height: 13px; background: rgba(237, 243, 247, 0.36); margin-bottom: 7px; }
+.riss i { display: block; height: 7px; border-radius: 4px; background: rgba(234, 235, 230, 0.15); }
+.riss i:nth-child(1) { width: 46%; height: 13px; background: rgba(234, 235, 230, 0.34); margin-bottom: 7px; }
 .riss i:nth-child(2) { width: 88%; }
 .riss i:nth-child(3) { width: 72%; }
 .riss i:nth-child(4) { width: 80%; }
@@ -718,7 +725,7 @@ a { color: inherit; }
 
 .luecke {
   display: inline-block;
-  background: rgba(69, 227, 166, 0.12);
+  background: rgba(232, 185, 107, 0.13);
   border-bottom: 1px dashed var(--signal);
   padding: 1px 7px;
   border-radius: 4px;
@@ -773,6 +780,30 @@ a { color: inherit; }
   gap: 8px 22px;
   color: var(--nebel-2);
   font-size: 0.85rem;
+}
+
+/* ============================================================
+   Die eine Highlight-Animation: der Kernsatz hellt sich beim
+   Scrollen Wort fuer Wort auf. Reine CSS-Scroll-Timeline, kein
+   JavaScript — laeuft damit nicht auf dem Hauptthread, und es wird
+   nur opacity animiert.
+   ============================================================ */
+
+.hell .wort { display: inline-block; opacity: 1; }
+
+@keyframes wort-auf {
+  from { opacity: 0.2; }
+  to   { opacity: 1; }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hell .wort {
+      animation: wort-auf linear both;
+      animation-timeline: view();
+      animation-range: cover calc(10% + var(--i) * 2.1%) cover calc(26% + var(--i) * 2.1%);
+    }
+  }
 }
 
 /* ============================================================

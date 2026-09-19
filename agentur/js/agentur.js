@@ -16,6 +16,10 @@
   if (!window.gsap || !window.ScrollTrigger) { notbremse(); return; }
   window.__bewegung = true;
 
+  /* Sicherheitsnetz: falls der Browser die Scrollposition doch
+     wiederhergestellt hat, oben anfangen — ausser bei einem Anker. */
+  if (!window.location.hash) { window.scrollTo(0, 0); }
+
   gsap.registerPlugin(ScrollTrigger);
   var hatSplit = typeof window.SplitText !== 'undefined';
   if (hatSplit) { gsap.registerPlugin(SplitText); }
@@ -158,6 +162,15 @@
       }
     });
   }
+
+  /* Zurueck-Button: die Seite kommt aus dem bfcache, das Skript laeuft
+     nicht neu. Ohne das bleibt die Leiste ausgeblendet haengen. */
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted && kopf) {
+      kopf.classList.remove('kopf--weg');
+      ScrollTrigger.refresh();
+    }
+  });
 
   /* ---------- 5. Notbremse ---------- */
 
