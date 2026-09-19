@@ -175,6 +175,70 @@
     });
   }
 
+  /* ---------- 4b. Strahler ----------
+     Folgt dem Zeiger und legt das Baugeruest frei. Die Schleife
+     schlaeft ein, sobald der Kegel seinen Zielpunkt erreicht hat,
+     und laeuft nur, solange der Abschnitt im Bild ist. Eine
+     rAF-Schleife, die dauerhaft dreht, waehrend jemand den Fuss
+     liest, ist verschenkte Rechenzeit und Akku. */
+
+  var buehne_strahler = document.querySelector('[data-strahler]');
+
+  if (buehne_strahler && !ruhig && window.matchMedia('(hover: hover)').matches) {
+    var fenster = buehne_strahler.querySelector('.strahler__fenster');
+    var gitter = buehne_strahler.querySelector('.strahler__gitter');
+
+    if (fenster && gitter) {
+      var HALB = 280;
+      var zx, zy, px, py;
+      var laeuft = false, imBild = true;
+
+      function setzen() {
+        fenster.style.transform = 'translate3d(' + px.toFixed(1) + 'px,' + py.toFixed(1) + 'px,0)';
+        /* Gegenlaeufig, damit das Gitter stillsteht, plus eine
+           leichte Parallaxe zur Abschnittsmitte. */
+        var mx = (px - buehne_strahler.clientWidth / 2) * 0.05;
+        var my = (py - buehne_strahler.clientHeight / 2) * 0.05;
+        gitter.style.transform =
+          'translate3d(' + (HALB - px + mx).toFixed(1) + 'px,' + (HALB - py + my).toFixed(1) + 'px,0)';
+      }
+
+      function schleife() {
+        px += (zx - px) * 0.1;
+        py += (zy - py) * 0.1;
+        setzen();
+        if (Math.abs(zx - px) < 0.2 && Math.abs(zy - py) < 0.2) {
+          px = zx; py = zy; setzen();
+          laeuft = false;
+          return;
+        }
+        requestAnimationFrame(schleife);
+      }
+
+      function wecken() {
+        if (!laeuft && imBild) { laeuft = true; requestAnimationFrame(schleife); }
+      }
+
+      zx = px = buehne_strahler.clientWidth * 0.7;
+      zy = py = buehne_strahler.clientHeight * 0.52;
+      setzen();
+
+      buehne_strahler.addEventListener('pointermove', function (e) {
+        var r = buehne_strahler.getBoundingClientRect();
+        zx = e.clientX - r.left;
+        zy = e.clientY - r.top;
+        wecken();
+      }, { passive: true });
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (eintraege) {
+          imBild = eintraege[0].isIntersecting;
+          if (imBild) { wecken(); }
+        }, { threshold: 0 }).observe(buehne_strahler);
+      }
+    }
+  }
+
   /* Zurueck-Button: die Seite kommt aus dem bfcache, das Skript laeuft
      nicht neu. Ohne das bleibt die Leiste ausgeblendet haengen. */
   window.addEventListener('pageshow', function (e) {
