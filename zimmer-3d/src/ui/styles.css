@@ -1,0 +1,70 @@
+:root {
+  --bg: #16191c;
+  --panel: rgba(28, 31, 35, 0.82);
+  --panel-border: rgba(255, 255, 255, 0.1);
+  --fg: #e9ebee;
+  --fg-dim: #9aa1a9;
+  --accent: #e8e4dc;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 14px/1.45 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+}
+canvas { display: block; touch-action: none; }
+
+.app { position: fixed; inset: 0; }
+
+.viewbar {
+  position: absolute;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  max-width: calc(100vw - 24px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+}
+.viewbar::-webkit-scrollbar { display: none; }
+.viewbar button {
+  flex: 0 0 auto;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--fg-dim);
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms, color 120ms;
+}
+.viewbar button:hover { color: var(--fg); background: rgba(255, 255, 255, 0.06); }
+.viewbar button[data-active="true"] { color: #16191c; background: var(--accent); }
+
+.badge {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  left: 14px;
+  padding: 7px 11px;
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--fg-dim);
+  letter-spacing: 0.01em;
+}
+.badge b { color: var(--fg); font-weight: 600; }

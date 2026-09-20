@@ -1,6 +1,8 @@
 # Raumanalyse & Rekonstruktionsplan
 
-Quelle: 10 Referenzfotos des Zimmers. Stand: 2026-09-20.
+Quelle: 14 Referenzfotos des Zimmers. Stand: 2026-09-20.
+Nachtrag nach 4 zusaetzlichen Fotos (Tuerwand mit Schrank, Schrank frontal,
+Uebersicht, Decke): die offenen Fragen 1, 3 und 5 sind geklaert.
 
 Konfidenz-Markierung:
 - **[S]** sicher aus den Bildern erkennbar
@@ -32,11 +34,11 @@ Alle Maße in Metern. Nicht gemessene Maße sind Schaetzungen und explizit als s
 | Groesse | Wert (Schaetzung) | Konfidenz | Begruendung / Herleitung |
 |---|---|---|---|
 | Grundriss | rechteckig | [W] | Alle Ecken in den Fotos ~90 Grad; keine Schraege sichtbar |
-| Laenge L (A -> C) | ~4.30 | [W] | Bett (1.89) + Sofa (~1.40) + Beistelltisch/Luft (~0.6) + Abstand zur Tuerwand (~0.4) entlang Wand D |
-| Breite B (B -> D) | ~3.20 | [W] | Bett-Tiefe (~1.65) + Laufweg (~0.8) + Kommodentiefe (0.48) + Reserve |
-| Deckenhoehe H | ~2.50 | [U] | Schrankhoehe + Luft darueber; typischer Altbestand-Wert. Muss gemessen werden |
+| Laenge L (A -> C) | ~4.00 | [W] | Bett (1.89) + Sofa (~1.40) + Beistelltisch/Luft (~0.6) + Abstand zur Tuerwand (~0.4) entlang Wand D |
+| Breite B (B -> D) | ~2.70 | [W] | Tuerwandblock (1.20, aus Tuerbreite abgeleitet) + Nischenbreite (1.50, = Schrankbreite) |
+| Deckenhoehe H | ~2.50 | [W] | Schrankhoehe 2.01 + gemessener Luftspalt im Bild ~0.46. Zwei unabhaengige Referenzen, daher belastbar |
 | Decke | flach, weiss | [S] | Rauchmelder sichtbar (Foto 5/6) |
-| Deckenversprung ueber dem Schrank | vorhanden? | [U] | Foto 2/4 zeigen oben eine Kante/Absatz ueber dem Schrankbereich. Entweder Unterzug, Nische oder nur Perspektive |
+| Deckenversprung ueber dem Schrank | nein | [S] | Foto 14 (Decke) zeigt eine durchgehend flache Decke. Die vermeintliche Kante war der Nischenrand |
 
 **Wichtigste Unsicherheit:** Die exakten Wandlaengen sind aus Fotos nicht bestimmbar. Der Fehler liegt realistisch bei +/-15-20 %, solange nicht gemessen wird.
 
@@ -72,7 +74,7 @@ Zwei Fenster nebeneinander, dazwischen das Kallax-Regal.
 | Waende | hell, sehr blasses Graugruen (ca. #DDE3DE), Raufaser/Feinputz-Struktur | [S] |
 | Tuerwand | wirkt weisser als die uebrigen Waende - evtl. eigener Anstrich oder nur Gegenlicht | [U] |
 | Decke | weiss, glatt/feine Struktur, Rauchmelder | [S] |
-| Deckenleuchte | in keinem Foto eindeutig sichtbar | [U] |
+| Deckenleuchte | runde weisse Schalenleuchte, Durchmesser ~0.33 | [S] (Foto 11, 14) |
 
 ---
 
@@ -83,7 +85,7 @@ Die meisten Stuecke sind mit hoher Wahrscheinlichkeit IKEA-Serienmoebel. Das ist
 | # | Objekt | Wand / Position | Masse B x T x H (Annahme) | Konfidenz |
 |---|---|---|---|---|
 | 1 | Tagesbett, weiss/hell, 3 Schubladen, Rueckenlehne + geschwungene Kopf-/Fussteile, rotes Polster im Ruecken | Wand D, Laengsseite an der Wand, Kopfende Richtung Tuerwand | 1.89 x ~1.65 (ausgezogen) x 0.86 | [S] Typ, [W] Masse |
-| 2 | Kleiderschrank, 3 Tueren, weiss Hochglanz, Buegelgriffe | Wand A oder Wand D nahe Ecke A/D - **nicht eindeutig** | 1.50 x 0.60 x ~2.16 | [S] Aussehen, [U] Position |
+| 2 | Kleiderschrank, 3 Tueren, weiss Hochglanz, Buegelgriffe | Wand A, in einer Nische rechts neben der Tuer, rechte Seite stoesst an Wand D | 1.50 x 0.60 x 2.01 | [S] Position, [W] Masse |
 | 3 | Sofa, 2-Sitzer, dunkelgrau, Kontrastnaht | Wand D, zwischen Bett und Fensterwand | ~1.40 x 0.85 x 0.75 | [S] |
 | 4 | Schreibtisch, weiss/grau, neigbare Platte, Frontleiste, hoehenverstellbar (Schuelerschreibtisch-Typ) | Wand B, in der Ecke B/C unter dem B-seitigen Fenster | ~1.25 x 0.70 x 0.75 | [S] Typ, [W] Masse |
 | 5 | Buerostuhl, schwarz/grau Mesh, Kopfstuetze, Armlehnen, 5-Stern-Fuss | vor dem Schreibtisch | ~0.68 x 0.68 x 1.20 | [S] |
@@ -133,7 +135,7 @@ Die meisten Stuecke sind mit hoher Wahrscheinlichkeit IKEA-Serienmoebel. Das ist
 |---|---|---|
 | Tageslicht | Hauptlichtquelle, kommt ausschliesslich von Wand C | [S] |
 | Himmelsrichtung | Ausblick auf Baeume/Garten; Lichtstimmung eher diffus/bedeckt | [W] |
-| Deckenleuchte | nicht sichtbar | [U] |
+| Deckenleuchte | runde weisse Deckenschale | [S] |
 | Leseleuchte am Bett | vorhanden, weiss | [S] |
 | Reflexionen | Boden reflektiert leicht, Schrankfronten Hochglanz | [S] |
 
@@ -141,28 +143,49 @@ Konsequenz fuer das Modell: Zwei Flaechenlichter in den Fensteroeffnungen + HDRI
 
 ---
 
-## 8. Wichtigste offene Fragen
+## 8. Geklaerte Punkte (Nachtrag)
 
-1. **Position des Kleiderschranks.** Die Fotos widersprechen sich perspektivisch: In Foto 2 steht der Schrank frontal, die Tuer daneben stark verkuerzt. Beides gleichzeitig geht nur, wenn der Schrank in einer Nische steht oder in der Ecke A/D um 90 Grad gedreht ist. Es fehlt ein Foto, das Tuer und Schrank zusammen frontal zeigt.
-2. **Raummasse** (L, B, H).
-3. **Nische/Unterzug** ueber dem Schrank: ja/nein, Tiefe.
-4. **Bett ausgezogen oder einzeln?** (80/90 vs. 160 Liegeflaeche)
-5. **Deckenleuchte** vorhanden?
-6. **Wandfarben**: alle Waende gleich gestrichen?
+1. **Kleiderschrank: geloest.** Foto 11 und 12 zeigen es eindeutig - die Tuer
+   sitzt in einem vorspringenden Wandblock, direkt rechts daneben springt die
+   Wand um die Schranktiefe zurueck. Der Schrank fuellt diese Nische vollstaendig
+   aus und stoesst mit der rechten Seite an Wand D (Bettwand). Damit ist der
+   Grundriss eindeutig.
+2. **Decke: flach**, kein Unterzug, keine Schraege (Foto 14).
+3. **Deckenleuchte: vorhanden**, runde weisse Schalenleuchte (Foto 11, 14).
+4. **Raummasse: hergeleitet statt gemessen.** Siehe Kopf dieser Datei. Der
+   Tuerwandblock und die Schrankbreite sind zwei unabhaengige Massstaebe, die
+   sich gegenseitig bestaetigen. Restfehler geschaetzt +/-0.15 m in der Breite,
+   +/-0.30 m in der Laenge.
+
+## 8b. Weiterhin offen
+
+1. **Raumlaenge L.** Die schwaechste Zahl im Modell - es gibt kein Foto, in dem
+   ein bekanntes Objekt ueber die gesamte Laenge reicht.
+2. **Bett ausgezogen oder einzeln?** (80/90 vs. 160 Liegeflaeche)
+3. **Wandfarben**: alle Waende gleich gestrichen, oder Tuerwand + Nische weiss?
+4. **Fenstermasse und -positionen**: bisher nur geschaetzt.
 
 ---
 
-## 9. Benoetigte Messwerte (Prioritaet)
+## 9. Verbleibende Messwerte (Prioritaet)
+
+Die Hauptmasse sind jetzt hergeleitet. Nur noch diese lohnen wirklich:
 
 | # | Messung | Aufwand | Wirkung |
 |---|---|---|---|
-| 1 | Raumlaenge, Raumbreite, Deckenhoehe | 3 min | sehr hoch |
-| 2 | Tuer: Oeffnungsbreite + Abstand zur Ecke B | 1 min | hoch |
-| 3 | Schrank: B x T x H + Abstand zur Tuerzarge + Abstand zur Ecke A/D | 2 min | hoch |
-| 4 | Fenster je: Breite, Hoehe, Bruestungshoehe, Abstand zur naechsten Ecke, Abstand zueinander | 4 min | hoch |
-| 5 | Bett: Liegeflaechenbreite + Laenge + Abstand Kopfende zur Tuerwand | 2 min | mittel |
-| 6 | Schreibtisch: B x T x H | 1 min | mittel |
-| 7 | Teppich: B x L | 1 min | niedrig |
+| 1 | Raumlaenge Tuerwand -> Fensterwand | 1 min | sehr hoch |
+| 2 | Raumbreite (Gegenprobe zur Herleitung 2.70) | 1 min | hoch |
+| 3 | Fenster je: Breite, Bruestungshoehe, Abstand zur naechsten Ecke | 3 min | mittel |
+| 4 | Bett: Liegeflaechenbreite | 30 s | mittel |
+
+### Drei Wege ohne Zollstock
+
+1. **Messen-App am iPhone** (AR-Massband): fuer Raumlaengen auf ~2-3 cm genau.
+2. **Dielen zaehlen.** Das Laminat laeuft laengs zur Raumlaenge. Anzahl der
+   Dielenreihen quer x Dielenbreite = Raumbreite. Eine Diele einmal messen
+   (typisch 18.9 / 19.3 / 20.6 cm) genuegt fuer alle weiteren Zahlen.
+3. **DIN-A4-Blatt als Lineal.** Lange Kante = 29.7 cm, kurze = 21.0 cm.
+   Zehnmal angelegt sind 2.97 m.
 
 ## 10. Benoetigte zusaetzliche Fotos
 
