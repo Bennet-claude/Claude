@@ -24,8 +24,9 @@
 export const ROOM = {
   /** Raumbreite Wand B -> Wand D. [W] +/- 0.15 */
   width: 2.7,
-  /** Raumlaenge Wand A -> Wand C. [W] +/- 0.30 */
-  length: 4.0,
+  /** Raumlaenge Wand A -> Wand C. [S] iPhone-Messung "etwas mehr als 4 m",
+   *  Gegenprobe ueber 58 gezaehlte Dielenreihen a ~7.1 cm = 4.12 m. */
+  length: 4.1,
   /** Deckenhoehe. [W] +/- 0.05 */
   height: 2.5,
   /** Innenwandstaerke (nur Darstellung). */
