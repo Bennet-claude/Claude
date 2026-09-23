@@ -20,7 +20,7 @@ export class DebugPanel {
     lines.push(`${renderer.fps.toFixed(0)} fps · ${renderer.avgMs.toFixed(1)} ms (max ${renderer.maxMs.toFixed(1)})`);
     lines.push(`DPR ${renderer.dpr} · ${renderer.width}×${renderer.height} · ${info.calls} Calls · ${(info.triangles / 1000).toFixed(1)}k Dreiecke`);
     const deg = (a) => Math.round((a * 180) / Math.PI);
-    lines.push(`t ${w.t.toFixed(2)} s · ${w.phase} · Tempo ${clock.tempo}× · Blick ${deg(fp.gaze)}° (Körper ${deg(fp.bodyHd)}°)`);
+    lines.push(`Szene ${w.scene ? w.scene.id : '–'} · t ${w.t.toFixed(2)} s · ${w.phase} · Tempo ${clock.tempo}× · Blick ${deg(fp.gaze)}° (Körper ${deg(fp.bodyHd)}°)`);
     if (w.phase === 'decide' || w.phase === 'toUser') {
       const carrier = w.phase === 'decide' ? w.user : -1;
       if (carrier >= 0) {
