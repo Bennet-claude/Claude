@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Blickfeld</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="description" content="Entscheidungstrainer für zentrale Mittelfeldspieler: scannen vor der Ballannahme, entscheiden unter Zeitdruck.">
+<meta name="description" content="Entscheidungstrainer für zentrale Mittelfeldspieler: echte Situationen aus Profispielen in Ich-Perspektive.">
 <meta name="theme-color" content="#0b100e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -25,7 +25,13 @@
 <div id="ui">
   <div class="hud-top">
     <button id="btn-pause" class="round-btn" type="button" aria-label="Pause"><span class="bars" aria-hidden="true"></span></button>
-    <div id="scorebug" class="scorebug" hidden></div>
+    <div class="hud-center">
+      <div class="hud-row">
+        <div id="scorebug" class="scorebug" hidden></div>
+        <div id="session" class="session" hidden></div>
+      </div>
+      <div id="phase-label" class="phase-label" hidden></div>
+    </div>
     <div class="tempo" role="group" aria-label="Tempo">
       <button type="button" data-tempo="0.25" aria-pressed="false">0,25×</button>
       <button type="button" data-tempo="0.5" aria-pressed="false">0,5×</button>
@@ -34,53 +40,56 @@
     </div>
   </div>
 
+  <section id="feedback" class="feedback" hidden aria-live="polite">
+    <div class="fb-head">
+      <span id="fb-grade" class="grade">Top-Lösung</span>
+      <span id="fb-points" class="fb-points">+100</span>
+      <span id="fb-pattern" class="fb-pattern"></span>
+    </div>
+    <p id="fb-text" class="fb-text"></p>
+    <p id="fb-scan" class="fb-note"></p>
+    <p id="fb-meta" class="fb-note"></p>
+    <div class="fb-bar"><span id="fb-progress"></span></div>
+  </section>
+
   <div id="hint" class="hint" hidden></div>
-  <button id="btn-secure" class="secure" type="button" disabled>Sichern</button>
+  <button id="btn-secure" class="secure" type="button" disabled><span class="secure-label">Sichern</span><span class="secure-meter" aria-hidden="true"></span></button>
 
   <section id="start" class="sheet start" aria-labelledby="start-title">
-    <p class="eyebrow">Meilenstein 1 · Testszene</p>
+    <p class="eyebrow">Entscheidungstrainer · zentrales Mittelfeld</p>
     <h1 id="start-title">Blickfeld</h1>
-    <p class="lead">Scannen vor der Ballannahme. Entscheiden, bevor der Gegner da ist.</p>
-    <div class="scene-card">
-      <div class="scene-line"><span class="chip">8er</span><span class="score">1:0</span><span class="minute">84.</span></div>
-      <p>Aufbau gegen einen 4-4-2-Mittelfeldblock. Der linke Innenverteidiger spielt dich im linken Halbraum an.</p>
+    <p class="lead">Echte Situationen aus Profispielen, aus deinen Augen. Scannen, entscheiden – und schon kommt die nächste.</p>
+    <div class="setting">
+      <span class="label">Deine Position</span>
+      <div class="seg pos-seg" role="group" aria-label="Position">
+        <button type="button" data-pos="6">6er</button>
+        <button type="button" data-pos="8">8er</button>
+        <button type="button" data-pos="10">10er</button>
+        <button type="button" data-pos="mix">Gemischt</button>
+      </div>
     </div>
     <dl class="controls">
-      <div><dt>Waagerecht wischen</dt><dd>Kopf drehen, bis 150° zu jeder Seite</dd></div>
-      <div><dt>Mitspieler antippen</dt><dd>Pass – vor der Annahme als Direktpass</dd></div>
+      <div><dt>Waagerecht wischen</dt><dd>Kopf drehen – vor der Annahme scannen</dd></div>
+      <div><dt>Mitspieler antippen</dt><dd>Pass, vor der Annahme als Direktpass</dd></div>
       <div><dt>Nach der Annahme hoch wischen</dt><dd>Andribbeln in Blickrichtung, runter: aufdrehen</dd></div>
-      <div><dt>Sichern</dt><dd>Ball abschirmen, Tempo rausnehmen</dd></div>
+      <div><dt>Sichern</dt><dd>Rücken zum Gegner, Zeit gewinnen, dann passen</dd></div>
     </dl>
     <div class="actions">
-      <button id="btn-start" class="btn primary" type="button">Szene starten</button>
+      <button id="btn-start" class="btn primary" type="button">Spielen</button>
       <button id="btn-fullscreen" class="btn" type="button">Vollbild</button>
     </div>
-    <p class="fine">Positionen 6 · 8 · 10 und immer neue Szenen kommen mit dem Generator (M3), die Analyse mit M2.</p>
-  </section>
-
-  <section id="context" class="context" hidden aria-live="polite">
-    <div class="ctx-row"><span id="ctx-role" class="chip">8er</span><span id="ctx-score" class="score">1:0</span><span id="ctx-min" class="minute">84.</span></div>
-    <p id="ctx-sub" class="ctx-sub"></p>
-  </section>
-
-  <section id="result" class="card result" hidden aria-live="polite">
-    <p class="eyebrow" id="res-tag">Ergebnis</p>
-    <h2 id="res-title"></h2>
-    <p id="res-detail" class="detail"></p>
-    <p id="res-meta" class="meta"></p>
-    <div class="actions">
-      <button id="btn-again" class="btn primary" type="button">Nochmal</button>
-      <button id="btn-menu" class="btn" type="button">Menü</button>
-    </div>
-    <p class="fine">Vogelperspektive mit Passwegen, Note und Scan-Auswertung folgen mit M2.</p>
+    <p id="start-stats" class="fine"></p>
+    <p class="fine">Laufwege aus zwei anonymisierten Profispielen (Metrica Sports Sample Data), nachgespielt in Echtzeit. Ab deiner Entscheidung übernimmt die Simulation.</p>
   </section>
 
   <section id="pause" class="sheet pause" hidden aria-labelledby="pause-title">
     <h2 id="pause-title">Pause</h2>
     <div class="actions">
       <button id="btn-resume" class="btn primary" type="button">Weiter</button>
-      <button id="btn-restart" class="btn" type="button">Szene neu starten</button>
+      <button id="btn-skip" class="btn" type="button">Nächste Situation</button>
+      <button id="btn-menu" class="btn" type="button">Menü</button>
     </div>
+    <dl id="session-stats" class="stats"></dl>
     <div class="settings">
       <div class="setting">
         <span class="label">Kopf nach dem Loslassen</span>
@@ -115,6 +124,7 @@
   </section>
 
   <pre id="debug" class="debug" hidden></pre>
+  <div id="fade" class="fade"></div>
   <div id="rotate" class="rotate" role="status"><p>Bitte ins Querformat drehen</p></div>
 </div>
 

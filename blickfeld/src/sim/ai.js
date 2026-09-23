@@ -23,14 +23,26 @@ function triggered(w, s) {
   return w.t >= t0 + (s.delay || 0);
 }
 
-// Ballorientiertes Verschieben um den Ankerpunkt.
-function zonal(w, i, tg, speed) {
+// Ballorientiertes Verschieben um den Ankerpunkt (eigener Anker im Skript oder aus der Szene).
+function zonal(w, i, tg, speed, s) {
   const kx = w.kx[i], ky = w.ky[i];
   const bx = w.ball.x, by = w.ball.y;
-  tg.x = w.ax[i] + kx * (bx - w.refX);
-  tg.y = clamp(w.ay[i] + ky * (by - w.refY), -PITCH.width / 2 + 1, PITCH.width / 2 - 1);
+  const own = s && s.ax !== undefined;
+  const ax = own ? s.ax : w.ax[i], ay = own ? s.ay : w.ay[i];
+  const rx = own ? s.rx : w.refX, ry = own ? s.ry : w.refY;
+  tg.x = clamp(ax + kx * (bx - rx), -PITCH.length / 2 + 1, PITCH.length / 2 - 1);
+  tg.y = clamp(ay + ky * (by - ry), -PITCH.width / 2 + 1, PITCH.width / 2 - 1);
   tg.speed = speed;
   tg.look = LOOK_BALL;
+}
+
+// Übergang in KI: halten, leicht in Laufrichtung weiter, ballorientiert verschieben.
+export function holdScript(w, i, drift) {
+  return {
+    type: 'zonal', speed: 4.5,
+    ax: w.px[i] + w.vx[i] * drift, ay: w.py[i] + w.vy[i] * drift,
+    rx: w.ball.x, ry: w.ball.y,
+  };
 }
 
 export function computeTarget(w, i, tg) {
@@ -40,7 +52,7 @@ export function computeTarget(w, i, tg) {
   switch (s.type) {
     case 'hold':
     case 'zonal':
-      zonal(w, i, tg, s.speed || 4);
+      zonal(w, i, tg, s.speed || 4, s);
       return;
 
     case 'move': {
@@ -74,9 +86,11 @@ export function computeTarget(w, i, tg) {
       const vx = w.px[v], vy = w.py[v];
       const dx = w.px[i] - vx, dy = w.py[i] - vy;
       const d = Math.sqrt(dx * dx + dy * dy) || 1;
-      // direkt anlaufen …
-      let ax = vx + (dx / d) * 0.95, ay = vy + (dy / d) * 0.95;
-      if (s.shadow >= 0) {
+      // direkt anlaufen, auf die Stelle, an der der Ballführer gleich sein wird …
+      const lead = Math.min(0.5, d / 12);
+      let ax = vx + w.vx[v] * lead, ay = vy + w.vy[v] * lead;
+      if (d > 2.5) { ax += (dx / d) * 0.6; ay += (dy / d) * 0.6; }
+      if (s.shadow >= 0 && d > 2.5) {
         // … und auf den letzten Metern im Bogen in den Passweg zum abgeschirmten Mitspieler
         const sx = w.px[s.shadow] - vx, sy = w.py[s.shadow] - vy;
         const sl = Math.sqrt(sx * sx + sy * sy) || 1;
@@ -86,7 +100,7 @@ export function computeTarget(w, i, tg) {
         ay += (vy + (sy / sl) * r - ay) * k;
       }
       tg.x = ax; tg.y = ay;
-      tg.arrive = d < 3.5;
+      tg.arrive = d < 1.8; // im Zweikampf abbremsen statt durchzulaufen
       tg.speed = s.speed || 6.5;
       return;
     }
@@ -154,8 +168,7 @@ export function computeTarget(w, i, tg) {
       return;
 
     case 'shield': {
-      // Körper zwischen Ball und nächsten Gegner
-      tg.x = w.px[i]; tg.y = w.py[i]; tg.speed = 0;
+      // Rücken zum nächsten Gegner, Körper zwischen Ball und Gegner, langsam wegdrehen
       let best = -1, bd = Infinity;
       for (let j = 0; j < w.n; j++) {
         if (w.team[j] === w.team[i]) continue;
@@ -164,17 +177,40 @@ export function computeTarget(w, i, tg) {
         if (d < bd) { bd = d; best = j; }
       }
       tg.look = LOOK_HEADING;
-      tg.hd = best >= 0 ? Math.atan2(w.py[i] - w.py[best], w.px[i] - w.px[best]) : w.hd[i];
+      if (best >= 0) {
+        const away = Math.atan2(w.py[i] - w.py[best], w.px[i] - w.px[best]);
+        tg.hd = away;
+        tg.x = w.px[i] + Math.cos(away) * 3; tg.y = w.py[i] + Math.sin(away) * 3;
+        tg.speed = Math.sqrt(bd) < 2.5 ? 0.9 : 0.5;
+      } else {
+        tg.hd = w.hd[i]; tg.x = w.px[i]; tg.y = w.py[i]; tg.speed = 0;
+      }
       return;
     }
 
     case 'support': {
-      // kommt dem Mitspieler entgegen, bleibt auf Abstand
+      // bietet sich an: im Winkel s.ang zur Linie Gegner → Mitspieler, auf Abstand s.dist
       const m = s.mate;
-      const dx = w.px[i] - w.px[m], dy = w.py[i] - w.py[m];
-      const l = Math.sqrt(dx * dx + dy * dy) || 1;
-      tg.x = w.px[m] + (dx / l) * 5.5; tg.y = w.py[m] + (dy / l) * 5.5;
+      let bx = -1, by = 0;
+      if (s.from >= 0) {
+        const dx = w.px[m] - w.px[s.from], dy = w.py[m] - w.py[s.from];
+        const l = Math.sqrt(dx * dx + dy * dy) || 1;
+        bx = dx / l; by = dy / l;
+      }
+      const c = Math.cos(s.ang), sn = Math.sin(s.ang);
+      tg.x = clamp(w.px[m] + (bx * c - by * sn) * s.dist, -PITCH.length / 2 + 1, PITCH.length / 2 - 1);
+      tg.y = clamp(w.py[m] + (bx * sn + by * c) * s.dist, -PITCH.width / 2 + 1, PITCH.width / 2 - 1);
       tg.speed = PLAYER.run;
+      return;
+    }
+
+    case 'ucarry': {
+      // eigener Spieler nach der Annahme: nimmt den Ball in der Bewegung mit, wird langsamer
+      const el = w.t - s.t0;
+      const sp = Math.max(s.vMin, s.v0 * Math.exp(-el / 0.8));
+      tg.x = w.px[i] + s.dx * 10; tg.y = w.py[i] + s.dy * 10;
+      tg.speed = sp; tg.arrive = false;
+      tg.look = sp > 1.6 ? LOOK_MOVE : LOOK_HEADING; tg.hd = w.hd[i];
       return;
     }
 
@@ -183,9 +219,12 @@ export function computeTarget(w, i, tg) {
       return;
 
     case 'carry': {
-      // mit Ball Richtung gegnerisches Tor
+      // mit Ball weiter: aus der Laufrichtung Richtung gegnerisches Tor eindrehen
       const gx = w.team[i] === 1 ? -PITCH.length / 2 : PITCH.length / 2;
-      tg.x = gx; tg.y = w.py[i] * 0.7; tg.speed = 5.2; tg.arrive = false;
+      const dx = gx - w.px[i], dy = -w.py[i] * 0.5;
+      const l = Math.sqrt(dx * dx + dy * dy) || 1;
+      tg.x = w.px[i] + (dx / l) * 8 + w.vx[i] * 0.8; tg.y = w.py[i] + (dy / l) * 8 + w.vy[i] * 0.8;
+      tg.speed = s.speed || 5.2; tg.arrive = false;
       tg.look = LOOK_MOVE;
       return;
     }

@@ -65,9 +65,23 @@ test('Szene: Direktpass vor der Annahme wird bei Ballankunft gespielt', () => {
   assert.equal(w.outcome.type, 'received');
 });
 
-test('Szene: Sichern gegen einen Gegenspieler hält den Ball', () => {
-  const w = playScene(() => ({ type: 'shield' }), 0.3);
-  assert.equal(w.outcome.type, 'shielded');
+test('Szene: Sichern ist kein Endzustand – danach kann gepasst werden', () => {
+  const w = new World();
+  w.load(M1_SCENE);
+  runUntil(w, (x) => x.phase === 'decide');
+  w.input({ type: 'shield' });
+  assert.equal(w.shielding, true);
+  runUntil(w, (x) => x.t >= x.ev.reception + 0.8 || x.outcome !== null);
+  if (!w.outcome) {
+    w.input({ type: 'pass', target: w.idx.LV });
+    runUntil(w, (x) => x.outcome !== null);
+  }
+  assert.ok(['received', 'fouled'].includes(w.outcome.type), w.outcome.type);
+});
+
+test('Szene: Wer beim Sichern nicht abspielt, verliert den Ball irgendwann', () => {
+  const w = playScene(() => ({ type: 'shield' }), 0.1);
+  assert.ok(['shieldLost', 'fouled'].includes(w.outcome.type), w.outcome.type);
 });
 
 test('Determinismus: gleiche Eingaben → identischer Zustand', () => {

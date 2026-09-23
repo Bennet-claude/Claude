@@ -176,12 +176,17 @@ export class Figures {
     return out;
   }
 
-  update(w, alpha, hideIndex) {
+  // eyeX/eyeY: Kameraposition – Figuren direkt an der Kamera ausblenden (sonst füllen sie das Bild)
+  update(w, alpha, hideIndex, eyeX, eyeY) {
     const b = w.ball;
     this.ballX = lerp(b.px, b.x, alpha);
     this.ballY = lerp(b.py, b.y, alpha);
     for (let i = 0; i < w.n; i++) {
       if (i === hideIndex) { this.hide(i); continue; }
+      if (eyeX !== undefined) {
+        const dx = lerp(w.ppx[i], w.px[i], alpha) - eyeX, dy = lerp(w.ppy[i], w.py[i], alpha) - eyeY;
+        if (dx * dx + dy * dy < 0.55 * 0.55) { this.hide(i); continue; }
+      }
       this.pose(w, i, alpha);
     }
     for (const m of this.meshes) m.instanceMatrix.needsUpdate = true;

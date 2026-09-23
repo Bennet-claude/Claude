@@ -57,6 +57,31 @@ export function planPass(path, ox, oy, tx, ty, tKick) {
   return path.T;
 }
 
+// Pass mit vorgegebener Flugzeit T (aus echten Daten): Tempo so, dass der Ball genau
+// dann beim Empfänger ist. Flach: s(T) = v0·T − ½·a·T² = d. Halbhoch: Scheitel aus T.
+export function planPassTimed(path, ox, oy, tx, ty, T, lofted, tKick) {
+  const ddx = tx - ox, ddy = ty - oy;
+  const dist = Math.max(0.5, Math.sqrt(ddx * ddx + ddy * ddy));
+  path.ox = ox; path.oy = oy;
+  path.dx = ddx / dist; path.dy = ddy / dist;
+  path.dist = dist; path.tKick = tKick;
+  const a = BALL.rollDecel;
+  let v0 = (dist + 0.5 * a * T * T) / T;
+  if (lofted || v0 > 24) {
+    const h = clamp((BALL.gravity * T * T) / 8, 1.2, 8);
+    path.mode = LOFT;
+    path.h = h; path.T = T; path.vh = dist / T; path.vz0 = (BALL.gravity * T) / 2;
+    path.v0 = path.vh;
+    path.tStop = T + (path.vh * 0.45) / a;
+    return T;
+  }
+  v0 = Math.max(v0, a * T + 1);
+  path.mode = FLAT;
+  path.v0 = v0; path.T = flatTime(v0, dist); path.h = 0;
+  path.tStop = v0 / a;
+  return path.T;
+}
+
 // Zeit bis zur Ankunft bei Distanz d für einen hypothetischen Pass (ohne Pfad-Objekt).
 export function arrivalTime(dist) {
   if (dist > BALL.loftThreshold) {

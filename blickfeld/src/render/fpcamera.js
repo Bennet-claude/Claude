@@ -39,7 +39,9 @@ export class FirstPersonCamera {
   reset(w, lookAtIndex) {
     const u = w.user;
     this.bodyHd = w.hd[u];
-    const tx = w.px[lookAtIndex] - w.px[u], ty = w.py[lookAtIndex] - w.py[u];
+    const lx = lookAtIndex >= 0 ? w.px[lookAtIndex] : w.ball.x;
+    const ly = lookAtIndex >= 0 ? w.py[lookAtIndex] : w.ball.y;
+    const tx = lx - w.px[u], ty = ly - w.py[u];
     this.gaze = this.target = this.clampToBody(Math.atan2(ty, tx));
     this.pitch = CAMERA.basePitchDeg * DEG;
     this.follow = false;
@@ -80,9 +82,10 @@ export class FirstPersonCamera {
     const toBall = Math.atan2(dy, dx);
 
     let tau = CAMERA.headTau;
-    if (this.follow) {
+    if (this.follow && !this.dragging) {
+      // nach dem Pass schaut der Spieler dem Ball nach – außer er dreht gerade selbst den Kopf
       if (distBall > 0.8) this.target = this.clampToBody(toBall);
-      tau = 0.12;
+      tau = 0.18;
     } else if (!this.dragging) {
       this.releaseT += dt;
       if (this.headMode === 'return' && this.releaseT > 0.18 && distBall > 0.8) {

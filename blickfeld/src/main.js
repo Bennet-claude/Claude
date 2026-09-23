@@ -1,9 +1,11 @@
-// Blickfeld – Einstieg: Spielschleife, Szenenablauf, Eingaben.
+// Blickfeld – Einstieg: laufendes Spiel aus echten Situationen.
 // Simulation in festen 60-Hz-Schritten, Rendering entkoppelt und interpoliert.
+// Ablauf: Situation → Entscheidung → kurze Rückmeldung → nächste Situation, ohne Menü dazwischen.
 
 import * as THREE from 'three';
-import { STEP, TIMING, TEMPI } from './config.js';
-import { lerp } from './core/math.js';
+import { STEP, TEMPI } from './config.js';
+import { lerp, DEG } from './core/math.js';
+import { mulberry32 } from './core/rng.js';
 import { World } from './sim/world.js';
 import { FixedClock } from './sim/clock.js';
 import { Renderer } from './render/renderer.js';
@@ -11,10 +13,16 @@ import { Figures } from './render/figures.js';
 import { Props } from './render/props.js';
 import { FirstPersonCamera } from './render/fpcamera.js';
 import { Gestures } from './ui/input.js';
-import { UI } from './ui/screens.js';
+import { UI, PHASE_NAMES, fmt } from './ui/screens.js';
 import { DebugPanel } from './ui/debug.js';
 import * as store from './ui/storage.js';
-import { M1_SCENE } from '../scenes/handmade.js';
+import { gradeDecision, evaluateOptions } from './eval/evaluate.js';
+import { pickNext, PHASES } from './generator/scheduler.js';
+import { SITUATIONS, buildRealScene } from '../scenes/real/loader.js';
+
+const RESULT_DELAY = 0.9;   // s Spielzeit nach dem Ergebnis, bevor die Rückmeldung kommt
+const FEEDBACK_TIME = 3.6;  // s Echtzeit, dann automatisch weiter
+const UNIT = 12;            // Szenen pro Einheit
 
 const canvas = document.getElementById('view');
 const renderer = new Renderer(canvas);
@@ -27,29 +35,46 @@ renderer.camera.add(props.edge);
 const fp = new FirstPersonCamera(renderer.camera);
 renderer.onResize = (aspect) => fp.applyAspect(aspect);
 
-const defaults = { tempo: 1, headMode: 'stay', invert: 'false', fov: 95, debug: false };
+const defaults = { tempo: 1, headMode: 'stay', invert: 'false', fov: 95, debug: false, pos: 'mix' };
 const settings = Object.assign({}, defaults, store.load('settings', {}));
 if (/[?&]debug=1/.test(location.search) || location.hash === '#debug') settings.debug = true;
+const progress = Object.assign(
+  { history: [], phases: [], stats: {}, totals: { scenes: 0, points: 0, bestStreak: 0 } },
+  store.load('progress', {}),
+);
+const rng = mulberry32((Date.now() ^ (Math.random() * 1e9)) >>> 0);
 
-let state = 'start'; // start | context | play | result
+let state = 'start'; // start | play | feedback | fadeout
 let paused = false;
-let menuOpen = false; // Einstellungen ohne laufende Szene (Start/Ergebnis)
-let contextT = 0;
+let menuOpen = false;
 let lastPhase = '';
 let last = 0;
 let raf = 0;
 let wakeLock = null;
+let fbT = 0, fbDuration = FEEDBACK_TIME, fadeT = 0;
+let session = newSession();
+
+function newSession() {
+  return { scenes: 0, points: 0, streak: 0, bestStreak: 0, gradeSum: {}, times: [], scans: 0, phase: {} };
+}
 
 const debug = new DebugPanel(document.getElementById('debug'));
 const ui = new UI({
-  start: () => startScene(),
-  again: () => startScene(),
-  menu: () => { paused = false; menuOpen = false; ui.hidePause(); loadScene(); state = 'start'; ui.showStart(); },
+  start: () => startGame(),
+  menu: () => toMenu(),
   pause: () => setPaused(!(paused || menuOpen)),
   resume: () => setPaused(false),
-  secure: () => { if (state === 'play' && !paused && world.phase === 'decide') world.input({ type: 'shield' }); },
+  skip: () => { setPaused(false); goNext(); },
+  next: () => { if (state === 'feedback' && !paused) goNext(); },
+  secure: () => {
+    if (state === 'play' && !paused && world.phase === 'decide' && !world.shielding) {
+      world.input({ type: 'shield' });
+      ui.hint('Ball gesichert – Mitspieler bieten sich an. Abspielen, bevor der Balken voll ist.', 2200);
+    }
+  },
   tempo: (t) => setTempo(t),
   setting: (k, v) => applySetting(k, v),
+  position: (p) => { settings.pos = p; ui.setPosition(p); store.save('settings', settings); },
   fullscreen: () => requestFullscreen(),
 });
 
@@ -60,6 +85,7 @@ function applySetting(k, v) {
   fp.headMode = settings.headMode;
   fp.invert = settings.invert === 'true';
   fp.setFov(settings.fov);
+  world.viewHalf = (settings.fov / 2) * 0.92 * DEG;
   ui.setSettings(settings);
   store.save('settings', settings);
 }
@@ -72,38 +98,136 @@ function setTempo(t) {
   store.save('settings', settings);
 }
 
+function sessionStats() {
+  if (session.scenes === 0) return null;
+  const avgTime = session.times.length ? session.times.reduce((a, b) => a + b, 0) / session.times.length : 0;
+  let best = null, worst = null;
+  for (const p of PHASES) {
+    const s = session.phase[p];
+    if (!s || s.n < 2) continue;
+    const avg = s.sum / s.n;
+    if (!best || avg > best[1]) best = [p, avg];
+    if (!worst || avg < worst[1]) worst = [p, avg];
+  }
+  const rows = [
+    ['Situationen', String(session.scenes)],
+    ['Punkte', session.points.toLocaleString('de-DE')],
+    ['Ø pro Situation', String(Math.round(session.points / session.scenes))],
+    ['Ø Entscheidungszeit', session.times.length ? `${fmt(avgTime)} s` : '–'],
+    ['Scans pro Situation', fmt(session.scans / session.scenes)],
+    ['Beste Serie', String(session.bestStreak)],
+  ];
+  if (best && worst && best[0] !== worst[0]) {
+    rows.push(['Stärkste Phase', PHASE_NAMES[best[0]]]);
+    rows.push(['Schwächste Phase', PHASE_NAMES[worst[0]]]);
+  }
+  return rows;
+}
+
 function setPaused(p) {
-  if (state === 'start' || state === 'result') {
-    // ohne laufende Szene: Pausemenü dient als Einstellungen
+  if (state === 'start') {
+    // ohne laufende Szene dient das Pausemenü als Einstellungen
     menuOpen = p;
-    if (p) ui.showOnly('pause');
-    else if (state === 'start') ui.showStart();
-    else ui.showOnly('result');
+    if (p) { ui.el.start.hidden = true; ui.showPause(null); } else { ui.hidePause(); ui.el.start.hidden = false; }
     return;
   }
   paused = p;
   clock.paused = p;
-  if (p) ui.showPause(); else ui.hidePause();
+  if (p) ui.showPause(sessionStats()); else ui.hidePause();
 }
 
-function loadScene() {
-  world.load(M1_SCENE);
+// ---------- Szenen ----------
+
+function loadScene(scene) {
+  world.load(scene);
   figures.setup(world);
   props.setup(world);
-  fp.reset(world, world.passer);
+  fp.reset(world, -1);
   clock.reset();
   lastPhase = '';
-  ui.sceneMeta(M1_SCENE.meta);
 }
 
-function startScene() {
+function nextScene() {
+  const pick = pickNext(SITUATIONS, settings.pos, progress, rng);
+  const scene = buildRealScene(pick.index, pick.mirror);
+  loadScene(scene);
+  progress.history.push(scene.baseId);
+  if (progress.history.length > 300) progress.history.splice(0, progress.history.length - 300);
+  progress.phases.push(scene.meta.phase);
+  if (progress.phases.length > 10) progress.phases.splice(0, progress.phases.length - 10);
+  ui.sceneMeta(scene.meta);
+  ui.setSession(session);
+  state = 'play';
+  ui.fade(false);
+}
+
+function startGame() {
   paused = false; menuOpen = false; clock.paused = false;
+  session = newSession();
   ui.hidePause();
-  loadScene();
-  state = 'context';
-  contextT = 0;
-  ui.showContext();
+  ui.showPlay();
+  nextScene();
   requestWakeLock();
+}
+
+function toMenu() {
+  paused = false; menuOpen = false; clock.paused = false;
+  state = 'start';
+  ui.hideFeedback();
+  ui.fade(false);
+  loadBackdrop();
+  ui.showStart(progress.totals);
+}
+
+function finishScene() {
+  const g = gradeDecision(world);
+  const phase = world.scene.meta.phase;
+  let points = g.points;
+  const good = g.grade === 'top' || g.grade === 'good';
+  session.streak = good ? session.streak + 1 : 0;
+  if (good && session.streak >= 3) points += 10 * Math.min(5, session.streak - 2); // Serienbonus
+  session.scenes++;
+  session.points += points;
+  session.bestStreak = Math.max(session.bestStreak, session.streak);
+  session.scans += world.scans;
+  if (g.decisionTime !== null) session.times.push(g.decisionTime);
+  const sp = session.phase[phase] || (session.phase[phase] = { n: 0, sum: 0 });
+  sp.n++; sp.sum += g.points;
+  // dauerhaft: Verlauf und Stärken/Schwächen je Phase
+  const ps = progress.stats[phase] || (progress.stats[phase] = { n: 0, avg: 60 });
+  ps.n++;
+  ps.avg += (g.points - ps.avg) / Math.min(ps.n, 20);
+  progress.totals.scenes++;
+  progress.totals.points += points;
+  progress.totals.bestStreak = Math.max(progress.totals.bestStreak, session.bestStreak);
+  store.save('progress', progress);
+
+  let meta = [];
+  if (g.decisionTime !== null) meta.push(world.action && world.action.direct ? 'Direktpass' : `Entscheidung nach ${fmt(g.decisionTime)} s`);
+  meta.push(`${world.scans} ${world.scans === 1 ? 'Scan' : 'Scans'} vor der Annahme`);
+  fbDuration = FEEDBACK_TIME;
+  if (session.scenes % UNIT === 0) {
+    const avg = Math.round(session.points / session.scenes);
+    meta.push(`Einheit ${session.scenes / UNIT} geschafft: Ø ${avg} Punkte`);
+    fbDuration = FEEDBACK_TIME + 2;
+  }
+  ui.showFeedback(g, points, meta.join(' · '));
+  ui.setSession(session);
+  fbT = 0;
+  state = 'feedback';
+}
+
+function goNext() {
+  if (state !== 'feedback' && state !== 'play') return;
+  ui.hideFeedback();
+  ui.fade(true);
+  fadeT = 0;
+  state = 'fadeout';
+}
+
+function loadBackdrop() {
+  const pick = pickNext(SITUATIONS, settings.pos, { history: [], phases: [], stats: {} }, rng);
+  loadScene(buildRealScene(pick.index, pick.mirror));
 }
 
 // ---------- Eingaben ----------
@@ -143,11 +267,13 @@ function pickTeammate(clientX, clientY) {
 
 new Gestures(canvas, {
   canDribble: () => state === 'play' && !paused && world.phase === 'decide',
-  headStart: () => { if (!paused && (state === 'play' || state === 'context')) fp.beginDrag(); },
+  headStart: () => { if (!paused && (state === 'play' || state === 'feedback')) fp.beginDrag(); },
   headMove: (dx) => { if (fp.dragging) fp.drag(dx, renderer.width); },
   headEnd: () => fp.endDrag(),
   tap: (x, y) => {
-    if (state !== 'play' || paused) return;
+    if (paused) return;
+    if (state === 'feedback') { goNext(); return; }
+    if (state !== 'play') return;
     const ph = world.phase;
     if (ph !== 'pre' && ph !== 'toUser' && ph !== 'decide') return;
     const t = pickTeammate(x, y);
@@ -193,25 +319,21 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     cancelAnimationFrame(raf);
     raf = 0;
-    if (state === 'play' || state === 'context') setPaused(true);
+    if (state === 'play' || state === 'feedback') setPaused(true);
   } else if (!raf) {
     last = 0;
     raf = requestAnimationFrame(frame);
-    if (state === 'play') requestWakeLock();
+    if (state !== 'start') requestWakeLock();
   }
 });
 
-function resize() {
-  renderer.resize();
-}
-window.addEventListener('resize', resize);
-if (window.visualViewport) window.visualViewport.addEventListener('resize', resize);
+window.addEventListener('resize', () => renderer.resize());
+if (window.visualViewport) window.visualViewport.addEventListener('resize', () => renderer.resize());
 
 // ---------- Schleife ----------
 
 function onPhaseChange(ph) {
-  if (ph === 'decide') ui.setSecure(true);
-  else ui.setSecure(false);
+  ui.setSecure(ph === 'decide');
   if (ph === 'action' || ph === 'done') ui.hint('');
 }
 
@@ -223,41 +345,46 @@ function frame(now) {
   renderer.track(dtMs);
 
   if (!paused) {
-    if (state === 'context') {
-      contextT += dt;
-      if (contextT >= TIMING.contextCard) { state = 'play'; ui.play(); }
-    } else if (state === 'play') {
+    if (state === 'play' || state === 'feedback') {
       const n = clock.advance(dt);
       for (let k = 0; k < n; k++) world.step(STEP);
+    }
+    if (state === 'play') {
       if (world.phase !== lastPhase) { lastPhase = world.phase; onPhaseChange(lastPhase); }
-      const a = world.action;
-      fp.follow = world.phase === 'done' || (!!a && (a.type !== 'pass' || a.kicked));
-      if (world.outcome && world.t - world.outcomeT >= TIMING.resolveTail) {
-        state = 'result';
-        ui.showResult(world, clock.tempo);
-      }
+      if (world.shielding) { ui.setSecure(true, true); ui.setMeter(world.shieldT / (world.shieldLimit || 2.8)); }
+      if (world.outcome && world.t - world.outcomeT >= RESULT_DELAY) finishScene();
+    } else if (state === 'feedback') {
+      fbT += dt;
+      ui.feedbackProgress(fbT / fbDuration);
+      if (fbT >= fbDuration) goNext();
+    } else if (state === 'fadeout') {
+      fadeT += dt;
+      if (fadeT >= 0.26) nextScene();
     }
   }
-
-  const alpha = state === 'play' ? clock.alpha : 0;
+  const a = world.action;
+  fp.follow = world.phase === 'done' || (!!a && (a.type !== 'pass' || a.kicked));
+  const alpha = state === 'start' ? 0 : clock.alpha;
   fp.update(world, alpha, dt);
-  figures.update(world, alpha, world.user);
+  figures.update(world, alpha, world.user, fp.eyeX, fp.eyeY);
   props.update(world, alpha, world.user);
-  props.updateEdge(renderer.camera, state === 'play' && (world.phase === 'pre' || world.phase === 'toUser' || world.phase === 'decide' || fp.follow));
+  props.updateEdge(renderer.camera, state === 'play' && world.phase !== 'done');
   renderer.render();
   debug.update(dt, renderer, world, fp, clock);
 }
 
 // ---------- Start ----------
 
-loadScene();
+loadBackdrop();
+evaluateOptions(world, world.user); // Bewertung einmal vorab durchlaufen (JIT aufwärmen, kein Ruckler bei der ersten Annahme)
 applySetting('fov', settings.fov);
 setTempo(settings.tempo);
-resize();
+ui.setPosition(settings.pos);
+renderer.resize();
 // alle Shader vorab kompilieren, auch für gerade unsichtbare Objekte
 props.ring.visible = props.edge.visible = true;
 renderer.compile();
 props.ring.visible = props.edge.visible = false;
-ui.showStart();
+ui.showStart(progress.totals);
 raf = requestAnimationFrame(frame);
-window.__blickfeld = { world, renderer, fp, clock, get state() { return state; } };
+window.__blickfeld = { world, renderer, fp, clock, get state() { return state; }, next: () => goNext() };
