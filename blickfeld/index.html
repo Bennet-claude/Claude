@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Blickfeld</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="Entscheidungstrainer für zentrale Mittelfeldspieler: scannen vor der Ballannahme, entscheiden unter Zeitdruck.">
+<meta name="theme-color" content="#0b100e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Blickfeld">
+<meta name="format-detection" content="telephone=no">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/app.css">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/three.module.js" } }
+</script>
+</head>
+<body>
+<canvas id="view" aria-label="Spielfeld aus Ich-Perspektive"></canvas>
+
+<div id="ui">
+  <div class="hud-top">
+    <button id="btn-pause" class="round-btn" type="button" aria-label="Pause"><span class="bars" aria-hidden="true"></span></button>
+    <div id="scorebug" class="scorebug" hidden></div>
+    <div class="tempo" role="group" aria-label="Tempo">
+      <button type="button" data-tempo="0.25" aria-pressed="false">0,25×</button>
+      <button type="button" data-tempo="0.5" aria-pressed="false">0,5×</button>
+      <button type="button" data-tempo="0.75" aria-pressed="false">0,75×</button>
+      <button type="button" data-tempo="1" aria-pressed="true">1×</button>
+    </div>
+  </div>
+
+  <div id="hint" class="hint" hidden></div>
+  <button id="btn-secure" class="secure" type="button" disabled>Sichern</button>
+
+  <section id="start" class="sheet start" aria-labelledby="start-title">
+    <p class="eyebrow">Meilenstein 1 · Testszene</p>
+    <h1 id="start-title">Blickfeld</h1>
+    <p class="lead">Scannen vor der Ballannahme. Entscheiden, bevor der Gegner da ist.</p>
+    <div class="scene-card">
+      <div class="scene-line"><span class="chip">8er</span><span class="score">1:0</span><span class="minute">84.</span></div>
+      <p>Aufbau gegen einen 4-4-2-Mittelfeldblock. Der linke Innenverteidiger spielt dich im linken Halbraum an.</p>
+    </div>
+    <dl class="controls">
+      <div><dt>Waagerecht wischen</dt><dd>Kopf drehen, bis 150° zu jeder Seite</dd></div>
+      <div><dt>Mitspieler antippen</dt><dd>Pass – vor der Annahme als Direktpass</dd></div>
+      <div><dt>Nach der Annahme hoch wischen</dt><dd>Andribbeln in Blickrichtung, runter: aufdrehen</dd></div>
+      <div><dt>Sichern</dt><dd>Ball abschirmen, Tempo rausnehmen</dd></div>
+    </dl>
+    <div class="actions">
+      <button id="btn-start" class="btn primary" type="button">Szene starten</button>
+      <button id="btn-fullscreen" class="btn" type="button">Vollbild</button>
+    </div>
+    <p class="fine">Positionen 6 · 8 · 10 und immer neue Szenen kommen mit dem Generator (M3), die Analyse mit M2.</p>
+  </section>
+
+  <section id="context" class="context" hidden aria-live="polite">
+    <div class="ctx-row"><span id="ctx-role" class="chip">8er</span><span id="ctx-score" class="score">1:0</span><span id="ctx-min" class="minute">84.</span></div>
+    <p id="ctx-sub" class="ctx-sub"></p>
+  </section>
+
+  <section id="result" class="card result" hidden aria-live="polite">
+    <p class="eyebrow" id="res-tag">Ergebnis</p>
+    <h2 id="res-title"></h2>
+    <p id="res-detail" class="detail"></p>
+    <p id="res-meta" class="meta"></p>
+    <div class="actions">
+      <button id="btn-again" class="btn primary" type="button">Nochmal</button>
+      <button id="btn-menu" class="btn" type="button">Menü</button>
+    </div>
+    <p class="fine">Vogelperspektive mit Passwegen, Note und Scan-Auswertung folgen mit M2.</p>
+  </section>
+
+  <section id="pause" class="sheet pause" hidden aria-labelledby="pause-title">
+    <h2 id="pause-title">Pause</h2>
+    <div class="actions">
+      <button id="btn-resume" class="btn primary" type="button">Weiter</button>
+      <button id="btn-restart" class="btn" type="button">Szene neu starten</button>
+    </div>
+    <div class="settings">
+      <div class="setting">
+        <span class="label">Kopf nach dem Loslassen</span>
+        <div class="seg" role="group" aria-label="Kopf nach dem Loslassen">
+          <button type="button" data-setting="headMode" data-value="stay">bleibt stehen</button>
+          <button type="button" data-setting="headMode" data-value="return">zurück zum Ball</button>
+        </div>
+      </div>
+      <div class="setting">
+        <span class="label">Wischrichtung</span>
+        <div class="seg" role="group" aria-label="Wischrichtung">
+          <button type="button" data-setting="invert" data-value="false">Blick folgt Finger</button>
+          <button type="button" data-setting="invert" data-value="true">umgekehrt</button>
+        </div>
+      </div>
+      <div class="setting">
+        <span class="label">Sichtfeld</span>
+        <div class="seg" role="group" aria-label="Sichtfeld">
+          <button type="button" data-setting="fov" data-value="90">90°</button>
+          <button type="button" data-setting="fov" data-value="95">95°</button>
+          <button type="button" data-setting="fov" data-value="100">100°</button>
+        </div>
+      </div>
+      <div class="setting">
+        <span class="label">Debug-Anzeige</span>
+        <div class="seg" role="group" aria-label="Debug-Anzeige">
+          <button type="button" data-setting="debug" data-value="false">aus</button>
+          <button type="button" data-setting="debug" data-value="true">an</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <pre id="debug" class="debug" hidden></pre>
+  <div id="rotate" class="rotate" role="status"><p>Bitte ins Querformat drehen</p></div>
+</div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

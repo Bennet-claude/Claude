@@ -1,0 +1,9 @@
+{
+  "name": "blickfeld",
+  "private": true,
+  "type": "module",
+  "description": "Entscheidungstrainer für zentrale Mittelfeldspieler (kein Build-Schritt, nur für Tests)",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}
