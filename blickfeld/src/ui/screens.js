@@ -34,6 +34,7 @@ export class UI {
       fbText: $('fb-text'), fbScan: $('fb-scan'), fbMeta: $('fb-meta'), fbProgress: $('fb-progress'),
       fullscreen: $('btn-fullscreen'), stats: $('session-stats'), startStats: $('start-stats'),
       meter: document.querySelector('.secure-meter'),
+      flashEl: $('flash'),
     };
     $('btn-start').addEventListener('click', () => this.h.start());
     $('btn-menu').addEventListener('click', () => this.h.menu());
@@ -151,6 +152,35 @@ export class UI {
 
   hidePause() {
     this.el.pause.hidden = true;
+  }
+
+  // Kontextknopf unten rechts: Sichern (mit Ball) / Fordern (Mitspieler hat den Ball)
+  setContext(mode) {
+    const b = this.el.secure;
+    const label = b.querySelector('.secure-label');
+    if (mode === 'shield') { label.textContent = 'Sichern'; b.disabled = false; }
+    else if (mode === 'demand') { label.textContent = 'Fordern'; b.disabled = false; }
+    else { b.disabled = true; if (mode === 'none') label.textContent = 'Sichern'; }
+    b.dataset.active = 'false';
+    this.setMeter(0);
+  }
+
+  flash(text, kind) {
+    const f = this.el.flashEl;
+    if (!f) return;
+    f.textContent = text;
+    f.dataset.kind = kind;
+    f.hidden = false;
+    f.classList.remove('on');
+    void f.offsetWidth;
+    f.classList.add('on');
+    clearTimeout(this.flashTimer);
+    this.flashTimer = setTimeout(() => { f.hidden = true; f.classList.remove('on'); }, 1900);
+  }
+
+  showMove(m, points, meta) {
+    const g = { grade: m.stars >= 3 ? 'top' : m.stars === 2 ? 'good' : m.stars === 1 ? 'ok' : 'bad', label: `${m.head} ${'★'.repeat(m.stars)}${'☆'.repeat(3 - m.stars)}`, pattern: m.items.map((x) => `${x.label} (${x.gradeLabel || '+'})`).join(' · '), text: m.key, lateNote: '', scanText: m.tip };
+    this.showFeedback(g, points, meta);
   }
 
   showFeedback(g, points, meta) {

@@ -4,8 +4,9 @@
 
 import { PITCH, LANE, PLAYER } from '../config.js';
 import { clamp } from '../core/math.js';
-import { createPath, planPass, arrivalTime, LOFT } from '../sim/ball.js';
-import { analyzePath, analyzeDribble, createLaneResult, createDribbleResult, isOffside, timeToIntercept, classify } from './lanes.js';
+import { createPath, planPass, planSpace, arrivalTime, LOFT } from '../sim/ball.js';
+import { analyzePath, analyzeDribble, createLaneResult, createDribbleResult, isOffside, timeToIntercept, classify, createRace, raceForBall } from './lanes.js';
+import { xG, GOAL } from '../sim/shot.js';
 import { W } from './weights.js';
 
 const HALF_L = PITCH.length / 2;
@@ -74,6 +75,45 @@ function shiftedWorld(w, T, out) {
 }
 const shifted = { px: new Float64Array(22), py: new Float64Array(22), vx: new Float64Array(22), vy: new Float64Array(22) };
 
+// Nutzen eines angekommenen Balls beim Empfänger r in (Px, Py) nach T Sekunden:
+// Raumgewinn, überspielte Gegner, Anschlusspass, Aufdrehen, Druck bei der Annahme
+function receiverTerms(w, team, def, r, bx, by, Px, Py, T, dist, pS, v0, ctx) {
+  const gain = (zoneValue(Px, Py) - v0) * (ctx.gain > 1 && Px > bx ? ctx.gain : 1);
+  const packing = packingCount(w, team, bx, by, Px, Py);
+  let tPress = Infinity;
+  for (let j = 0; j < w.n; j++) {
+    if (w.team[j] === team) continue;
+    const tt = timeToIntercept(w, j, Px, Py, 0.1, T) - T;
+    if (tt < tPress) tPress = tt;
+  }
+  const pressurePen = tPress < 0.9 ? W.pressure * (1 - Math.max(0, tPress) / 0.9) : 0;
+  // Kann der Empfänger aufdrehen? Kein Gegner in 5 m Richtung gegnerisches Tor
+  let turn = true;
+  for (let j = 0; j < w.n; j++) {
+    if (w.team[j] === team) continue;
+    const ex = w.px[j] + w.vx[j] * T - Px, ey = w.py[j] + w.vy[j] * T - Py;
+    if (ex > -1 && Math.hypot(ex, ey) < 5) { turn = false; break; }
+  }
+  // Anschlusspass vom Empfänger aus (Dritter Mann / Klatschen)
+  let follow = 0, followTo = -1;
+  if (pS > 0.3 && dist < 32) {
+    const sw = shiftedWorld(w, T, shifted);
+    for (let k = 0; k < w.n; k++) {
+      if (k === r || w.team[k] !== team || w.gk[k]) continue;
+      const kx = sw.px[k], ky = sw.py[k];
+      const g2 = zoneValue(kx, ky) - zoneValue(Px, Py);
+      if (g2 <= 0.004) continue;
+      planPass(path2, Px, Py, kx, ky, 0);
+      analyzePath(sw, path2, def, lane2);
+      const p2 = sigmoid(lane2.margin / W.sigmaMargin);
+      const val = p2 * g2;
+      if (val > follow) { follow = val; followTo = k; }
+    }
+  }
+  const reward = gain + W.packing * packing + W.followUp * follow + (turn ? W.turn : 0) - pressurePen;
+  return { gain, packing, follow, followTo, turn, tPress, reward };
+}
+
 // Alle Optionen des Ballführers bewerten. Rückgabe: { options, best, ctx }
 export function evaluateOptions(w, carrier, extraDribbleDir) {
   const team = w.team[carrier];
@@ -99,42 +139,10 @@ export function evaluateOptions(w, carrier, extraDribbleDir) {
     const offside = isOffside(w, r, bx);
     let pS = offside ? 0 : sigmoid(lane.margin / W.sigmaMargin);
     if (lane.margin === Infinity) pS = 1;
-    const gain = (zoneValue(Px, Py) - v0) * (ctx.gain > 1 && Px > bx ? ctx.gain : 1);
-    const packing = packingCount(w, team, bx, by, Px, Py);
-    // Druck auf den Empfänger bei Ankunft
-    let tPress = Infinity;
-    for (let j = 0; j < w.n; j++) {
-      if (w.team[j] === team) continue;
-      const tt = timeToIntercept(w, j, Px, Py, 0.1, path.T) - path.T;
-      if (tt < tPress) tPress = tt;
-    }
-    const pressurePen = tPress < 0.9 ? W.pressure * (1 - Math.max(0, tPress) / 0.9) : 0;
-    // Kann der Empfänger aufdrehen? Kein Gegner in 5 m Richtung gegnerisches Tor
-    let turn = true;
-    for (let j = 0; j < w.n; j++) {
-      if (w.team[j] === team) continue;
-      const ex = w.px[j] + w.vx[j] * path.T - Px, ey = w.py[j] + w.vy[j] * path.T - Py;
-      if (ex > -1 && Math.hypot(ex, ey) < 5) { turn = false; break; }
-    }
-    // Anschlusspass vom Empfänger aus (Dritter Mann / Klatschen)
-    let follow = 0, followTo = -1;
-    if (pS > 0.3 && path.dist < 32) {
-      const sw = shiftedWorld(w, path.T, shifted);
-      for (let k = 0; k < w.n; k++) {
-        if (k === r || w.team[k] !== team || w.gk[k]) continue;
-        const kx = sw.px[k], ky = sw.py[k];
-        const g2 = zoneValue(kx, ky) - zoneValue(Px, Py);
-        if (g2 <= 0.004) continue;
-        planPass(path2, Px, Py, kx, ky, 0);
-        analyzePath(sw, path2, def, lane2);
-        const p2 = sigmoid(lane2.margin / W.sigmaMargin);
-        const val = p2 * g2;
-        if (val > follow) { follow = val; followTo = k; }
-      }
-    }
+    const rt = receiverTerms(w, team, def, r, bx, by, Px, Py, path.T, path.dist, pS, v0, ctx);
+    const { gain, packing, follow, followTo, turn, tPress } = rt;
     const lossX = lane.interceptor >= 0 ? lane.ix : bx, lossY = lane.interceptor >= 0 ? lane.iy : by;
-    const reward = gain + W.packing * packing + W.followUp * follow + (turn ? W.turn : 0) - pressurePen;
-    const value = pS * reward - (1 - pS) * lossCost(lossX, lossY) * ctx.loss;
+    const value = pS * rt.reward - (1 - pS) * lossCost(lossX, lossY) * ctx.loss;
     options.push({
       type: 'pass', target: r, value, pS, gain, packing, follow, followTo, turn, tPress,
       status: offside ? 'abseits' : lane.status, margin: lane.margin, critical: lane.critical,
@@ -158,6 +166,16 @@ export function evaluateOptions(w, carrier, extraDribbleDir) {
     const gain = (zoneValue(ex, ey) - v0) * W.dribble;
     const value = pS * gain - (1 - pS) * lossCost(bx, by) * ctx.loss;
     options.push({ type: 'dribble', dir: a, dx, dy, value, pS, gain, meters: drib.gain, tackler: drib.tackler, exact: k === 8 });
+  }
+
+  // --- Torschuss (ab etwa 35 m) ---
+  const sg = team === 0 ? 1 : -1;
+  const toGoal = Math.hypot(GOAL.x * sg - bx, by);
+  if (toGoal < 35 && (GOAL.x * sg - bx) * sg > 1) {
+    const xg = xG(w, bx, by, team, carrier);
+    // Nach dem Schuss ist der Ball meist weg – aber weit vorn, deshalb billig
+    const value = xg * W.shotGoal - v0 - (1 - xg) * lossCost(bx, by) * W.shotLoss;
+    options.push({ type: 'shot', value, pS: xg, xg, dist: toGoal, gain: xg * W.shotGoal - v0 });
   }
 
   // --- Sichern ---
@@ -186,8 +204,43 @@ export function evaluateOptions(w, carrier, extraDribbleDir) {
   return { options, best, ctx, v0, lines, t: w.t };
 }
 
+// Pass in den Raum auf (tx, ty): Wer kommt zuerst an den Ball, was ist der Punkt wert?
+const pathS = createPath();
+const race = createRace();
+export function evaluateSpace(w, carrier, tx, ty) {
+  const team = w.team[carrier];
+  const bx = w.ball.x, by = w.ball.y;
+  const v0 = zoneValue(bx, by);
+  const ctx = contextFactors(w);
+  planSpace(pathS, bx, by, tx, ty, 0);
+  raceForBall(w, pathS, carrier, team, race);
+  const mate = race.winner >= 0 && w.team[race.winner] === team ? race.winner : -1;
+  const offside = mate >= 0 && mate !== carrier && isOffside(w, mate, bx);
+  let pS;
+  if (race.tMate === Infinity || race.mate < 0 || race.tMate >= race.tOut) pS = 0;
+  else if (race.tOpp === Infinity) pS = 1;
+  else pS = sigmoid(race.margin / W.sigmaMargin);
+  if (offside) pS = 0;
+  const mx = mate >= 0 ? race.mx : race.x, my = mate >= 0 ? race.my : race.y;
+  const def = team === 0 ? 1 : 0;
+  const rt = mate >= 0
+    ? receiverTerms(w, team, def, mate, bx, by, mx, my, race.tMate, Math.hypot(mx - bx, my - by), pS, v0, ctx)
+    : { gain: 0, packing: 0, follow: 0, followTo: -1, turn: false, tPress: 0, reward: 0 };
+  const lx = race.opp >= 0 ? race.ox : bx, ly = race.opp >= 0 ? race.oy : by;
+  const value = pS * rt.reward - (1 - pS) * lossCost(lx, ly) * ctx.loss * (race.out ? 0.7 : 1);
+  return {
+    type: 'space', exact: true, target: race.mate, value, pS, gain: rt.gain, tx, ty, mx, my,
+    status: offside ? 'abseits' : race.out && race.mate < 0 ? 'aus' : classify(race.margin),
+    margin: race.margin, critical: race.opp, out: race.out && pS === 0, dist: pathS.dist,
+    packing: rt.packing, follow: rt.follow, followTo: rt.followTo, turn: rt.turn, tPress: rt.tPress,
+    lofted: pathS.mode === LOFT, T: race.tMate,
+  };
+}
+
 export function findChoice(ev, choice) {
   if (!ev || !choice) return null;
+  if (choice.type === 'space') return ev.options.find((o) => o.type === 'space' && o.exact) || null;
+  if (choice.type === 'shot') return ev.options.find((o) => o.type === 'shot') || null;
   if (choice.type === 'pass') return ev.options.find((o) => o.type === 'pass' && o.target === choice.target) || null;
   if (choice.type === 'shield') return ev.options.find((o) => o.type === 'shield');
   if (choice.type === 'dribble') return ev.options.find((o) => o.type === 'dribble' && o.exact) || null;
@@ -201,6 +254,11 @@ const nr = (w, i) => `die ${w.num[i]}`;
 export function patternOf(w, o) {
   if (!o) return '';
   if (o.type === 'shield') return 'Ball sichern';
+  if (o.type === 'shot') return o.dist < 17 ? 'Abschluss' : 'Fernschuss';
+  if (o.type === 'space') {
+    if (o.target < 0) return 'Pass ins Leere';
+    return o.mx > w.ball.x + 8 ? 'Steilpass in den Raum' : 'Pass in den Raum';
+  }
   if (o.type === 'dribble') {
     const fwd = o.dx > 0.5;
     return fwd ? 'Andribbeln' : o.dx < -0.5 ? 'Abdrehen' : 'Andribbeln zur Seite';
@@ -229,10 +287,19 @@ const PHRASE = {
 export function describeOption(w, o) {
   if (!o) return '';
   if (o.type === 'shield') return 'Ball sichern';
+  if (o.type === 'shot') return o.dist < 17 ? 'der Abschluss' : `der Schuss aus ${fmt(o.dist, 0)} m`;
+  if (o.type === 'space') return o.target >= 0 ? `der Pass in den Raum für ${nr(w, o.target).replace('die', 'die')}` : 'der Pass in den Raum';
   if (o.type === 'dribble') return o.dx > 0.5 ? 'Andribbeln nach vorn' : 'Andribbeln in den freien Raum';
   const p = patternOf(w, o);
   const f = PHRASE[p];
   return f ? f(nr(w, o.target)) : `Pass auf ${nr(w, o.target)}`;
+}
+
+function sameOption(a, b) {
+  if (!a || !b || a.type !== b.type) return false;
+  if (a.type === 'pass') return a.target === b.target;
+  if (a.type === 'dribble') return Math.cos(a.dir - b.dir) > 0.9;
+  return true;
 }
 
 const GRADE_LABELS = { top: 'Top-Lösung', good: 'Gut', ok: 'Vertretbar', risky: 'Riskant', bad: 'Fehler' };
@@ -267,18 +334,28 @@ export function gradeDecision(w) {
     res.text = `Zu lange gewartet. ${best ? `${capital(describeOption(w, best))} wäre die Lösung gewesen.` : ''}`;
     res.pattern = best ? patternOf(w, best) : '';
   } else {
-    const delta = best.value - chosen.value;
+    // Richtige Idee, aber zu spät: gleiche Option war bei der Annahme die beste → nur eine Stufe Abzug
+    const sameIdea = ref === evR && evA && sameOption(best, chosen);
+    const delta = (sameIdea ? evA.best.value : best.value) - chosen.value;
     if (delta <= W.grade.top) res.grade = 'top';
     else if (delta <= W.grade.good) res.grade = 'good';
     else if (delta <= W.grade.ok) res.grade = 'ok';
     else res.grade = 'bad';
-    const lost = o === 'intercepted' || o === 'tackled' || o === 'dribbleLost' || o === 'shieldLost' || o === 'offside';
-    if (chosen.pS < W.riskyP && res.grade !== 'bad' && !(res.grade === 'top' && !lost)) res.grade = 'risky';
-    if (lost && (res.grade === 'top' || res.grade === 'good' || res.grade === 'ok')) res.grade = 'risky';
+    if (sameIdea && res.decisionTime > 1.0) res.grade = { top: 'good', good: 'ok', ok: 'ok', bad: 'bad' }[res.grade];
+    const lost = o === 'intercepted' || o === 'tackled' || o === 'dribbleLost' || o === 'shieldLost' || o === 'offside' || o === 'out';
+    if (chosen.type === 'shot') {
+      // Schüsse haben immer eine kleine Erfolgschance – riskant ist nur der Verzweiflungsschuss
+      if (chosen.xg < W.shotRiskyXg && res.grade !== 'bad' && res.grade !== 'top') res.grade = 'risky';
+    } else {
+      if (chosen.pS < W.riskyP && res.grade !== 'bad' && !(res.grade === 'top' && !lost)) res.grade = 'risky';
+      if (lost && (res.grade === 'top' || res.grade === 'good' || res.grade === 'ok')) res.grade = 'risky';
+    }
     res.pattern = patternOf(w, res.grade === 'top' ? chosen : best);
     res.text = explain(w, chosen, best, res.grade, o);
     if (evR && evA && evR.best.value > evA.best.value + 0.01 && res.decisionTime > 0.5) {
-      res.lateNote = `Bei der Annahme war ${describeOption(w, evR.best)} noch besser – ${fmt(res.decisionTime)} s gezögert.`;
+      res.lateNote = sameOption(evR.best, chosen)
+        ? `Richtige Idee, aber ${fmt(res.decisionTime)} s gezögert – bei der Annahme war ${describeOption(w, evR.best)} noch klarer.`
+        : `Bei der Annahme war ${describeOption(w, evR.best)} noch besser – ${fmt(res.decisionTime)} s gezögert.`;
     }
   }
   res.label = GRADE_LABELS[res.grade];
@@ -295,8 +372,26 @@ export function gradeDecision(w) {
   return res;
 }
 
+const SHOT_END = {
+  goal: 'Tor!', saved: 'Der Torwart hält.', wide: 'Knapp vorbei.', post: 'Pfosten!', blocked: 'Geblockt.',
+};
+
 function explain(w, c, b, grade, outcome) {
-  const same = c === b || (c.type === b.type && c.target === b.target && c.type === 'pass');
+  const same = c === b || (c.type === b.type && c.target === b.target && c.type === 'pass') || (c.type === 'shot' && b.type === 'shot');
+  if (c.type === 'shot') {
+    const pct = Math.round(c.xg * 100);
+    const lead = `${SHOT_END[outcome] || ''} Abschluss aus ${fmt(c.dist, 0)} m – Torchance etwa ${pct} %.`.trim();
+    if (grade === 'top' || grade === 'good') return `${lead} Richtige Entscheidung, hier zu schießen.`;
+    return `${lead}${same ? '' : ` Besser: ${describeOption(w, b)}.`}`;
+  }
+  if (c.type === 'space') {
+    if (outcome === 'offside') return `Abseits – ${nr(w, c.target)} war beim Pass schon hinter der letzten Linie.`;
+    if (outcome === 'out') return `Pass in den Raum ins Aus – da kam keiner mehr hin.${same ? '' : ` Besser: ${describeOption(w, b)}.`}`;
+    if (outcome === 'intercepted') return `Der Pass in den Raum kam beim Gegner an – ihre ${w.num[c.critical >= 0 ? c.critical : 0]} war schneller.${same ? '' : ` Besser: ${describeOption(w, b)}.`}`;
+    const who = c.target >= 0 ? `, ${nr(w, c.target)} erläuft ihn` : '';
+    if (grade === 'top') return `Pass in den Raum${who} – ${c.gain > 0.01 ? 'Raum gewonnen' : 'gut dosiert'}.`;
+    return `Pass in den Raum${who}.${same ? '' : ` Besser: ${describeOption(w, b)}.`}`;
+  }
   if (outcome === 'offside') return `Abseits – ${nr(w, c.target)} stand beim Pass hinter der letzten Linie.`;
   if (outcome === 'intercepted') {
     return `Der Passweg auf ${nr(w, c.target)} war zu – ihre ${w.num[c.critical >= 0 ? c.critical : 0]} kam vorher an den Ball.${same ? '' : ` Besser: ${describeOption(w, b)}.`}`;
@@ -313,7 +408,7 @@ function explain(w, c, b, grade, outcome) {
       return `${capital(describeOption(w, c))}${bits.length ? ' – ' + bits.join(', ') : ''}.`;
     }
     if (c.type === 'shield') return 'Unter Druck den Ball behauptet und Zeit gewonnen.';
-    return `${capital(describeOption(w, c))} in den freien Raum – ${fmt(c.meters, 0)} m gewonnen.`;
+    return `${capital(describeOption(w, c))} in den freien Raum – ${fmt(c.meters || 0, 0)} m gewonnen.`;
   }
   if (c.type === 'pass' && b.type === 'pass' && b.packing > c.packing + 1) {
     return `Sicher gespielt, aber ${describeOption(w, b)} war frei und hätte ${b.packing} Gegner überspielt.`;

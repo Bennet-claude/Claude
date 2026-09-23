@@ -19,4 +19,7 @@ export const W = {
   grade: { top: 0.006, good: 0.016, ok: 0.032 },
   riskyP: 0.62,           // darunter gilt eine Entscheidung als riskant
   points: { top: 100, good: 70, ok: 40, risky: 20, bad: 0, fast: 10 },
+  shotGoal: 1.8,          // Umrechnung xG → Raumwert (die Raumwerte am Strafraum liegen ≈ 1,8× über typischen xT-Werten)
+  shotLoss: 0.4,          // nach dem Schuss ist der Ball meist weg, aber weit vom eigenen Tor
+  shotRiskyXg: 0.07,      // Schüsse darunter gelten als Verzweiflungstat
 };

@@ -2,7 +2,7 @@
 // Spieler werden entweder aus echten Laufwegen nachgespielt ("replay") oder von Skripten
 // gesteuert (ai.js). Der Wechsel ist nahtlos, weil beide Position und Geschwindigkeit teilen.
 
-import { PLAYER, LANE, BALL, CAMERA } from '../config.js';
+import { PLAYER, LANE, BALL, CAMERA, PITCH } from '../config.js';
 import { angleDiff, clamp, DEG, TAU } from '../core/math.js';
 import { createPath, pathPos, pathDistance } from './ball.js';
 import { computeTarget, createTarget, holdScript, LOOK_BALL, LOOK_MOVE, LOOK_POINT, LOOK_HEADING } from './ai.js';
@@ -44,6 +44,7 @@ export class World {
     this.pending = [];
     this.inputs = [];
     this.replay = null;
+    this.continuous = false; // Spielzug nach der ersten Entscheidung weiterführen
     this.t = 0; this.tick = 0;
   }
 
@@ -136,7 +137,8 @@ export class World {
 
   // Wahrnehmung vor der Annahme: wer war im Blickfeld, wie oft wurde weggeschaut?
   trackGaze() {
-    if (this.phase !== 'pre' && this.phase !== 'toUser') return;
+    const ph = this.phase;
+    if (ph !== 'pre' && ph !== 'toUser' && ph !== 'team' && ph !== 'flight') return;
     const u = this.user, ux = this.px[u], uy = this.py[u];
     for (let j = 0; j < this.n; j++) {
       if (j === u) continue;
@@ -285,6 +287,12 @@ export class World {
     if (b.inFlight) {
       pathPos(b.path, this.t + dt - b.path.tKick, this.tmp3);
       b.x = this.tmp3[0]; b.y = this.tmp3[1]; b.z = this.tmp3[2];
+      // Bande: Ball bleibt kurz hinter der Linie liegen
+      const lx = PITCH.length / 2 + 4, ly = PITCH.width / 2 + 3.5;
+      if (Math.abs(b.x) > lx || Math.abs(b.y) > ly) {
+        b.x = clamp(b.x, -lx, lx); b.y = clamp(b.y, -ly, ly); b.z = BALL.radius;
+        b.inFlight = false;
+      }
     }
   }
 

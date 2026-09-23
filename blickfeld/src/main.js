@@ -4,31 +4,34 @@
 
 import * as THREE from 'three';
 import { STEP, TEMPI } from './config.js';
-import { lerp, DEG } from './core/math.js';
+import { lerp, clamp, DEG } from './core/math.js';
 import { mulberry32 } from './core/rng.js';
 import { World } from './sim/world.js';
 import { FixedClock } from './sim/clock.js';
 import { Renderer } from './render/renderer.js';
-import { Figures } from './render/figures.js';
+import { Players } from './render/players.js';
 import { Props } from './render/props.js';
 import { FirstPersonCamera } from './render/fpcamera.js';
 import { Gestures } from './ui/input.js';
 import { UI, PHASE_NAMES, fmt } from './ui/screens.js';
 import { DebugPanel } from './ui/debug.js';
 import * as store from './ui/storage.js';
-import { gradeDecision, evaluateOptions } from './eval/evaluate.js';
+import { evaluateOptions } from './eval/evaluate.js';
+import { evaluateMove, RESULT } from './eval/move.js';
 import { pickNext, PHASES } from './generator/scheduler.js';
 import { SITUATIONS, buildRealScene } from '../scenes/real/loader.js';
 
-const RESULT_DELAY = 0.9;   // s Spielzeit nach dem Ergebnis, bevor die Rückmeldung kommt
-const FEEDBACK_TIME = 3.6;  // s Echtzeit, dann automatisch weiter
+const RESULT_DELAY = { goal: 2.2, saved: 1.4, post: 1.4, wide: 1.3, blocked: 1.2 }; // s Spielzeit nach dem Ergebnis
+const RESULT_DELAY_DEFAULT = 0.9;
+const FEEDBACK_TIME = 6.5;  // s Echtzeit, dann automatisch weiter
 const UNIT = 12;            // Szenen pro Einheit
 
 const canvas = document.getElementById('view');
 const renderer = new Renderer(canvas);
 const world = new World();
+world.continuous = true; // Spielzug läuft nach der ersten Entscheidung weiter
 const clock = new FixedClock();
-const figures = new Figures();
+const figures = new Players();
 const props = new Props();
 renderer.scene.add(figures.group, props.group);
 renderer.camera.add(props.edge);
@@ -55,7 +58,7 @@ let fbT = 0, fbDuration = FEEDBACK_TIME, fadeT = 0;
 let session = newSession();
 
 function newSession() {
-  return { scenes: 0, points: 0, streak: 0, bestStreak: 0, gradeSum: {}, times: [], scans: 0, phase: {} };
+  return { scenes: 0, points: 0, streak: 0, bestStreak: 0, gradeSum: {}, times: [], scans: 0, phase: {}, stars: 0, goals: 0, shots: 0 };
 }
 
 const debug = new DebugPanel(document.getElementById('debug'));
@@ -67,9 +70,13 @@ const ui = new UI({
   skip: () => { setPaused(false); goNext(); },
   next: () => { if (state === 'feedback' && !paused) goNext(); },
   secure: () => {
-    if (state === 'play' && !paused && world.phase === 'decide' && !world.shielding) {
+    if (state !== 'play' || paused) return;
+    if (world.phase === 'decide' && !world.shielding) {
       world.input({ type: 'shield' });
       ui.hint('Ball gesichert – Mitspieler bieten sich an. Abspielen, bevor der Balken voll ist.', 2200);
+    } else if (world.phase === 'team') {
+      world.input({ type: 'demand' });
+      ui.hint(`Ball gefordert – die ${world.num[world.carrier]} sucht dich, wenn der Weg frei ist.`, 1600);
     }
   },
   tempo: (t) => setTempo(t),
@@ -180,38 +187,45 @@ function toMenu() {
 }
 
 function finishScene() {
-  const g = gradeDecision(world);
+  const m = evaluateMove(world);
+  const g = m.first;
   const phase = world.scene.meta.phase;
-  let points = g.points;
-  const good = g.grade === 'top' || g.grade === 'good';
+  let points = m.points;
+  const good = m.stars >= 2;
   session.streak = good ? session.streak + 1 : 0;
   if (good && session.streak >= 3) points += 10 * Math.min(5, session.streak - 2); // Serienbonus
   session.scenes++;
   session.points += points;
   session.bestStreak = Math.max(session.bestStreak, session.streak);
-  session.scans += world.scans;
-  if (g.decisionTime !== null) session.times.push(g.decisionTime);
+  session.scans += world.decisions[0] ? world.decisions[0].scans : world.scans;
+  session.stars += m.stars;
+  if (m.type === 'goal') session.goals++;
+  if (m.shots) session.shots += m.shots;
+  if (g && g.decisionTime !== null) session.times.push(g.decisionTime);
+  const firstPts = g ? g.points : 0;
   const sp = session.phase[phase] || (session.phase[phase] = { n: 0, sum: 0 });
-  sp.n++; sp.sum += g.points;
-  // dauerhaft: Verlauf und Stärken/Schwächen je Phase
+  sp.n++; sp.sum += firstPts;
+  // dauerhaft: Verlauf und Stärken/Schwächen je Phase (erste Entscheidung = Kern des Trainings)
   const ps = progress.stats[phase] || (progress.stats[phase] = { n: 0, avg: 60 });
   ps.n++;
-  ps.avg += (g.points - ps.avg) / Math.min(ps.n, 20);
+  ps.avg += (firstPts - ps.avg) / Math.min(ps.n, 20);
   progress.totals.scenes++;
   progress.totals.points += points;
+  progress.totals.goals = (progress.totals.goals || 0) + (m.type === 'goal' ? 1 : 0);
   progress.totals.bestStreak = Math.max(progress.totals.bestStreak, session.bestStreak);
   store.save('progress', progress);
 
-  let meta = [];
-  if (g.decisionTime !== null) meta.push(world.action && world.action.direct ? 'Direktpass' : `Entscheidung nach ${fmt(g.decisionTime)} s`);
-  meta.push(`${world.scans} ${world.scans === 1 ? 'Scan' : 'Scans'} vor der Annahme`);
+  const meta = [];
+  if (g && g.decisionTime !== null) meta.push(world.decisions[0].direct ? 'Direktpass' : `1. Entscheidung nach ${fmt(g.decisionTime)} s`);
+  const sc = world.decisions[0] ? world.decisions[0].scans : world.scans;
+  meta.push(`${sc} ${sc === 1 ? 'Scan' : 'Scans'} vor der Annahme`);
   fbDuration = FEEDBACK_TIME;
   if (session.scenes % UNIT === 0) {
     const avg = Math.round(session.points / session.scenes);
     meta.push(`Einheit ${session.scenes / UNIT} geschafft: Ø ${avg} Punkte`);
     fbDuration = FEEDBACK_TIME + 2;
   }
-  ui.showFeedback(g, points, meta.join(' · '));
+  ui.showMove(m, points, meta.join(' · '));
   ui.setSession(session);
   fbT = 0;
   state = 'feedback';
@@ -233,6 +247,7 @@ function loadBackdrop() {
 // ---------- Eingaben ----------
 
 const v3 = new THREE.Vector3();
+let pickScore = Infinity;
 function pickTeammate(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
   const px = clientX - rect.left, py = clientY - rect.top;
@@ -262,11 +277,54 @@ function pickTeammate(clientX, clientY) {
     }
     if (score < bestScore) { bestScore = score; best = i; }
   }
+  pickScore = bestScore;
   return best;
 }
 
+// Tipp → Strahl vom Auge durch den Bildpunkt
+const raycaster = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+function tapRay(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+  raycaster.setFromCamera(ndc, renderer.camera);
+  return raycaster.ray;
+}
+
+// Tor getroffen? Rückgabe: Zielpunkt auf der Torlinie (y quer, z Höhe) oder null
+function pickGoal(r) {
+  const gx = (world.team[world.user] === 0 ? 1 : -1) * 52.5;
+  const o = r.origin, d = r.direction;
+  if (Math.abs(world.ball.x - gx) > 45) return null;
+  if (d.x * Math.sign(gx) > 0.02) {
+    const t = (gx - o.x) / d.x;
+    const y = -(o.z + d.z * t), z = o.y + d.y * t;
+    if (t > 0 && Math.abs(y) < 3.66 + 1.3 && z > -0.4 && z < 2.44 + 1.1) return { y: clamp(y, -4.3, 4.3), z: clamp(z, 0.15, 3.3) };
+  }
+  // Tipp auf den Rasen direkt vor dem Tor: flacher Schuss dorthin
+  if (d.y < -0.01) {
+    const t = -o.y / d.y;
+    const x = o.x + d.x * t, y = -(o.z + d.z * t);
+    if ((x - gx) * Math.sign(-gx) < 3 && Math.abs(y) < 4.2) return { y: clamp(y, -3.4, 3.4), z: 0.3 };
+  }
+  return null;
+}
+
+// Punkt auf dem Rasen (Pass in den Raum), höchstens 60 m weit
+function pickGround(r) {
+  const o = r.origin, d = r.direction;
+  if (d.y > -0.004) return null;
+  const t = -o.y / d.y;
+  let x = o.x + d.x * t, y = -(o.z + d.z * t);
+  const bx = world.ball.x, by = world.ball.y;
+  const dist = Math.hypot(x - bx, y - by);
+  if (dist > 60) { x = bx + ((x - bx) / dist) * 60; y = by + ((y - by) / dist) * 60; }
+  if (dist < 3) return null;
+  return { x, y };
+}
+
 new Gestures(canvas, {
-  canDribble: () => state === 'play' && !paused && world.phase === 'decide',
+  canDribble: () => state === 'play' && !paused && (world.phase === 'decide' || world.phase === 'team' || world.phase === 'flight'),
   headStart: () => { if (!paused && (state === 'play' || state === 'feedback')) fp.beginDrag(); },
   headMove: (dx) => { if (fp.dragging) fp.drag(dx, renderer.width); },
   headEnd: () => fp.endDrag(),
@@ -275,18 +333,41 @@ new Gestures(canvas, {
     if (state === 'feedback') { goNext(); return; }
     if (state !== 'play') return;
     const ph = world.phase;
-    if (ph !== 'pre' && ph !== 'toUser' && ph !== 'decide') return;
     const t = pickTeammate(x, y);
-    if (t < 0) return;
-    world.input({ type: 'pass', target: t });
-    if (ph !== 'decide') ui.hint(`Direktpass auf die ${world.num[t]} vorgemerkt`);
+    if (ph === 'team') {
+      // Tipp auf den ballführenden Mitspieler: Ball fordern
+      if (t === world.carrier) { world.input({ type: 'demand' }); ui.hint('Ball gefordert', 1200); }
+      return;
+    }
+    if (ph !== 'pre' && ph !== 'toUser' && ph !== 'decide') return;
+    const ray = tapRay(x, y);
+    const goal = pickGoal(ray);
+    if (t >= 0 && (pickScore <= 1 || !goal)) {
+      world.input({ type: 'pass', target: t });
+      if (ph !== 'decide') ui.hint(`Direktpass auf die ${world.num[t]} vorgemerkt`);
+      return;
+    }
+    if (goal) {
+      world.input({ type: 'shot', y: goal.y, z: goal.z });
+      if (ph !== 'decide') ui.hint('Direktabnahme vorgemerkt');
+      return;
+    }
+    if (ph !== 'decide') return;
+    const g = pickGround(ray);
+    if (!g) return;
+    world.input({ type: 'space', x: g.x, y: g.y });
+    props.markSpace(g.x, g.y);
   },
   swipe: (dx, dy) => {
-    if (state !== 'play' || paused || world.phase !== 'decide') return;
+    if (state !== 'play' || paused) return;
     // Bildschirmrichtung → Richtung auf dem Platz, relativ zur Blickrichtung
     const screenAng = Math.atan2(dx, -dy); // 0 = nach oben, positiv = nach rechts
     const dir = fp.gaze - screenAng;
-    world.input({ type: 'dribble', dx: Math.cos(dir), dy: Math.sin(dir) });
+    if (world.phase === 'decide') world.input({ type: 'dribble', dx: Math.cos(dir), dy: Math.sin(dir) });
+    else if (world.phase === 'team' || world.phase === 'flight') {
+      world.input({ type: 'run', dx: Math.cos(dir), dy: Math.sin(dir) });
+      ui.hint('Sprint', 700);
+    }
   },
 });
 
@@ -333,8 +414,13 @@ if (window.visualViewport) window.visualViewport.addEventListener('resize', () =
 // ---------- Schleife ----------
 
 function onPhaseChange(ph) {
-  ui.setSecure(ph === 'decide');
+  ui.setContext(ph === 'decide' ? 'shield' : ph === 'team' ? 'demand' : ph === 'flight' ? 'demand-off' : 'none');
   if (ph === 'action' || ph === 'done') ui.hint('');
+  if (ph === 'done' && world.outcome) {
+    const t = world.outcome.type;
+    if (t === 'goal') ui.flash('Tor', 'goal');
+    else if (t === 'saved' || t === 'post' || t === 'wide' || t === 'blocked') ui.flash(RESULT[t].head, 'shot');
+  }
 }
 
 function frame(now) {
@@ -352,7 +438,7 @@ function frame(now) {
     if (state === 'play') {
       if (world.phase !== lastPhase) { lastPhase = world.phase; onPhaseChange(lastPhase); }
       if (world.shielding) { ui.setSecure(true, true); ui.setMeter(world.shieldT / (world.shieldLimit || 2.8)); }
-      if (world.outcome && world.t - world.outcomeT >= RESULT_DELAY) finishScene();
+      if (world.outcome && world.t - world.outcomeT >= (RESULT_DELAY[world.outcome.type] ?? RESULT_DELAY_DEFAULT)) finishScene();
     } else if (state === 'feedback') {
       fbT += dt;
       ui.feedbackProgress(fbT / fbDuration);
@@ -363,10 +449,12 @@ function frame(now) {
     }
   }
   const a = world.action;
-  fp.follow = world.phase === 'done' || (!!a && (a.type !== 'pass' || a.kicked));
+  const ph = world.phase;
+  fp.follow = ph === 'done' || ph === 'team' || ph === 'flight' || (ph === 'action' && !!a && (a.type === 'dribble' || a.kicked));
+  props.tick(dt);
   const alpha = state === 'start' ? 0 : clock.alpha;
   fp.update(world, alpha, dt);
-  figures.update(world, alpha, world.user, fp.eyeX, fp.eyeY);
+  figures.update(world, alpha, world.user, fp.eyeX, fp.eyeY, paused ? 0 : dt * clock.tempo);
   props.update(world, alpha, world.user);
   props.updateEdge(renderer.camera, state === 'play' && world.phase !== 'done');
   renderer.render();

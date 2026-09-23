@@ -63,6 +63,15 @@ export class Props {
     this.ring.visible = false;
     this.ring.renderOrder = 2;
 
+    // Zielmarke für Pässe in den Raum (kurz sichtbar, wird größer und blasser)
+    const mark = new THREE.RingGeometry(0.5, 0.62, 40);
+    mark.rotateX(-Math.PI / 2);
+    this.mark = new THREE.Mesh(mark, new THREE.MeshBasicMaterial({ color: 0xf1f0ea, transparent: true, opacity: 0, depthWrite: false }));
+    this.mark.position.y = 0.013;
+    this.mark.visible = false;
+    this.mark.renderOrder = 2;
+    this.markT = 9;
+
     // Pfeil am Bildrand, wenn der Ball außerhalb des Blickfelds ist (hängt an der Kamera)
     const shape = new THREE.Shape();
     shape.moveTo(0, 0.022); shape.lineTo(-0.018, -0.008); shape.lineTo(0, 0.0); shape.lineTo(0.018, -0.008); shape.closePath();
@@ -79,10 +88,29 @@ export class Props {
     this.v = new THREE.Vector3();
     this.lastX = 0; this.lastY = 0;
     this.group = new THREE.Group();
-    this.group.add(this.shadows, this.ball, this.ring);
+    this.group.add(this.shadows, this.ball, this.ring, this.mark);
+  }
+
+  markSpace(x, y) {
+    this.mark.position.x = x;
+    this.mark.position.z = -y;
+    this.markT = 0;
+  }
+
+  // Zielmarke ausblenden (Echtzeit)
+  tick(dt) {
+    this.markT += dt;
+    const k = this.markT / 0.9;
+    if (k >= 1) { this.mark.visible = false; return; }
+    this.mark.visible = true;
+    const e = 1 - Math.pow(1 - k, 3);
+    this.mark.scale.setScalar(0.7 + 0.6 * e);
+    this.mark.material.opacity = 0.95 * (1 - k);
   }
 
   setup(w) {
+    this.markT = 9;
+    this.mark.visible = false;
     this.shadows.count = w.n + 1;
     this.lastX = w.ball.x; this.lastY = w.ball.y;
   }

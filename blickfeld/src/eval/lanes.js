@@ -43,8 +43,7 @@ function inOwnBox(team, x, y) {
 
 // Zeit, die Spieler j braucht, um bei Ballzeit tau am Punkt (bx,by) in Höhe bz einzugreifen.
 // Rückgabe: benötigte Zeit (<= tau heißt: er ist rechtzeitig da).
-export function timeToIntercept(world, j, bx, by, bz, tau) {
-  const reaction = LANE.reaction;
+export function timeToIntercept(world, j, bx, by, bz, tau, reaction = LANE.reaction) {
   const px = world.px[j], py = world.py[j], vx = world.vx[j], vy = world.vy[j];
   // passiver Block: Gegner steht/läuft ohnehin in der Bahn
   const td = Math.min(tau, reaction);
@@ -160,6 +159,53 @@ export function isOffside(world, receiver, ballX) {
   const rx = world.px[receiver] * sign;
   const line = Math.max(offsideLineX(world, team) * sign, ballX * sign);
   return rx > 0 && rx > line + 0.05;
+}
+
+// Wer ist zuerst am Ball? Für Pässe in den Raum, Abpraller und freie Bälle.
+// Mitspieler des Passgebers ahnen den Pass (kürzere Reaktion), der Passgeber selbst
+// kommt erst nach 0,6 s wieder in Frage. Verlässt der Ball vorher das Feld: aus.
+export function createRace() {
+  return { winner: -1, t: Infinity, x: 0, y: 0, mate: -1, tMate: Infinity, mx: 0, my: 0, opp: -1, tOpp: Infinity, ox: 0, oy: 0, margin: Infinity, out: false, tOut: Infinity, outX: 0, outY: 0 };
+}
+
+export function raceForBall(world, path, passer, team, res, reactMate = 0.15) {
+  res.winner = -1; res.t = Infinity; res.mate = -1; res.tMate = Infinity; res.opp = -1; res.tOpp = Infinity;
+  res.margin = Infinity; res.out = false; res.tOut = Infinity;
+  const hx = PITCH.length / 2 + 0.3, hy = PITCH.width / 2 + 0.3;
+  const tEnd = Math.min(path.tStop, 8);
+  const n = world.n;
+  let tau = 0;
+  for (let k = 1; tau < tEnd; k++) {
+    tau = Math.min(tEnd, k * LANE.sampleDt);
+    pathPos(path, tau, tmp);
+    if (Math.abs(tmp[0]) > hx || Math.abs(tmp[1]) > hy) { res.out = true; res.tOut = tau; res.outX = tmp[0]; res.outY = tmp[1]; break; }
+    if (tmp[2] > LANE.maxInterceptHeight) continue;
+    for (let j = 0; j < n; j++) {
+      if (j === passer && tau < 0.6) continue;
+      const mine = world.team[j] === team;
+      if (mine ? res.tMate <= tau : res.tOpp <= tau) continue;
+      const need = timeToIntercept(world, j, tmp[0], tmp[1], tmp[2], tau, mine ? reactMate : LANE.reaction);
+      if (need > tau) continue;
+      if (mine) { res.tMate = tau; res.mate = j; res.mx = tmp[0]; res.my = tmp[1]; }
+      else { res.tOpp = tau; res.opp = j; res.ox = tmp[0]; res.oy = tmp[1]; }
+    }
+    if (res.tMate < Infinity && res.tOpp < Infinity) break;
+  }
+  if (!res.out && res.tMate === Infinity && res.tOpp === Infinity) {
+    // Ball bleibt liegen: wer ist zuerst an der Stelle?
+    pathPos(path, path.tStop, tmp);
+    for (let j = 0; j < n; j++) {
+      const mine = world.team[j] === team;
+      const need = Math.max(path.tStop, timeToIntercept(world, j, tmp[0], tmp[1], tmp[2], 99, mine ? reactMate : LANE.reaction));
+      if (mine && need < res.tMate) { res.tMate = need; res.mate = j; res.mx = tmp[0]; res.my = tmp[1]; }
+      if (!mine && need < res.tOpp) { res.tOpp = need; res.opp = j; res.ox = tmp[0]; res.oy = tmp[1]; }
+    }
+  }
+  if (res.tMate <= res.tOpp && res.mate >= 0 && res.tMate < res.tOut) { res.winner = res.mate; res.t = res.tMate; res.x = res.mx; res.y = res.my; }
+  else if (res.opp >= 0 && res.tOpp < res.tOut) { res.winner = res.opp; res.t = res.tOpp; res.x = res.ox; res.y = res.oy; }
+  else if (res.out) { res.t = res.tOut; res.x = res.outX; res.y = res.outY; }
+  res.margin = res.tOpp - res.tMate;
+  return res;
 }
 
 export { pathHeight, LOFT };

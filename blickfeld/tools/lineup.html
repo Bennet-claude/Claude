@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><title>Lineup</title>
+<style>html,body{margin:0;background:#223}canvas{display:block}</style>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
+</head><body>
+<script type="module">
+// Prüfstand für die Spielerfiguren: Reihe von Figuren in verschiedenen Bewegungszuständen.
+import * as THREE from 'three';
+import { Players } from '../src/render/players.js';
+const q = new URLSearchParams(location.search);
+const W = innerWidth, H = innerHeight;
+const r = new THREE.WebGLRenderer({ antialias: true });
+r.setSize(W, H); r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping;
+document.body.appendChild(r.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x6f8a73);
+scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x3d5a36, 1.3));
+const sun = new THREE.DirectionalLight(0xfff3e0, 2.2); sun.position.set(-20, 40, 25); scene.add(sun);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0x3f7a3a }));
+ground.rotation.x = -Math.PI / 2; scene.add(ground);
+const cam = new THREE.PerspectiveCamera(30, W / H, 0.1, 200);
+const cyc = q.get('cyc');
+let cfg = [
+  // speed, move dir relative to heading (deg), kick
+  [0, 0], [1.3, 0], [2.8, 0], [3.6, 0], [4.3, 0], [7.5, 0], [1.1, 180], [0.8, 90], [0.8, -90], [0, 0, 0.22], [5.5, 0],
+];
+if (cyc !== null) cfg = new Array(11).fill(0).map(() => [parseFloat(cyc), parseFloat(q.get('dir') || '0'), q.get('kick') ? 0 : undefined]);
+const n = cfg.length;
+const mk = () => new Float64Array(22);
+const w = { n, px: mk(), py: mk(), ppx: mk(), ppy: mk(), vx: mk(), vy: mk(), hd: mk(), phd: mk(), kickT: mk().fill(-1), pkickT: mk().fill(-1),
+  gk: new Uint8Array(22), team: new Uint8Array(22), skin: new Uint8Array(22), num: new Uint8Array(22), ball: { px: 0, py: -30, x: 0, y: -30 } };
+const heading = parseFloat(q.get('hd') || '0') * Math.PI / 180;
+for (let i = 0; i < n; i++) {
+  w.px[i] = w.ppx[i] = i * 1.6 - (n - 1) * 0.8; w.py[i] = w.ppy[i] = 0;
+  w.hd[i] = w.phd[i] = heading; w.team[i] = i % 2; w.skin[i] = i % 5; w.num[i] = [6, 8, 10, 4, 23, 17, 5, 14, 3, 9, 11][i];
+  const a = heading + cfg[i][1] * Math.PI / 180;
+  w.vx[i] = Math.cos(a) * cfg[i][0]; w.vy[i] = Math.sin(a) * cfg[i][0];
+  if (cfg[i][2] !== undefined) w.kickT[i] = w.pkickT[i] = cfg[i][2];
+}
+w.gk[10] = 1;
+const players = new Players();
+players.setup(w);
+if (cyc !== null) for (let i = 0; i < n; i++) { players.phase[i] = i / n; if (q.get('kick')) w.kickT[i] = w.pkickT[i] = i * 0.045; }
+scene.add(players.group);
+const t = cyc !== null ? 0 : parseFloat(q.get('t') || '0.4');
+const dt = 1 / 60;
+for (let s = 0; s * dt < t; s++) {
+  for (let i = 0; i < n; i++) { w.ppx[i] = w.px[i]; w.ppy[i] = w.py[i]; }
+  // Figuren laufen auf der Stelle: Position bleibt, aber Weg wird für die Phase gezählt
+  players.update(w, 1, -1, undefined, undefined, dt);
+  for (let i = 0; i < n; i++) { players.lastX[i] -= w.vx[i] * dt; players.lastY[i] -= w.vy[i] * dt; }
+}
+players.update(w, 1, -1, undefined, undefined, 0);
+const view = q.get('view') || 'side';
+if (view === 'side') { cam.position.set(0, 1.4, 26); cam.lookAt(0, 0.95, 0); }
+else if (view === 'front') { cam.position.set(24, 1.6, 4); cam.lookAt(0, 0.95, 0); }
+else if (view === 'close') { const i = parseInt(q.get('i') || '2'); cam.fov = 22; cam.updateProjectionMatrix(); cam.position.set(w.px[i] + 3.2, 1.5, 4.5); cam.lookAt(w.px[i], 0.95, 0); }
+else if (view === 'back') { const i = parseInt(q.get('i') || '2'); cam.fov = 22; cam.updateProjectionMatrix(); cam.position.set(w.px[i] - 5.5, 1.6, -1.0); cam.lookAt(w.px[i], 1.0, 0); }
+else if (view === 'eye') { cam.fov = 60; cam.updateProjectionMatrix(); cam.position.set(-14, 1.75, 7); cam.lookAt(0, 1.2, 0); }
+r.render(scene, cam);
+window.done = true;
+</script></body></html>
