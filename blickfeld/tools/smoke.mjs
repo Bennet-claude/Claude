@@ -1,5 +1,5 @@
-// Rauchtest im Headless-Chromium: lädt die Seite, spielt mehrere Situationen, macht Screenshots.
-// FPS-Werte hier sind bedeutungslos (Software-Rendering) – nur Fehler und Bild prüfen.
+// Rauchtest im Headless-Chromium: Vorspann, Menü, Karriere, Spielzug mit Analyse, Tempo-Modus,
+// Pause und Dialoge – mit Screenshots. FPS-Werte hier sind bedeutungslos (Software-Rendering).
 // Aufruf: node tools/smoke.mjs [ausgabeordner]
 import { createRequire } from 'node:module';
 import http from 'node:http';
@@ -32,58 +32,87 @@ page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') 
 page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
 await page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
 const shot = (n) => page.screenshot({ path: path.join(out, n) });
-const B = () => window.__blickfeld;
+const state = () => page.evaluate(() => window.__blickfeld && window.__blickfeld.state);
 
-await page.goto(`http://localhost:${port}/?debug=1`);
-await page.waitForFunction(() => window.__blickfeld && window.__blickfeld.renderer.fps > 0, null, { timeout: 30000 });
-await page.waitForTimeout(600);
-await shot('1-start.png');
-// langsames Tempo, damit Screenshots im Software-Rendering die Szene nicht verpassen
-await page.click('[data-tempo="0.25"]');
-await page.click('#btn-start');
-await page.waitForFunction(() => window.__blickfeld.state === 'play');
+await page.goto(`http://localhost:${port}/?debug=0`);
+await page.waitForFunction(() => window.__blickfeld && window.__blickfeld.renderer.fps > 0, null, { timeout: 60000 });
 await page.waitForTimeout(1200);
-await shot('2-anlauf.png');
-const results = [];
-for (let s = 0; s < 3; s++) {
-  await page.waitForFunction(() => window.__blickfeld.state === 'play' && window.__blickfeld.world.phase === 'decide', null, { timeout: 90000, polling: 16 });
-  // Blick auf die beste Option, dann spielen (Szene 2: erst sichern)
-  const mode = s === 1 ? 'shield' : 'best';
-  await page.evaluate((mode) => {
-    const { world, fp } = window.__blickfeld;
-    const best = world.evalAtReception.best;
-    if (mode === 'shield') { world.input({ type: 'shield' }); return; }
-    if (best.type === 'pass') {
-      fp.target = Math.atan2(world.py[best.target] - world.py[world.user], world.px[best.target] - world.px[world.user]);
-      world.input({ type: 'pass', target: best.target });
-    } else if (best.type === 'dribble') world.input({ type: 'dribble', dx: best.dx, dy: best.dy });
-    else world.input({ type: 'shield' });
-  }, mode);
-  await page.waitForTimeout(700);
-  await shot(`3-szene${s + 1}-aktion.png`);
-  if (mode === 'shield') {
-    await page.waitForTimeout(1500);
-    await page.evaluate(() => {
-      const { world } = window.__blickfeld;
-      if (world.phase !== 'decide') return;
-      const passes = world.evalAtReception.options.filter((o) => o.type === 'pass').sort((a, b) => b.value - a.value);
-      world.input({ type: 'pass', target: passes[0].target });
-    });
-  }
-  await page.waitForFunction(() => window.__blickfeld.state === 'feedback', null, { timeout: 90000 });
-  await page.waitForTimeout(250);
-  await shot(`4-szene${s + 1}-rueckmeldung.png`);
-  results.push(await page.evaluate(() => ({ id: window.__blickfeld.world.scene.id, outcome: window.__blickfeld.world.outcome.type, grade: document.getElementById('fb-grade').textContent, text: document.getElementById('fb-text').textContent })));
-  await page.evaluate(() => window.__blickfeld.next());
-}
-await page.waitForFunction(() => window.__blickfeld.state === 'play');
+await shot('01-vorspann-a.png');
+await page.waitForTimeout(2600);
+await shot('02-vorspann-b.png');
+await page.waitForFunction(() => window.__blickfeld.state === 'menu', null, { timeout: 60000 });
+await page.waitForTimeout(1400);
+await shot('03-menue.png');
+
+// Karriere öffnen, Level wählen
+await page.click('#card-career');
+await page.waitForTimeout(900);
+await shot('04-karriere.png');
+await page.click('.level:not(.locked)');
+await page.waitForTimeout(700);
+await shot('05-level.png');
+await page.click('#lc-start');
+await page.waitForFunction(() => window.__blickfeld.state === 'play', null, { timeout: 30000 });
+
+// Autopilot: in jeder Entscheidung die beste Option, ohne Ball einmal sprinten
+await page.evaluate(() => {
+  const B = window.__blickfeld;
+  let last = -1, ran = -1;
+  window.__auto = setInterval(() => {
+    const w = B.world;
+    if (B.state !== 'play') return;
+    if (w.phase === 'decide' && w.ev.reception !== last && w.t - w.ev.reception > 0.4) {
+      last = w.ev.reception;
+      const o = w.evalAtReception.best;
+      if (o.type === 'pass') {
+        B.fp.target = Math.atan2(w.py[o.target] - w.py[w.user], w.px[o.target] - w.px[w.user]);
+        w.input({ type: 'pass', target: o.target });
+      } else if (o.type === 'dribble') w.input({ type: 'dribble', dx: o.dx, dy: o.dy });
+      else if (o.type === 'shot') w.input({ type: 'shot', y: 2.4, z: 0.5 });
+      else w.input({ type: 'shield' });
+    }
+    if (w.phase === 'team' && w.t - ran > 3) { ran = w.t; w.input({ type: 'run', dx: 0.9, dy: 0.3 }); }
+  }, 50);
+});
+await page.waitForTimeout(2500);
+await shot('06-spiel.png');
+await page.waitForFunction(() => window.__blickfeld.state === 'feedback', null, { timeout: 150000 });
+await page.waitForTimeout(900);
+await shot('07-analyse.png');
+const result = await page.evaluate(() => ({
+  title: document.getElementById('r-title').textContent,
+  items: [...document.querySelectorAll('#r-items li')].map((l) => l.textContent),
+  key: document.getElementById('r-key').textContent,
+  tip: document.getElementById('r-tip').textContent,
+  objective: document.getElementById('r-objective').textContent,
+  outcome: window.__blickfeld.world.outcome.type,
+  decisions: window.__blickfeld.world.decisions.length,
+}));
+
+// Tempo-Modus: HUD mit Leben, dann Pause
+await page.evaluate(() => window.__blickfeld.startMode('tempo'));
+await page.waitForFunction(() => window.__blickfeld.state === 'play', null, { timeout: 30000 });
+await page.waitForFunction(() => window.__blickfeld.world.phase === 'decide' || window.__blickfeld.world.phase === 'toUser', null, { timeout: 60000 });
+await page.waitForTimeout(300);
+await shot('08-tempo-hud.png');
 await page.click('#btn-pause');
-await page.waitForTimeout(300);
-await shot('5-pause.png');
+await page.waitForTimeout(700);
+await shot('09-pause.png');
+await page.click('#btn-menu');
+await page.waitForTimeout(1200);
+await page.click('#btn-settings');
+await page.waitForTimeout(800);
+await shot('10-einstellungen.png');
+await page.click('[data-close="settings"]');
+await page.waitForTimeout(400);
+await page.click('#btn-stats');
+await page.waitForTimeout(1000);
+await shot('11-statistik.png');
 const info = await page.evaluate(() => { const r = window.__blickfeld.renderer; return { calls: r.r.info.render.calls, tris: r.r.info.render.triangles }; });
-await page.setViewportSize({ width: 820, height: 1180 });
-await page.waitForTimeout(300);
-await shot('6-hochformat.png');
-console.log(JSON.stringify({ results, ...info, errors }, null, 2));
+await page.setViewportSize({ width: 844, height: 390 });
+await page.click('[data-close="stats"]');
+await page.waitForTimeout(900);
+await shot('12-iphone-menue.png');
+console.log(JSON.stringify({ result, ...info, errors }, null, 2));
 await browser.close();
 server.close();

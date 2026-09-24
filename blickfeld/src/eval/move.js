@@ -133,9 +133,19 @@ export function evaluateMove(w) {
   else if (grades[0] && grades[0].scanText && grades[0].grade !== 'top') tip = grades[0].scanText;
   else if (type === 'timeout') tip = 'Im letzten Drittel früher den Abschluss oder den tödlichen Pass suchen.';
 
+  const lastDec = w.decisions[nDec - 1];
+  const lostByUser = !!R.lost && !!lastDec && lastDec.outcome.type === type;
+  // Tipp nicht doppelt zur Analyse
+  const core = tip.replace(/^Besser war /, '').replace(/\.$/, '');
+  if (tip && key.toLowerCase().includes(core.toLowerCase())) {
+    tip = grades[0] && grades[0].scanText && !R.shot
+      ? grades[0].scanText
+      : R.lost ? 'Vor der Annahme über die Schulter schauen – dann weißt du schon, wo der freie Raum ist.' : '';
+  }
   return {
     type, head: R.head, stars, points, items, key: key.trim(), tip,
-    first: grades[0] || null, quality: q, shots: w.move.shots, touches: w.move.userTouches,
+    first: grades[0] || null, grades, quality: q, shots: w.move.shots, touches: w.move.userTouches,
+    offball: ob, lostByUser,
   };
 }
 

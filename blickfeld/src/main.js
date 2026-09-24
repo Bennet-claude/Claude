@@ -1,9 +1,9 @@
-// Blickfeld – Einstieg: laufendes Spiel aus echten Situationen.
+// Blickfeld – Einstieg: Vorspann, Menü, Spielmodi und der laufende Spielzug.
 // Simulation in festen 60-Hz-Schritten, Rendering entkoppelt und interpoliert.
-// Ablauf: Situation → Entscheidung → kurze Rückmeldung → nächste Situation, ohne Menü dazwischen.
+// Im Menü läuft im Hintergrund eine echte Situation, gefilmt wie im Fernsehen.
 
 import * as THREE from 'three';
-import { STEP, TEMPI } from './config.js';
+import { STEP } from './config.js';
 import { lerp, clamp, DEG } from './core/math.js';
 import { mulberry32 } from './core/rng.js';
 import { World } from './sim/world.js';
@@ -12,6 +12,7 @@ import { Renderer } from './render/renderer.js';
 import { Players } from './render/players.js';
 import { Props } from './render/props.js';
 import { FirstPersonCamera } from './render/fpcamera.js';
+import { CinematicCamera } from './render/cinematic.js';
 import { Gestures } from './ui/input.js';
 import { UI, PHASE_NAMES, fmt } from './ui/screens.js';
 import { DebugPanel } from './ui/debug.js';
@@ -20,65 +21,101 @@ import { evaluateOptions } from './eval/evaluate.js';
 import { evaluateMove, RESULT } from './eval/move.js';
 import { pickNext, PHASES } from './generator/scheduler.js';
 import { SITUATIONS, buildRealScene } from '../scenes/real/loader.js';
+import {
+  LEVELS, OBJECTIVES, levelById, nextLevel, currentLevel, levelPool, objectiveMet, levelStars, totalStars,
+} from './game/career.js';
 
-const RESULT_DELAY = { goal: 2.2, saved: 1.4, post: 1.4, wide: 1.3, blocked: 1.2 }; // s Spielzeit nach dem Ergebnis
+const RESULT_DELAY = { goal: 2.2, saved: 1.4, post: 1.4, wide: 1.3, blocked: 1.2 }; // s Spielzeit nach dem Ende
 const RESULT_DELAY_DEFAULT = 0.9;
-const FEEDBACK_TIME = 6.5;  // s Echtzeit, dann automatisch weiter
-const UNIT = 12;            // Szenen pro Einheit
+const FEEDBACK_TIME = 7;    // s Echtzeit bis automatisch weiter (Training/Tempo)
+const FEEDBACK_BLITZ = 2.6;
+const UNIT = 12;            // Spielzüge pro Trainingseinheit
+const TEMPO = { start: 0.8, step: 0.05, max: 1.35, lives: 3 };
+const BLITZ_TIME = 90;
+const CINE_VFOV = 36;
 
 const canvas = document.getElementById('view');
 const renderer = new Renderer(canvas);
 const world = new World();
-world.continuous = true; // Spielzug läuft nach der ersten Entscheidung weiter
 const clock = new FixedClock();
 const figures = new Players();
 const props = new Props();
 renderer.scene.add(figures.group, props.group);
 renderer.camera.add(props.edge);
 const fp = new FirstPersonCamera(renderer.camera);
-renderer.onResize = (aspect) => fp.applyAspect(aspect);
+const cine = new CinematicCamera(renderer.camera);
+renderer.onResize = (aspect) => applyCameraMode(aspect);
 
-const defaults = { tempo: 1, headMode: 'stay', invert: 'false', fov: 95, debug: false, pos: 'mix' };
+const defaults = { tempo: 1, headMode: 'stay', invert: 'false', fov: 95, debug: false, pos: 'mix', intro: 'full' };
 const settings = Object.assign({}, defaults, store.load('settings', {}));
+if ([0.5, 0.75, 1].indexOf(settings.tempo) < 0) settings.tempo = 1;
 if (/[?&]debug=1/.test(location.search) || location.hash === '#debug') settings.debug = true;
 const progress = Object.assign(
-  { history: [], phases: [], stats: {}, totals: { scenes: 0, points: 0, bestStreak: 0 } },
+  {
+    history: [], phases: [], stats: {},
+    totals: { scenes: 0, points: 0, bestStreak: 0, goals: 0, scans: 0, decT: 0, decN: 0 },
+    career: { stars: {} }, best: { tempo: 0, blitz: 0 }, introSeen: 0,
+  },
   store.load('progress', {}),
 );
+progress.career = Object.assign({ stars: {} }, progress.career);
+progress.best = Object.assign({ tempo: 0, blitz: 0 }, progress.best);
 const rng = mulberry32((Date.now() ^ (Math.random() * 1e9)) >>> 0);
 
-let state = 'start'; // start | play | feedback | fadeout
+// state: intro | menu | play | feedback | fadeout | over
+let state = 'intro';
 let paused = false;
-let menuOpen = false;
 let lastPhase = '';
 let last = 0;
 let raf = 0;
 let wakeLock = null;
-let fbT = 0, fbDuration = FEEDBACK_TIME, fadeT = 0;
+let fbT = 0, fbDuration = FEEDBACK_TIME, fadeT = 0, introTimer = 0;
+let bdFade = 0;             // Menü-Hintergrund: Überblendung zur nächsten Situation
+let pendingLevel = null;
 let session = newSession();
+let run = null;
+let lastMove = null;
 
 function newSession() {
-  return { scenes: 0, points: 0, streak: 0, bestStreak: 0, gradeSum: {}, times: [], scans: 0, phase: {}, stars: 0, goals: 0, shots: 0 };
+  return { scenes: 0, points: 0, streak: 0, bestStreak: 0, times: [], scans: 0, stars: 0, goals: 0 };
 }
 
+window.addEventListener('resize', () => renderer.resize());
+if (window.visualViewport) window.visualViewport.addEventListener('resize', () => renderer.resize());
+
 const debug = new DebugPanel(document.getElementById('debug'));
+
+// ---------- Kamera: Ich-Perspektive im Spiel, Kamerafahrt in Vorspann und Menü ----------
+
+const cinematic = () => state === 'intro' || state === 'menu' || state === 'over';
+
+function applyCameraMode(aspect = renderer.camera.aspect) {
+  const c = renderer.camera;
+  if (cinematic()) {
+    c.aspect = aspect;
+    c.fov = CINE_VFOV;
+    c.updateProjectionMatrix();
+  } else fp.applyAspect(aspect);
+}
+
+// ---------- Oberfläche ----------
+
 const ui = new UI({
-  start: () => startGame(),
-  menu: () => toMenu(),
-  pause: () => setPaused(!(paused || menuOpen)),
+  openCareer: () => openCareer(),
+  closeCareer: () => { ui.hideCareer(); showMenu(); },
+  pickLevel: (id) => { pendingLevel = levelById(id); ui.showLevelCard(pendingLevel, progress.career.stars[id] || 0); },
+  closeLevelCard: () => ui.hideLevelCard(),
+  startLevel: () => { ui.hideLevelCard(); ui.hideCareer(); startRun('career', pendingLevel); },
+  startMode: (m) => startRun(m),
+  openStats: () => openStats(),
+  pause: () => setPaused(!paused),
   resume: () => setPaused(false),
-  skip: () => { setPaused(false); goNext(); },
-  next: () => { if (state === 'feedback' && !paused) goNext(); },
-  secure: () => {
-    if (state !== 'play' || paused) return;
-    if (world.phase === 'decide' && !world.shielding) {
-      world.input({ type: 'shield' });
-      ui.hint('Ball gesichert – Mitspieler bieten sich an. Abspielen, bevor der Balken voll ist.', 2200);
-    } else if (world.phase === 'team') {
-      world.input({ type: 'demand' });
-      ui.hint(`Ball gefordert – die ${world.num[world.carrier]} sucht dich, wenn der Weg frei ist.`, 1600);
-    }
-  },
+  restart: () => { if (run) { const r = run; startRun(r.mode, r.level); } },
+  menu: () => toMenu(),
+  again: () => { ui.hideGameOver(); startRun(run ? run.mode : 'training'); },
+  next: () => { if (state === 'feedback' && !paused && !(lastMove && lastMove.actions)) goNext(); },
+  context: () => onContext(),
+  skipIntro: () => endIntro(),
   tempo: (t) => setTempo(t),
   setting: (k, v) => applySetting(k, v),
   position: (p) => { settings.pos = p; ui.setPosition(p); store.save('settings', settings); },
@@ -91,59 +128,165 @@ function applySetting(k, v) {
   else settings[k] = v;
   fp.headMode = settings.headMode;
   fp.invert = settings.invert === 'true';
-  fp.setFov(settings.fov);
+  fp.hfov = settings.fov;
+  if (!cinematic()) fp.setFov(settings.fov);
   world.viewHalf = (settings.fov / 2) * 0.92 * DEG;
   ui.setSettings(settings);
   store.save('settings', settings);
 }
 
 function setTempo(t) {
-  if (TEMPI.indexOf(t) < 0) return;
+  if ([0.5, 0.75, 1].indexOf(t) < 0) return;
   settings.tempo = t;
-  clock.tempo = t;
+  if (run && run.mode === 'training') clock.tempo = t;
   ui.setTempo(t);
   store.save('settings', settings);
 }
 
-function sessionStats() {
-  if (session.scenes === 0) return null;
-  const avgTime = session.times.length ? session.times.reduce((a, b) => a + b, 0) / session.times.length : 0;
-  let best = null, worst = null;
-  for (const p of PHASES) {
-    const s = session.phase[p];
-    if (!s || s.n < 2) continue;
-    const avg = s.sum / s.n;
-    if (!best || avg > best[1]) best = [p, avg];
-    if (!worst || avg < worst[1]) worst = [p, avg];
-  }
+function showMenu() {
+  ui.showMenu({ level: currentLevel(progress.career.stars), stars: progress.career.stars, totals: progress.totals, best: progress.best });
+}
+
+function openCareer() {
+  const cur = currentLevel(progress.career.stars);
+  ui.showCareer(progress.career.stars, cur.chapter, cur.id);
+}
+
+function openStats() {
+  const t = progress.totals;
   const rows = [
-    ['Situationen', String(session.scenes)],
-    ['Punkte', session.points.toLocaleString('de-DE')],
-    ['Ø pro Situation', String(Math.round(session.points / session.scenes))],
-    ['Ø Entscheidungszeit', session.times.length ? `${fmt(avgTime)} s` : '–'],
-    ['Scans pro Situation', fmt(session.scans / session.scenes)],
-    ['Beste Serie', String(session.bestStreak)],
+    ['Spielzüge', t.scenes.toLocaleString('de-DE')],
+    ['Tore', String(t.goals || 0)],
+    ['Ø Punkte', t.scenes ? String(Math.round(t.points / t.scenes)) : '–'],
+    ['Beste Serie', String(t.bestStreak || 0)],
+    ['Ø Entscheidung', t.decN ? `${fmt(t.decT / t.decN)} s` : '–'],
+    ['Scans vor der Annahme', t.scenes ? fmt((t.scans || 0) / t.scenes) : '–'],
+    ['Karriere-Sterne', `${totalStars(progress.career.stars)} / ${LEVELS.length * 3}`],
+    ['Rekorde', `Tempo ${progress.best.tempo || '–'} · Blitz ${progress.best.blitz || '–'}`],
   ];
-  if (best && worst && best[0] !== worst[0]) {
-    rows.push(['Stärkste Phase', PHASE_NAMES[best[0]]]);
-    rows.push(['Schwächste Phase', PHASE_NAMES[worst[0]]]);
-  }
-  return rows;
+  const phases = PHASES.map((p) => {
+    const s = progress.stats[p];
+    return [PHASE_NAMES[p], s ? s.avg : 0, s ? s.n : 0];
+  });
+  ui.showStats(rows, phases);
 }
 
-function setPaused(p) {
-  if (state === 'start') {
-    // ohne laufende Szene dient das Pausemenü als Einstellungen
-    menuOpen = p;
-    if (p) { ui.el.start.hidden = true; ui.showPause(null); } else { ui.hidePause(); ui.el.start.hidden = false; }
-    return;
+// ---------- Schleife ----------
+
+function onPhaseChange(ph) {
+  ui.setContext(ph === 'decide' ? 'shield' : ph === 'team' ? 'demand' : ph === 'flight' ? 'demand-off' : 'shield-off');
+  if (ph === 'action' || ph === 'done') ui.hint('');
+  if (ph === 'done' && world.outcome) {
+    const t = world.outcome.type;
+    if (t === 'goal') ui.flash('Tor', 'goal');
+    else if (RESULT[t] && RESULT[t].shot) ui.flash(RESULT[t].head, 'shot');
   }
-  paused = p;
-  clock.paused = p;
-  if (p) ui.showPause(sessionStats()); else ui.hidePause();
 }
 
-// ---------- Szenen ----------
+function onContext() {
+  if (state !== 'play' || paused) return;
+  if (world.phase === 'decide' && !world.shielding) {
+    world.input({ type: 'shield' });
+    ui.setShieldActive(true);
+    ui.hint('Ball gesichert – Mitspieler bieten sich an. Abspielen, bevor der Balken voll ist.', 2200);
+  } else if (world.phase === 'team') {
+    world.input({ type: 'demand' });
+    ui.hint(`Ball gefordert – die ${world.num[world.carrier]} sucht dich, wenn der Weg frei ist.`, 1600);
+  }
+}
+
+function frame(now) {
+  raf = requestAnimationFrame(frame);
+  const dtMs = last ? now - last : 16.7;
+  last = now;
+  const dt = Math.min(dtMs / 1000, 0.1);
+  renderer.track(dtMs);
+
+  if (cinematic()) {
+    // Hintergrund: echte Situation läuft, die Kamera fährt langsam darum herum
+    clock.tempo = 1;
+    const n = clock.advance(dt);
+    for (let k = 0; k < n; k++) world.step(STEP);
+    if (state !== 'intro') {
+      if (bdFade === 0 && ((world.outcome && world.t - world.outcomeT > 1.2) || world.t > 12)) bdFade = 0.001;
+      if (bdFade > 0) {
+        const before = bdFade;
+        bdFade += dt;
+        if (before < 0.3 && bdFade >= 0.3) loadBackdrop();
+        canvas.classList.toggle('dim', bdFade < 0.3);
+        if (bdFade > 0.8) bdFade = 0;
+      }
+    }
+    cine.update(world, dt);
+    figures.update(world, clock.alpha, -1, undefined, undefined, dt);
+    props.update(world, clock.alpha, -1);
+    props.updateEdge(renderer.camera, false);
+  } else {
+    if (!paused) {
+      if (state === 'play' || state === 'feedback') {
+        const n = clock.advance(dt);
+        for (let k = 0; k < n; k++) world.step(STEP);
+      }
+      if (state === 'play') {
+        if (world.phase !== lastPhase) { lastPhase = world.phase; onPhaseChange(lastPhase); }
+        if (world.shielding) { ui.setShieldActive(true); ui.setMeter(world.shieldT / (world.shieldLimit || 2.8)); }
+        if (run && run.mode === 'blitz' && !run.timeUp) {
+          run.timeLeft -= dt;
+          if (run.timeLeft <= 0) { run.timeLeft = 0; run.timeUp = true; ui.hint('Zeit! Letzter Spielzug', 1800); }
+        }
+        if (world.outcome && world.t - world.outcomeT >= (RESULT_DELAY[world.outcome.type] ?? RESULT_DELAY_DEFAULT)) finishMove();
+      } else if (state === 'feedback') {
+        if (!(lastMove && lastMove.actions)) {
+          fbT += dt;
+          ui.resultProgress(fbT / fbDuration);
+          if (fbT >= fbDuration) goNext();
+        }
+      } else if (state === 'fadeout') {
+        fadeT += dt;
+        if (fadeT >= 0.26) afterFade();
+      }
+      updateChips();
+    }
+    const a = world.action;
+    const ph = world.phase;
+    fp.follow = ph === 'done' || ph === 'team' || ph === 'flight' || (ph === 'action' && !!a && (a.type === 'dribble' || a.kicked));
+    const alpha = clock.alpha;
+    fp.update(world, alpha, dt);
+    figures.update(world, alpha, world.user, fp.eyeX, fp.eyeY, paused ? 0 : dt * clock.tempo);
+    props.update(world, alpha, world.user);
+    props.updateEdge(renderer.camera, state === 'play' && world.phase !== 'done');
+  }
+  props.tick(dt);
+  renderer.render();
+  debug.update(dt, renderer, world, fp, clock);
+}
+
+// ---------- HUD je Modus ----------
+
+let chipBump = 0;
+function updateChips() {
+  if (!run) return;
+  const c = [];
+  const pts = (n) => Math.round(n).toLocaleString('de-DE');
+  if (run.mode === 'training') {
+    c.push({ label: 'Punkte ', text: pts(session.points) });
+    if (session.streak >= 2) c.push({ text: `Serie ${session.streak}` });
+  } else if (run.mode === 'career') {
+    c.push({ icon: 'target', label: `Level ${run.level.n} · `, text: OBJECTIVES[run.level.goal].short });
+  } else if (run.mode === 'tempo') {
+    c.push({ type: 'lives', value: run.lives, max: TEMPO.lives, bump: chipBump > 0 });
+    c.push({ icon: 'speed', text: `${fmt(run.speed, 2)}×` });
+    c.push({ label: 'Punkte ', text: pts(run.score) });
+  } else if (run.mode === 'blitz') {
+    const s = Math.ceil(run.timeLeft);
+    c.push({ icon: 'timer', text: `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`, cls: `timer${s <= 10 ? ' low' : ''}` });
+    c.push({ label: 'Punkte ', text: pts(run.score) });
+  }
+  ui.chips(c);
+  if (chipBump > 0) chipBump--;
+}
+
+// ---------- Szenen und Modi ----------
 
 function loadScene(scene) {
   world.load(scene);
@@ -154,39 +297,96 @@ function loadScene(scene) {
   lastPhase = '';
 }
 
+function pickScene() {
+  if (run && run.mode === 'career') {
+    const pool = levelPool(SITUATIONS, run.level, settings.pos);
+    const sub = pool.map((i) => SITUATIONS[i]);
+    const p = pickNext(sub, 'mix', progress, rng);
+    return { index: pool[p.index], mirror: p.mirror };
+  }
+  return pickNext(SITUATIONS, settings.pos, progress, rng);
+}
+
 function nextScene() {
-  const pick = pickNext(SITUATIONS, settings.pos, progress, rng);
+  const pick = pickScene();
+  world.continuous = true;
   const scene = buildRealScene(pick.index, pick.mirror);
+  state = 'play';
+  applyCameraMode();
   loadScene(scene);
   progress.history.push(scene.baseId);
   if (progress.history.length > 300) progress.history.splice(0, progress.history.length - 300);
   progress.phases.push(scene.meta.phase);
   if (progress.phases.length > 10) progress.phases.splice(0, progress.phases.length - 10);
   ui.sceneMeta(scene.meta);
-  ui.setSession(session);
-  state = 'play';
+  clock.tempo = run.mode === 'training' ? settings.tempo : run.mode === 'tempo' ? run.speed : 1;
+  ui.setContext('shield-off');
   ui.fade(false);
 }
 
-function startGame() {
-  paused = false; menuOpen = false; clock.paused = false;
+function startRun(mode, level) {
+  paused = false; clock.paused = false;
+  ui.hideMenu(); ui.hideCareer(); ui.hideGameOver(); ui.hidePause(); ui.hideResult(); ui.hideLevelCard();
+  for (const s of ['settings', 'stats', 'howto']) ui.closeSheet(s);
+  run = { mode, level: level || null, lives: TEMPO.lives, speed: TEMPO.start, timeLeft: BLITZ_TIME, timeUp: false, score: 0, moves: 0, goals: 0, over: false };
+  if (mode === 'career' && !run.level) run.level = currentLevel(progress.career.stars);
   session = newSession();
-  ui.hidePause();
-  ui.showPlay();
-  nextScene();
+  lastMove = null;
+  ui.showHud(mode === 'training');
+  ui.setTempo(settings.tempo);
+  updateChips();
+  // kurz abblenden, dann erste Situation
+  ui.fade(true);
+  state = 'fadeout';
+  fadeT = 0;
   requestWakeLock();
 }
 
-function toMenu() {
-  paused = false; menuOpen = false; clock.paused = false;
-  state = 'start';
-  ui.hideFeedback();
-  ui.fade(false);
-  loadBackdrop();
-  ui.showStart(progress.totals);
+function afterFade() {
+  if (run && run.over) { gameOver(); return; }
+  nextScene();
 }
 
-function finishScene() {
+function toMenu() {
+  paused = false; clock.paused = false;
+  canvas.classList.remove('dim');
+  bdFade = 0;
+  ui.hidePause(); ui.hideResult(); ui.hideGameOver(); ui.hideLevelCard();
+  ui.fade(false);
+  run = null;
+  state = 'menu';
+  applyCameraMode();
+  cine.start('menu');
+  loadBackdrop();
+  showMenu();
+}
+
+function setPaused(p) {
+  if (state !== 'play' && state !== 'feedback') return;
+  paused = p;
+  clock.paused = p;
+  if (p) ui.showPause(sessionRows(), !!run && run.mode !== 'training'); else ui.hidePause();
+}
+
+function sessionRows() {
+  if (!run) return [];
+  if (run.mode === 'tempo') return [['Punkte', String(Math.round(run.score))], ['Leben', String(run.lives)], ['Tempo', `${fmt(run.speed, 2)}×`], ['Spielzüge', String(run.moves)]];
+  if (run.mode === 'blitz') return [['Punkte', String(Math.round(run.score))], ['Zeit', `${Math.ceil(run.timeLeft)} s`], ['Spielzüge', String(run.moves)], ['Tore', String(run.goals)]];
+  if (run.mode === 'career') return [['Level', `${run.level.n} · ${run.level.name}`], ['Ziel', OBJECTIVES[run.level.goal].short]];
+  if (session.scenes === 0) return [];
+  const avgTime = session.times.length ? session.times.reduce((a, b) => a + b, 0) / session.times.length : 0;
+  return [
+    ['Spielzüge', String(session.scenes)],
+    ['Punkte', session.points.toLocaleString('de-DE')],
+    ['Tore', String(session.goals)],
+    ['Ø Sterne', fmt(session.stars / session.scenes)],
+    ['Ø Entscheidung', session.times.length ? `${fmt(avgTime)} s` : '–'],
+    ['Beste Serie', String(session.bestStreak)],
+  ];
+}
+
+// Spielzug vorbei: bewerten, Fortschritt speichern, Analyse zeigen
+function finishMove() {
   const m = evaluateMove(world);
   const g = m.first;
   const phase = world.scene.meta.phase;
@@ -195,53 +395,133 @@ function finishScene() {
   session.streak = good ? session.streak + 1 : 0;
   if (good && session.streak >= 3) points += 10 * Math.min(5, session.streak - 2); // Serienbonus
   session.scenes++;
-  session.points += points;
   session.bestStreak = Math.max(session.bestStreak, session.streak);
-  session.scans += world.decisions[0] ? world.decisions[0].scans : world.scans;
+  const sc = world.decisions[0] ? world.decisions[0].scans : world.scans;
+  session.scans += sc;
   session.stars += m.stars;
   if (m.type === 'goal') session.goals++;
-  if (m.shots) session.shots += m.shots;
   if (g && g.decisionTime !== null) session.times.push(g.decisionTime);
+  // dauerhaft: Stärken/Schwächen je Phase (erste Entscheidung = Kern des Trainings)
   const firstPts = g ? g.points : 0;
-  const sp = session.phase[phase] || (session.phase[phase] = { n: 0, sum: 0 });
-  sp.n++; sp.sum += firstPts;
-  // dauerhaft: Verlauf und Stärken/Schwächen je Phase (erste Entscheidung = Kern des Trainings)
   const ps = progress.stats[phase] || (progress.stats[phase] = { n: 0, avg: 60 });
   ps.n++;
   ps.avg += (firstPts - ps.avg) / Math.min(ps.n, 20);
-  progress.totals.scenes++;
-  progress.totals.points += points;
-  progress.totals.goals = (progress.totals.goals || 0) + (m.type === 'goal' ? 1 : 0);
-  progress.totals.bestStreak = Math.max(progress.totals.bestStreak, session.bestStreak);
-  store.save('progress', progress);
 
   const meta = [];
   if (g && g.decisionTime !== null) meta.push(world.decisions[0].direct ? 'Direktpass' : `1. Entscheidung nach ${fmt(g.decisionTime)} s`);
-  const sc = world.decisions[0] ? world.decisions[0].scans : world.scans;
   meta.push(`${sc} ${sc === 1 ? 'Scan' : 'Scans'} vor der Annahme`);
+  const extra = {};
   fbDuration = FEEDBACK_TIME;
-  if (session.scenes % UNIT === 0) {
-    const avg = Math.round(session.points / session.scenes);
-    meta.push(`Einheit ${session.scenes / UNIT} geschafft: Ø ${avg} Punkte`);
-    fbDuration = FEEDBACK_TIME + 2;
+  run.moves++;
+  if (m.type === 'goal') run.goals++;
+
+  if (run.mode === 'training') {
+    if (session.scenes % UNIT === 0) {
+      meta.push(`Einheit ${session.scenes / UNIT} geschafft: Ø ${Math.round((session.points + points) / session.scenes)} Punkte`);
+      fbDuration += 2;
+    }
+  } else if (run.mode === 'career') {
+    const lv = run.level;
+    const met = objectiveMet(lv.goal, world, m);
+    const got = levelStars(lv.goal, world, m);
+    const prev = progress.career.stars[lv.id] || 0;
+    if (got > prev) progress.career.stars[lv.id] = got;
+    extra.eyebrow = `Level ${lv.n} · ${lv.name}`;
+    extra.stars = got;
+    extra.objective = { met, text: OBJECTIVES[lv.goal].short };
+    const nx = nextLevel(lv.id);
+    extra.actions = [];
+    if (met && nx) extra.actions.push({ label: 'Nächstes Level', primary: true, onClick: () => { run.level = nx; goNext(); } });
+    extra.actions.push({ label: 'Nochmal', primary: !met, onClick: () => goNext() });
+    extra.actions.push({ label: 'Übersicht', onClick: () => { toMenu(); openCareer(); } });
+    if (got > prev && prev > 0) meta.push('Neuer Bestwert in diesem Level');
+  } else if (run.mode === 'tempo') {
+    const lose = m.stars === 0 || m.lostByUser;
+    if (lose) { run.lives--; chipBump = 40; meta.push('Ein Leben weg'); }
+    else if (good) { run.speed = Math.min(TEMPO.max, run.speed + TEMPO.step); meta.push(`Schneller: ${fmt(run.speed, 2)}×`); }
+    points = Math.round(points * clock.tempo);
+    run.score += points;
+    extra.eyebrow = `Tempo ${fmt(clock.tempo, 2)}× · ${run.lives} ${run.lives === 1 ? 'Leben' : 'Leben'} übrig`;
+    if (run.lives <= 0) run.over = true;
+  } else if (run.mode === 'blitz') {
+    run.score += points;
+    fbDuration = FEEDBACK_BLITZ;
+    if (run.timeUp) run.over = true;
   }
-  ui.showMove(m, points, meta.join(' · '));
-  ui.setSession(session);
+  session.points += points;
+  const t = progress.totals;
+  t.scenes++; t.points += points; t.scans = (t.scans || 0) + sc;
+  if (m.type === 'goal') t.goals = (t.goals || 0) + 1;
+  if (g && g.decisionTime !== null) { t.decT = (t.decT || 0) + g.decisionTime; t.decN = (t.decN || 0) + 1; }
+  t.bestStreak = Math.max(t.bestStreak || 0, session.bestStreak);
+  store.save('progress', progress);
+
+  lastMove = m;
+  lastMove.actions = extra.actions && extra.actions.length ? extra.actions : null;
+  ui.showResult(m, points, meta.join(' · '), extra);
   fbT = 0;
   state = 'feedback';
 }
 
 function goNext() {
   if (state !== 'feedback' && state !== 'play') return;
-  ui.hideFeedback();
+  ui.hideResult();
   ui.fade(true);
   fadeT = 0;
   state = 'fadeout';
 }
 
+function gameOver() {
+  const mode = run.mode;
+  const best = progress.best[mode] || 0;
+  const record = run.score > best;
+  if (record) progress.best[mode] = Math.round(run.score);
+  store.save('progress', progress);
+  state = 'over';
+  applyCameraMode();
+  cine.start('menu');
+  loadBackdrop();
+  ui.fade(false);
+  ui.showGameOver({
+    mode: mode === 'tempo' ? 'Tempo' : 'Blitz',
+    title: mode === 'tempo' ? 'Keine Leben mehr' : 'Zeit abgelaufen',
+    score: run.score, best, record,
+    rows: [
+      ['Spielzüge', String(run.moves)],
+      ['Tore', String(run.goals)],
+      mode === 'tempo' ? ['Höchstes Tempo', `${fmt(run.speed, 2)}×`] : ['Ø pro Spielzug', String(run.moves ? Math.round(run.score / run.moves) : 0)],
+      ['Ø Sterne', session.scenes ? fmt(session.stars / session.scenes) : '–'],
+    ],
+  });
+}
+
 function loadBackdrop() {
-  const pick = pickNext(SITUATIONS, settings.pos, { history: [], phases: [], stats: {} }, rng);
+  const pick = pickNext(SITUATIONS, 'mix', { history: progress.history.slice(-40), phases: [], stats: {} }, rng);
+  world.continuous = false;
   loadScene(buildRealScene(pick.index, pick.mirror));
+}
+
+// ---------- Vorspann ----------
+
+function startIntro() {
+  const full = settings.intro === 'full' || !(progress.introSeen > 0);
+  state = 'intro';
+  applyCameraMode();
+  cine.start('intro');
+  introTimer = setTimeout(endIntro, ui.intro(full)); // Echtzeit, wie die Texteinblendungen
+  ui.shade('off');
+}
+
+function endIntro() {
+  if (state !== 'intro') return;
+  clearTimeout(introTimer);
+  canvas.classList.remove('dim');
+  progress.introSeen = (progress.introSeen || 0) + 1;
+  store.save('progress', progress);
+  ui.endIntro();
+  state = 'menu';
+  cine.start('menu');
+  showMenu();
 }
 
 // ---------- Eingaben ----------
@@ -330,7 +610,8 @@ new Gestures(canvas, {
   headEnd: () => fp.endDrag(),
   tap: (x, y) => {
     if (paused) return;
-    if (state === 'feedback') { goNext(); return; }
+    if (state === 'intro') { endIntro(); return; }
+    if (state === 'feedback') { if (!(lastMove && lastMove.actions)) goNext(); return; }
     if (state !== 'play') return;
     const ph = world.phase;
     const t = pickTeammate(x, y);
@@ -404,75 +685,33 @@ document.addEventListener('visibilitychange', () => {
   } else if (!raf) {
     last = 0;
     raf = requestAnimationFrame(frame);
-    if (state !== 'start') requestWakeLock();
+    if (run) requestWakeLock();
   }
 });
-
-window.addEventListener('resize', () => renderer.resize());
-if (window.visualViewport) window.visualViewport.addEventListener('resize', () => renderer.resize());
-
-// ---------- Schleife ----------
-
-function onPhaseChange(ph) {
-  ui.setContext(ph === 'decide' ? 'shield' : ph === 'team' ? 'demand' : ph === 'flight' ? 'demand-off' : 'none');
-  if (ph === 'action' || ph === 'done') ui.hint('');
-  if (ph === 'done' && world.outcome) {
-    const t = world.outcome.type;
-    if (t === 'goal') ui.flash('Tor', 'goal');
-    else if (t === 'saved' || t === 'post' || t === 'wide' || t === 'blocked') ui.flash(RESULT[t].head, 'shot');
-  }
-}
-
-function frame(now) {
-  raf = requestAnimationFrame(frame);
-  const dtMs = last ? now - last : 16.7;
-  last = now;
-  const dt = Math.min(dtMs / 1000, 0.1);
-  renderer.track(dtMs);
-
-  if (!paused) {
-    if (state === 'play' || state === 'feedback') {
-      const n = clock.advance(dt);
-      for (let k = 0; k < n; k++) world.step(STEP);
-    }
-    if (state === 'play') {
-      if (world.phase !== lastPhase) { lastPhase = world.phase; onPhaseChange(lastPhase); }
-      if (world.shielding) { ui.setSecure(true, true); ui.setMeter(world.shieldT / (world.shieldLimit || 2.8)); }
-      if (world.outcome && world.t - world.outcomeT >= (RESULT_DELAY[world.outcome.type] ?? RESULT_DELAY_DEFAULT)) finishScene();
-    } else if (state === 'feedback') {
-      fbT += dt;
-      ui.feedbackProgress(fbT / fbDuration);
-      if (fbT >= fbDuration) goNext();
-    } else if (state === 'fadeout') {
-      fadeT += dt;
-      if (fadeT >= 0.26) nextScene();
-    }
-  }
-  const a = world.action;
-  const ph = world.phase;
-  fp.follow = ph === 'done' || ph === 'team' || ph === 'flight' || (ph === 'action' && !!a && (a.type === 'dribble' || a.kicked));
-  props.tick(dt);
-  const alpha = state === 'start' ? 0 : clock.alpha;
-  fp.update(world, alpha, dt);
-  figures.update(world, alpha, world.user, fp.eyeX, fp.eyeY, paused ? 0 : dt * clock.tempo);
-  props.update(world, alpha, world.user);
-  props.updateEdge(renderer.camera, state === 'play' && world.phase !== 'done');
-  renderer.render();
-  debug.update(dt, renderer, world, fp, clock);
-}
 
 // ---------- Start ----------
 
 loadBackdrop();
-evaluateOptions(world, world.user); // Bewertung einmal vorab durchlaufen (JIT aufwärmen, kein Ruckler bei der ersten Annahme)
+world.continuous = true;
+evaluateOptions(world, world.user); // Bewertung einmal vorab durchlaufen (JIT aufwärmen)
+world.continuous = false;
 applySetting('fov', settings.fov);
-setTempo(settings.tempo);
+ui.setTempo(settings.tempo);
 ui.setPosition(settings.pos);
 renderer.resize();
 // alle Shader vorab kompilieren, auch für gerade unsichtbare Objekte
-props.ring.visible = props.edge.visible = true;
+props.ring.visible = props.edge.visible = props.mark.visible = true;
 renderer.compile();
-props.ring.visible = props.edge.visible = false;
-ui.showStart(progress.totals);
+props.ring.visible = props.edge.visible = props.mark.visible = false;
+if (/[?&]menu=1/.test(location.search) || location.hash === '#menu') {
+  state = 'menu'; applyCameraMode(); cine.start('menu'); showMenu();
+} else startIntro();
 raf = requestAnimationFrame(frame);
-window.__blickfeld = { world, renderer, fp, clock, get state() { return state; }, next: () => goNext() };
+window.__blickfeld = {
+  world, renderer, fp, clock, ui,
+  get state() { return state; },
+  get run() { return run; },
+  next: () => goNext(),
+  startMode: (m, id) => startRun(m, id ? levelById(id) : undefined),
+  skipIntro: () => endIntro(),
+};

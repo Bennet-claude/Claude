@@ -38,6 +38,8 @@ for (let i = 0; i < n; i++) {
   if (cfg[i][2] !== undefined) w.kickT[i] = w.pkickT[i] = cfg[i][2];
 }
 w.gk[10] = 1;
+w.t = 1;
+if (q.get('dive')) { w.gkDive = { i: 10, t0: 0, dir: parseFloat(q.get('dive')) }; w.hd[10] = w.phd[10] = Math.PI; w.vx[10] = w.vy[10] = 0; }
 const players = new Players();
 players.setup(w);
 if (cyc !== null) for (let i = 0; i < n; i++) { players.phase[i] = i / n; if (q.get('kick')) w.kickT[i] = w.pkickT[i] = i * 0.045; }

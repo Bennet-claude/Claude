@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <title>Blickfeld</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="description" content="Entscheidungstrainer für zentrale Mittelfeldspieler: echte Situationen aus Profispielen in Ich-Perspektive.">
-<meta name="theme-color" content="#0b100e">
+<meta name="description" content="Blickfeld – Entscheidungstrainer für zentrale Mittelfeldspieler. Get better with football intelligence.">
+<meta name="theme-color" content="#0a0d0c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,114 +13,258 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap">
 <link rel="stylesheet" href="css/app.css">
 <script type="importmap">
 { "imports": { "three": "./vendor/three/three.module.js" } }
 </script>
 </head>
 <body>
-<canvas id="view" aria-label="Spielfeld aus Ich-Perspektive"></canvas>
+<canvas id="view" aria-label="Stadion und Spielfeld"></canvas>
+<div id="shade" class="shade" aria-hidden="true"></div>
 
 <div id="ui">
-  <div class="hud-top">
-    <button id="btn-pause" class="round-btn" type="button" aria-label="Pause"><span class="bars" aria-hidden="true"></span></button>
-    <div class="hud-center">
-      <div class="hud-row">
-        <div id="scorebug" class="scorebug" hidden></div>
-        <div id="session" class="session" hidden></div>
-      </div>
-      <div id="phase-label" class="phase-label" hidden></div>
+
+  <!-- ============ Vorspann ============ -->
+  <div id="intro" class="intro" hidden>
+    <div class="intro-glow" aria-hidden="true"></div>
+    <div class="intro-center">
+      <h1 class="intro-word" aria-label="Blickfeld"></h1>
+      <p class="intro-tag" aria-label="Get better with football intelligence.">
+        <span>Get</span> <span>better</span> <span>with</span> <span>football</span> <span>intelligence.</span>
+      </p>
+      <div class="intro-rule" aria-hidden="true"></div>
+      <p class="intro-sub">Scannen <i>·</i> Entscheiden <i>·</i> Spielen</p>
     </div>
-    <div class="tempo" role="group" aria-label="Tempo">
-      <button type="button" data-tempo="0.25" aria-pressed="false">0,25×</button>
-      <button type="button" data-tempo="0.5" aria-pressed="false">0,5×</button>
-      <button type="button" data-tempo="0.75" aria-pressed="false">0,75×</button>
-      <button type="button" data-tempo="1" aria-pressed="true">1×</button>
-    </div>
+    <button id="intro-skip" class="intro-skip" type="button">Überspringen</button>
   </div>
 
-  <section id="feedback" class="feedback" hidden aria-live="polite">
-    <div class="fb-head">
-      <span id="fb-grade" class="grade">Top-Lösung</span>
-      <span id="fb-points" class="fb-points">+100</span>
-      <span id="fb-pattern" class="fb-pattern"></span>
-    </div>
-    <p id="fb-text" class="fb-text"></p>
-    <p id="fb-scan" class="fb-note"></p>
-    <p id="fb-meta" class="fb-note"></p>
-    <div class="fb-bar"><span id="fb-progress"></span></div>
+  <!-- ============ Hauptmenü ============ -->
+  <main id="menu" class="menu" hidden>
+    <header class="menu-top rise" style="--i:0">
+      <div class="brand">
+        <span class="wordmark">Blickfeld</span>
+        <span class="tagline">Get better with football intelligence.</span>
+      </div>
+      <div class="menu-top-actions">
+        <button id="btn-howto" class="chip-btn" type="button">So geht’s</button>
+        <button id="btn-settings" class="icon-btn" type="button" aria-label="Einstellungen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.6 7.6 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.6 7.6 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.7 7.7 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.6 7.6 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.6 7.6 0 0 0 2.6-1.5l2.4 1 2-3.4-2-1.6Z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="menu-body">
+      <button id="card-career" class="card hero rise" style="--i:1" type="button">
+        <span class="card-eyebrow">Karriere</span>
+        <span id="hero-level" class="hero-title">Level 1 · Der erste Kontakt</span>
+        <span id="hero-goal" class="hero-goal">Triff nach der Annahme eine gute Entscheidung.</span>
+        <span class="hero-foot">
+          <span id="hero-progress" class="hero-progress"><span class="stars-total"></span></span>
+          <span class="pill-primary">Weiter <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></span>
+        </span>
+      </button>
+
+      <div class="mode-grid">
+        <button id="card-training" class="card mode rise" style="--i:2" type="button">
+          <svg class="mode-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v4.5l3 2"/></svg>
+          <span class="mode-title">Training</span>
+          <span class="mode-desc">Echte Situationen ohne Ende. Dein Tempo.</span>
+          <span id="best-training" class="mode-best"></span>
+        </button>
+        <button id="card-tempo" class="card mode rise" style="--i:3" type="button">
+          <svg class="mode-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4.5-5.5"/></svg>
+          <span class="mode-title">Tempo</span>
+          <span class="mode-desc">Jeder gute Spielzug macht das Spiel schneller. Drei Leben.</span>
+          <span id="best-tempo" class="mode-best"></span>
+        </button>
+        <button id="card-blitz" class="card mode rise" style="--i:4" type="button">
+          <svg class="mode-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2.5 5 13.5h6l-1 8 8-11h-6l1-8Z"/></svg>
+          <span class="mode-title">Blitz</span>
+          <span class="mode-desc">90 Sekunden. So viele Punkte wie möglich.</span>
+          <span id="best-blitz" class="mode-best"></span>
+        </button>
+      </div>
+    </section>
+
+    <footer class="menu-foot rise" style="--i:5">
+      <div class="field">
+        <span class="field-label">Position</span>
+        <div class="seg" role="group" aria-label="Position">
+          <button type="button" data-pos="6">6er</button>
+          <button type="button" data-pos="8">8er</button>
+          <button type="button" data-pos="10">10er</button>
+          <button type="button" data-pos="mix">Alle</button>
+        </div>
+      </div>
+      <button id="btn-stats" class="stat-line" type="button"><span id="menu-stats">Noch keine Spielzüge</span></button>
+    </footer>
+  </main>
+
+  <!-- ============ Karriere-Übersicht ============ -->
+  <section id="career" class="screen" hidden aria-labelledby="career-title">
+    <header class="screen-top">
+      <button id="career-back" class="icon-btn" type="button" aria-label="Zurück"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2 id="career-title">Karriere</h2>
+      <span id="career-stars" class="screen-meta"></span>
+    </header>
+    <nav id="chapter-tabs" class="tabs" aria-label="Kapitel"></nav>
+    <p id="chapter-sub" class="chapter-sub"></p>
+    <div id="level-grid" class="level-grid"></div>
   </section>
 
+  <!-- ============ Level-Start ============ -->
+  <section id="level-card" class="sheet center" hidden role="dialog" aria-modal="true" aria-labelledby="lc-title">
+    <p id="lc-eyebrow" class="eyebrow">Kapitel 1 · Level 1</p>
+    <h2 id="lc-title">Der erste Kontakt</h2>
+    <p id="lc-goal" class="lc-goal"></p>
+    <ul class="lc-stars">
+      <li><span class="star on"></span> Ziel erreicht</li>
+      <li><span class="star on"></span><span class="star on"></span> und gute Entscheidungen</li>
+      <li><span class="star on"></span><span class="star on"></span><span class="star on"></span> Top-Spielzug</li>
+    </ul>
+    <div class="actions">
+      <button id="lc-start" class="btn primary" type="button">Los</button>
+      <button id="lc-back" class="btn" type="button">Zurück</button>
+    </div>
+  </section>
+
+  <!-- ============ HUD ============ -->
+  <header id="hud" class="hud" hidden>
+    <button id="btn-pause" class="icon-btn" type="button" aria-label="Pause">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg>
+    </button>
+    <div id="hud-chips" class="hud-chips"></div>
+    <div id="tempo" class="seg small" role="group" aria-label="Trainingstempo">
+      <button type="button" data-tempo="0.5">0,5×</button>
+      <button type="button" data-tempo="0.75">0,75×</button>
+      <button type="button" data-tempo="1">1×</button>
+    </div>
+  </header>
+  <div id="phase-label" class="phase-label" hidden></div>
   <div id="hint" class="hint" hidden></div>
-  <button id="btn-secure" class="secure" type="button" disabled><span class="secure-label">Sichern</span><span class="secure-meter" aria-hidden="true"></span></button>
+  <button id="btn-context" class="context" type="button" disabled hidden><span class="context-label">Sichern</span><span class="context-meter" aria-hidden="true"></span></button>
+  <div id="flash" class="flash" hidden aria-live="assertive"></div>
 
-  <section id="start" class="sheet start" aria-labelledby="start-title">
-    <p class="eyebrow">Entscheidungstrainer · zentrales Mittelfeld</p>
-    <h1 id="start-title">Blickfeld</h1>
-    <p class="lead">Echte Situationen aus Profispielen, aus deinen Augen. Scannen, entscheiden – und schon kommt die nächste.</p>
-    <div class="setting">
-      <span class="label">Deine Position</span>
-      <div class="seg pos-seg" role="group" aria-label="Position">
-        <button type="button" data-pos="6">6er</button>
-        <button type="button" data-pos="8">8er</button>
-        <button type="button" data-pos="10">10er</button>
-        <button type="button" data-pos="mix">Gemischt</button>
+  <!-- ============ Spielzug-Analyse ============ -->
+  <section id="result" class="result" hidden aria-live="polite">
+    <div class="result-head">
+      <div>
+        <p id="r-eyebrow" class="eyebrow">Spielzug-Analyse</p>
+        <h2 id="r-title" class="result-title">Tor</h2>
+      </div>
+      <div class="result-score">
+        <div id="r-stars" class="stars big" aria-label="Sterne"></div>
+        <div id="r-points" class="result-points">+0</div>
       </div>
     </div>
-    <dl class="controls">
-      <div><dt>Waagerecht wischen</dt><dd>Kopf drehen – vor der Annahme scannen</dd></div>
-      <div><dt>Mitspieler antippen</dt><dd>Pass, vor der Annahme als Direktpass</dd></div>
-      <div><dt>Nach der Annahme hoch wischen</dt><dd>Andribbeln in Blickrichtung, runter: aufdrehen</dd></div>
-      <div><dt>Sichern</dt><dd>Rücken zum Gegner, Zeit gewinnen, dann passen</dd></div>
-    </dl>
-    <div class="actions">
-      <button id="btn-start" class="btn primary" type="button">Spielen</button>
-      <button id="btn-fullscreen" class="btn" type="button">Vollbild</button>
-    </div>
-    <p id="start-stats" class="fine"></p>
-    <p class="fine">Laufwege aus zwei anonymisierten Profispielen (Metrica Sports Sample Data), nachgespielt in Echtzeit. Ab deiner Entscheidung übernimmt die Simulation.</p>
+    <p id="r-objective" class="objective" hidden></p>
+    <ol id="r-items" class="result-items"></ol>
+    <p id="r-key" class="result-key"></p>
+    <p id="r-tip" class="result-tip"></p>
+    <p id="r-meta" class="result-meta"></p>
+    <div id="r-actions" class="actions"></div>
+    <div class="result-bar"><span id="r-progress"></span></div>
   </section>
 
-  <section id="pause" class="sheet pause" hidden aria-labelledby="pause-title">
+  <!-- ============ Pause ============ -->
+  <section id="pause" class="sheet center" hidden role="dialog" aria-modal="true" aria-labelledby="pause-title">
     <h2 id="pause-title">Pause</h2>
-    <div class="actions">
-      <button id="btn-resume" class="btn primary" type="button">Weiter</button>
-      <button id="btn-skip" class="btn" type="button">Nächste Situation</button>
-      <button id="btn-menu" class="btn" type="button">Menü</button>
-    </div>
     <dl id="session-stats" class="stats"></dl>
-    <div class="settings">
-      <div class="setting">
-        <span class="label">Kopf nach dem Loslassen</span>
-        <div class="seg" role="group" aria-label="Kopf nach dem Loslassen">
-          <button type="button" data-setting="headMode" data-value="stay">bleibt stehen</button>
-          <button type="button" data-setting="headMode" data-value="return">zurück zum Ball</button>
-        </div>
-      </div>
-      <div class="setting">
-        <span class="label">Wischrichtung</span>
-        <div class="seg" role="group" aria-label="Wischrichtung">
-          <button type="button" data-setting="invert" data-value="false">Blick folgt Finger</button>
-          <button type="button" data-setting="invert" data-value="true">umgekehrt</button>
-        </div>
-      </div>
-      <div class="setting">
-        <span class="label">Sichtfeld</span>
-        <div class="seg" role="group" aria-label="Sichtfeld">
-          <button type="button" data-setting="fov" data-value="90">90°</button>
-          <button type="button" data-setting="fov" data-value="95">95°</button>
-          <button type="button" data-setting="fov" data-value="100">100°</button>
-        </div>
-      </div>
-      <div class="setting">
-        <span class="label">Debug-Anzeige</span>
-        <div class="seg" role="group" aria-label="Debug-Anzeige">
-          <button type="button" data-setting="debug" data-value="false">aus</button>
-          <button type="button" data-setting="debug" data-value="true">an</button>
-        </div>
+    <div class="actions column">
+      <button id="btn-resume" class="btn primary" type="button">Weiter</button>
+      <button id="btn-restart" class="btn" type="button">Neu starten</button>
+      <button id="btn-pause-settings" class="btn" type="button">Einstellungen</button>
+      <button id="btn-menu" class="btn" type="button">Zum Menü</button>
+    </div>
+  </section>
+
+  <!-- ============ Spielende (Tempo / Blitz) ============ -->
+  <section id="gameover" class="sheet center" hidden role="dialog" aria-modal="true" aria-labelledby="go-title">
+    <p id="go-eyebrow" class="eyebrow">Tempo</p>
+    <h2 id="go-title">Spielende</h2>
+    <div id="go-score" class="go-score">0</div>
+    <p id="go-best" class="go-best"></p>
+    <dl id="go-stats" class="stats"></dl>
+    <div class="actions">
+      <button id="go-again" class="btn primary" type="button">Nochmal</button>
+      <button id="go-menu" class="btn" type="button">Zum Menü</button>
+    </div>
+  </section>
+
+  <!-- ============ Einstellungen ============ -->
+  <section id="settings" class="sheet side" hidden role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <header class="sheet-top">
+      <h2 id="settings-title">Einstellungen</h2>
+      <button class="icon-btn close" type="button" data-close="settings" aria-label="Schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </header>
+    <div class="field">
+      <span class="field-label">Kopf nach dem Loslassen</span>
+      <div class="seg" role="group">
+        <button type="button" data-setting="headMode" data-value="stay">bleibt stehen</button>
+        <button type="button" data-setting="headMode" data-value="return">zurück zum Ball</button>
       </div>
     </div>
+    <div class="field">
+      <span class="field-label">Wischrichtung</span>
+      <div class="seg" role="group">
+        <button type="button" data-setting="invert" data-value="false">Blick folgt Finger</button>
+        <button type="button" data-setting="invert" data-value="true">umgekehrt</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="field-label">Sichtfeld</span>
+      <div class="seg" role="group">
+        <button type="button" data-setting="fov" data-value="90">90°</button>
+        <button type="button" data-setting="fov" data-value="95">95°</button>
+        <button type="button" data-setting="fov" data-value="100">100°</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="field-label">Vorspann beim Start</span>
+      <div class="seg" role="group">
+        <button type="button" data-setting="intro" data-value="full">lang</button>
+        <button type="button" data-setting="intro" data-value="short">kurz</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="field-label">Debug-Anzeige</span>
+      <div class="seg" role="group">
+        <button type="button" data-setting="debug" data-value="false">aus</button>
+        <button type="button" data-setting="debug" data-value="true">an</button>
+      </div>
+    </div>
+    <button id="btn-fullscreen" class="btn" type="button">Vollbild</button>
+    <p class="fine">Laufwege aus zwei anonymisierten Profispielen (Metrica Sports Sample Data). Bewegungen der Spieler aus der CMU Graphics Lab Motion Capture Database (mocap.cs.cmu.edu). Die Bewertung ist regelbasiert und läuft komplett auf dem Gerät.</p>
+  </section>
+
+  <!-- ============ Statistik ============ -->
+  <section id="stats" class="sheet side" hidden role="dialog" aria-modal="true" aria-labelledby="stats-title">
+    <header class="sheet-top">
+      <h2 id="stats-title">Deine Entwicklung</h2>
+      <button class="icon-btn close" type="button" data-close="stats" aria-label="Schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </header>
+    <dl id="stats-list" class="stats"></dl>
+    <h3 class="section-title">Nach Spielphase <span class="fine-inline">(erste Entscheidung, Ø Punkte)</span></h3>
+    <div id="phase-bars" class="phase-bars"></div>
+  </section>
+
+  <!-- ============ Anleitung ============ -->
+  <section id="howto" class="sheet side" hidden role="dialog" aria-modal="true" aria-labelledby="howto-title">
+    <header class="sheet-top">
+      <h2 id="howto-title">So geht’s</h2>
+      <button class="icon-btn close" type="button" data-close="howto" aria-label="Schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </header>
+    <ol class="howto">
+      <li><b>Scannen.</b> Waagerecht wischen dreht den Kopf. Schau dich um, bevor der Ball kommt.</li>
+      <li><b>Pass.</b> Mitspieler antippen. Vor der Annahme angetippt: Direktpass.</li>
+      <li><b>Pass in den Raum.</b> Auf den Rasen tippen – der Ball geht genau dorthin.</li>
+      <li><b>Schuss.</b> Aufs Tor tippen. Wohin du tippst, dahin zielst du.</li>
+      <li><b>Dribbling.</b> Mit Ball nach oben wischen: in Blickrichtung andribbeln.</li>
+      <li><b>Sichern.</b> Knopf unten rechts: Rücken zum Gegner, Zeit gewinnen.</li>
+      <li><b>Ohne Ball.</b> Wischen = Sprint in die Tiefe. „Fordern“ = Ball verlangen.</li>
+      <li><b>Bewertung.</b> Nach jedem Spielzug: jede Entscheidung, dein Laufen ohne Ball und das Ergebnis – mit Sternen und einem Tipp.</li>
+    </ol>
   </section>
 
   <pre id="debug" class="debug" hidden></pre>

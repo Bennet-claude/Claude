@@ -143,6 +143,7 @@ function startAction(w, a, tNow = w.t) {
 function startShield(w) {
   const u = w.user;
   w.shielding = true;
+  w.move.shielded = true;
   w.shieldStart = w.t;
   w.shieldT = 0;
   if (w.ev.action < 0) w.ev.action = w.t;

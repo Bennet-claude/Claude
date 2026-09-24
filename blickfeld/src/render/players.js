@@ -669,7 +669,7 @@ export class Players {
         // Hals dreht ein Drittel der Blickwendung mit
         tmpQ2.setFromAxisAngle(AXIS_Y, look * 0.35);
         tmpQ.premultiply(tmpQ2);
-      } else if (j === JI.Head) {
+      } else if (j === JI.Head && this.dive[i] === 0) {
         // Kopf stabilisiert (wie beim echten Laufen): Blick waagerecht, leicht gesenkt, zum Ball gedreht
         tmpV.copy(this.offV[j]).applyMatrix4(worldM[p]);
         tmpQ.setFromAxisAngle(AXIS_Y, hd + Math.PI / 2 + look);
