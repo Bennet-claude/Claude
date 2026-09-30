@@ -1136,7 +1136,7 @@ function init() {
   const antennaMat = decal(new THREE.MeshStandardMaterial({ color: new THREE.Color(FIN[f0].body).multiplyScalar(0.6), metalness: 0.6, roughness: 0.5 }), 1);
   const logoMat = decal(new THREE.MeshPhysicalMaterial({ color: FIN[f0].body, metalness: 1, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.04, transparent: true, depthWrite: false }), 3);
   const frontGlassMat = decal(new THREE.MeshPhysicalMaterial({ color: 0x020203, metalness: 0, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.02 }), 1);
-  const bezelMat = new THREE.MeshStandardMaterial({ color: 0x08080a, roughness: 0.42, metalness: 0.3 });
+  const bezelMat = new THREE.MeshStandardMaterial({ color: 0x060607, roughness: 0.5, metalness: 0.2, envMapIntensity: 0.6 });
   const decalDark = decal(new THREE.MeshStandardMaterial({ color: 0x07070a, roughness: 0.3, metalness: 0.5 }), 2);
   const portMat = decal(new THREE.MeshStandardMaterial({ color: 0x050506, roughness: 0.6, metalness: 0.2 }), 2);
   const screwMat = decal(new THREE.MeshStandardMaterial({ color: 0x8a8d92, roughness: 0.35, metalness: 1 }), 2);
@@ -1152,7 +1152,7 @@ function init() {
     [[0.94, 0.1, 4], [0.8, 0.06, 2], [0.62, 0.09, 3], [0.44, 0.08, 2], [0.26, 0.06, 2]].forEach(([r, a, w]) => { g.strokeStyle = `rgba(140,150,180,${a})`; g.lineWidth = w; g.beginPath(); g.arc(m, m, r * m, 0, TAU); g.stroke(); });
     rg = g.createRadialGradient(m, m, 0, m, m, m * 0.2); rg.addColorStop(0, 'rgba(0,0,0,1)'); rg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = rg; g.beginPath(); g.arc(m, m, m * 0.2, 0, TAU); g.fill();
   }, true);
-  const lensElemMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, map: lensTex, metalness: 0, roughness: 0.12, clearcoat: 0.7, clearcoatRoughness: 0.04, iridescence: 0.6, iridescenceIOR: 1.6, iridescenceThicknessRange: [0, 340], envMapIntensity: 0.75 });
+  const lensElemMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, map: lensTex, metalness: 0, roughness: 0.14, clearcoat: 0.5, clearcoatRoughness: 0.05, iridescence: 0.45, iridescenceIOR: 1.6, iridescenceThicknessRange: [0, 340], envMapIntensity: 0.4 });
   const barrelMat = new THREE.MeshStandardMaterial({ color: 0x050506, roughness: 0.75, metalness: 0.2 });
   const flashTex = canvasTex(256, (g) => {
     const rg = g.createRadialGradient(128, 128, 0, 128, 128, 128); rg.addColorStop(0, '#f6f0e1'); rg.addColorStop(0.8, '#e7ddc6'); rg.addColorStop(1, '#cdbf9f'); g.fillStyle = rg; g.fillRect(0, 0, 256, 256);
