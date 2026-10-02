@@ -1,0 +1,986 @@
+/* ==========================================================================
+   Böker Bestattungen und Tischlerei – Konzeptentwurf (Studio Leine)
+   Mobile-first. Keine externen Ressourcen. Schriften lokal (OFL).
+   ========================================================================== */
+
+/* ---------- Schriften (lokal, keine CDN-Einbindung) ---------- */
+@font-face {
+  font-family: "Marcellus";
+  src: url("../fonts/marcellus-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("../fonts/atkinson-next-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("../fonts/atkinson-next-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Tokens ---------- */
+:root {
+  /* Stein, Moos, Holz, Licht */
+  --kalk: #EDEDE7;          /* Off-White, Kalkstein */
+  --kalk-hell: #F6F6F2;
+  --kalk-tief: #E2E3DB;
+  --granit: #252826;        /* Anthrazit */
+  --granit-2: #2D312E;
+  --granit-3: #3B403C;
+  --text: #252826;
+  --text-2: #4D524C;
+  --salbei: #7E8C77;        /* gedämpftes Salbeigrün */
+  --salbei-tief: #44513E;
+  --salbei-hell: #CDD3C6;
+  --holz: #9A7a58;          /* dezenter Holzton */
+  --holz-tief: #6A4D31;
+  --holz-hell: #E8E1D6;
+  --licht: #E8C483;         /* Kerzenlicht – nur im Trauerfall-Abschnitt */
+  --auf-dunkel: #ECEBE5;
+  --auf-dunkel-2: #B9BDB5;
+  --linie: rgb(37 40 38 / 0.22);
+  --linie-hell: rgb(236 235 229 / 0.2);
+
+  --font-serif: "Marcellus", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-sans: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+
+  --fs-body: clamp(1.1875rem, 1.12rem + 0.25vw, 1.3125rem);   /* 19–21 px */
+  --fs-lead: clamp(1.3125rem, 1.2rem + 0.5vw, 1.5625rem);
+  --fs-h1: clamp(2.625rem, 1.7rem + 3.6vw, 4.75rem);
+  --fs-h2: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem);
+  --fs-h3: clamp(1.5rem, 1.35rem + 0.6vw, 1.875rem);
+
+  --gutter: clamp(1.25rem, 5vw, 3.5rem);
+  --wrap: 78rem;
+  --abstand: clamp(5rem, 3.5rem + 6vw, 9.5rem);
+  --radius: 4px;
+
+  /* Bewegung – wird von motion.js gelesen */
+  --motion-duration: 1.6s;
+  --motion-duration-kurz: 0.2s;
+  --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  --header-h: 0px;   /* Kopf ist mobil nicht fixiert */
+  --bar-h: calc(4.75rem + env(safe-area-inset-bottom, 0px)); /* untere Leiste */
+
+  --korn: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='k'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .14 0 0 0 0 .15 0 0 0 0 .14 0 0 0 .9 -.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23k)' opacity='.16'/%3E%3C/svg%3E");
+}
+
+@media (min-width: 64em) {
+  :root {
+    --header-h: 5.25rem;
+    --bar-h: 0px;
+  }
+}
+
+/* ---------- Basis ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+  scrollbar-color: var(--salbei) var(--kalk-tief);
+}
+
+body {
+  margin: 0;
+  padding-bottom: var(--bar-h);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text);
+  background-color: var(--kalk);
+  background-image: var(--korn);
+  caret-color: var(--salbei-tief);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--salbei-hell); color: var(--granit); }
+
+h1, h2, h3 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+h1 { font-size: var(--fs-h1); line-height: 1.06; }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); line-height: 1.2; }
+
+p { margin: 0 0 1em; max-width: 60ch; text-wrap: pretty; }
+p:last-child { margin-bottom: 0; }
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible {
+  outline: 3px solid var(--salbei-tief);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+ul, ol { margin: 0; padding: 0; }
+address { font-style: normal; }
+figure { margin: 0; }
+
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--wrap));
+  margin-inline: auto;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem; top: -10rem;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: var(--granit);
+  color: var(--kalk-hell);
+  font-weight: 700;
+}
+.skip-link:focus { top: 1rem; }
+
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.45;
+  color: var(--text-2);
+}
+
+/* [PRÜFEN]-Markierungen: sichtbar, aber ruhig */
+.pruefen {
+  display: inline;
+  padding: 0.05em 0.35em;
+  font-family: var(--font-sans);
+  font-size: 0.85em;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  color: #5A3F0E;
+  background: #F2E5C4;
+  border: 1px dashed #A07A32;
+  border-radius: 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* ---------- Icons ---------- */
+.icon {
+  width: 1.25em;
+  height: 1.25em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- Buttons (mind. 48 px, hier 56 px) ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  min-height: 3.5rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 1.0625em;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-kurz) ease,
+    border-color var(--motion-duration-kurz) ease,
+    color var(--motion-duration-kurz) ease,
+    transform 160ms ease-out;
+}
+.btn:hover { text-decoration: none; }
+.btn:active { transform: scale(0.98); }
+
+.btn--gross { min-height: 3.75rem; padding-inline: 1.75rem; }
+
+.btn--primary { background: var(--granit); color: var(--kalk-hell); }
+
+.btn--linie { border-color: var(--granit); color: var(--granit); background: transparent; }
+
+.btn--hell { background: var(--kalk-hell); color: var(--granit); }
+
+.btn--linie-hell { border-color: var(--auf-dunkel); color: var(--auf-dunkel); background: transparent; }
+
+.btn--holz { background: var(--holz-tief); color: var(--kalk-hell); }
+
+/* Hover nur bei echter Maus – auf Touch-Geräten bleibt keine Farbe „hängen“ */
+@media (hover: hover) and (pointer: fine) {
+  .btn--primary:hover { background: var(--salbei-tief); }
+  .btn--linie:hover { background: rgb(37 40 38 / 0.07); }
+  .btn--hell:hover { background: var(--licht); }
+  .btn--linie-hell:hover { background: rgb(236 235 229 / 0.1); }
+  .btn--holz:hover { background: #563D25; }
+}
+
+/* ---------- Konzept-Hinweis ---------- */
+.konzept-hinweis {
+  background: var(--salbei-hell);
+  color: var(--granit);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+.konzept-hinweis p {
+  max-width: none;
+  padding-block: 0.7rem;
+}
+
+/* ---------- Kopf ---------- */
+.kopf {
+  position: relative;
+  z-index: 50;
+  background: var(--kalk-hell);
+  border-bottom: 1px solid var(--linie);
+}
+.kopf__inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 4.75rem;
+}
+
+.marke {
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+  text-decoration: none;
+  line-height: 1.1;
+}
+.marke__name {
+  font-family: var(--font-serif);
+  font-size: 1.875rem;
+  letter-spacing: 0.02em;
+}
+.marke__zusatz {
+  font-size: 1rem;
+  color: var(--text-2);
+}
+
+.nav__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--granit);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--granit);
+  font: 700 1.0625rem/1 var(--font-sans);
+  cursor: pointer;
+}
+.nav__toggle[aria-expanded="true"] { background: var(--granit); color: var(--kalk-hell); }
+
+/* Ohne JS: Liste immer sichtbar. Mit JS: aufklappbar. */
+.nav__liste {
+  list-style: none;
+}
+.js .nav__liste {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 0.5rem var(--gutter) 1.25rem;
+  background: var(--kalk-hell);
+  border-bottom: 1px solid var(--linie);
+  box-shadow: 0 18px 30px -18px rgb(37 40 38 / 0.35);
+}
+.js .nav__liste.is-offen { display: block; }
+.nav__liste a {
+  display: flex;
+  align-items: center;
+  min-height: 3.5rem;
+  border-bottom: 1px solid var(--linie);
+  font-size: 1.375rem;
+  text-decoration: none;
+}
+.nav__liste li:last-child a { border-bottom: 0; }
+
+.kopf__tel { display: none; }
+
+@media (min-width: 40em) {
+  .kopf__tel { display: inline-flex; min-height: 3.25rem; padding-inline: 1.25rem; }
+}
+
+@media (min-width: 64em) {
+  .kopf {
+    position: sticky;
+    top: 0;
+  }
+  .kopf__inner { min-height: var(--header-h); }
+}
+
+@media (min-width: 77em) {
+  .nav__toggle { display: none; }
+  .js .nav__liste,
+  .nav__liste {
+    display: flex;
+    position: static;
+    gap: clamp(1rem, 1.6vw, 1.75rem);
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+  }
+  .nav__liste a {
+    min-height: 3rem;
+    border: 0;
+    font-size: 1.125rem;
+  }
+  .nav__liste a:hover { text-decoration: underline; }
+}
+
+/* ---------- Abschnitte ---------- */
+.abschnitt { padding-block: var(--abstand); }
+
+.rule {
+  display: block;
+  height: 1px;
+  background: var(--linie);
+  transform-origin: left center;
+}
+
+/* ---------- Platzhalter-Bilder ---------- */
+.ph {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--salbei-hell);
+  background-image:
+    repeating-linear-gradient(135deg, rgb(37 40 38 / 0.055) 0 1px, transparent 1px 14px),
+    var(--korn);
+}
+.ph--bogen {
+  aspect-ratio: 4 / 5;
+  border-radius: 999px 999px 0 0;
+}
+.ph--rechteck {
+  aspect-ratio: 4 / 3;
+  border-radius: 2px;
+}
+.ph--salbei { background-color: #BCC5B5; }
+.ph--stein { background-color: #C9CBC3; }
+.ph--holz { background-color: #C7B49B; }
+.ph--holz-hell { background-color: #DCCFBD; }
+
+.ph__label {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  padding: 0.3rem 0.6rem;
+  background: rgb(246 246 242 / 0.9);
+  color: var(--granit);
+  font-size: 1rem;
+  line-height: 1.3;
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   Start / Highlight 1 – „Das Tor öffnet sich“
+   ========================================================================== */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+.hero__grid {
+  display: grid;
+  grid-template-rows: auto minmax(9rem, 1fr);
+  gap: 2rem;
+  min-height: calc(100svh - var(--header-h) - var(--bar-h));
+  padding-top: clamp(2rem, 6vw, 4.5rem);
+}
+.hero__text {
+  align-self: center;
+}
+.hero__text h1 { max-width: 13ch; }
+.hero__lead {
+  margin-top: 1.25rem;
+  font-size: var(--fs-lead);
+  line-height: 1.45;
+  color: var(--text-2);
+  max-width: 34ch;
+}
+.hero__aktionen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+.hero__aktionen .btn { flex: 1 1 16rem; }
+.hero__adresse {
+  margin-top: 1.5rem;
+  font-size: 1.0625rem;
+  color: var(--text-2);
+}
+
+/* Bogen – der Platz für das Tor */
+.hero__slot {
+  position: relative;
+  min-height: 9rem;
+  width: min(68%, 17rem);
+  justify-self: end;
+}
+.tor {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 999px 999px 0 0;
+  background: #5E6A59;
+}
+.tor__bild {
+  position: absolute;
+  inset: 0;
+  background-color: #6F7C69;
+  background-image:
+    var(--korn),
+    repeating-linear-gradient(135deg, rgb(246 246 242 / 0.05) 0 1px, transparent 1px 16px),
+    linear-gradient(180deg, #8C9886 0%, #6C7966 48%, #4C5748 100%);
+  transform-origin: 50% 100%;
+}
+.tor__schatten {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(26 29 27 / 0.42) 0%, rgb(26 29 27 / 0.9) 100%);
+  opacity: 0;
+}
+.tor__label {
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgb(37 40 38 / 0.72);
+  color: var(--kalk-hell);
+}
+
+/* Aussage – ohne Bewegung ein ruhiges Band unter dem Bogen */
+.tor__aussage {
+  padding-block: clamp(2.5rem, 6vw, 4rem);
+  border-top: 1px solid var(--linie);
+}
+.tor__satz {
+  font-family: var(--font-serif);
+  font-size: var(--fs-h2);
+  line-height: 1.12;
+  max-width: 17ch;
+  text-wrap: balance;
+  margin-bottom: 0.75rem;
+}
+.tor__ort { color: var(--text-2); font-size: var(--fs-lead); }
+
+/* Mit Bewegung: Aussage liegt im Tor und wird erst beim Scrollen sichtbar */
+.motion-ok .hero__grid {
+  height: calc(100svh - var(--header-h) - var(--bar-h));
+}
+.motion-ok .tor__aussage {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(3rem, 14vh, 8rem);
+  z-index: 3;
+  padding: 0;
+  border: 0;
+  color: var(--auf-dunkel);
+  opacity: 0;
+  pointer-events: none;
+}
+.motion-ok .tor__ort { color: var(--auf-dunkel-2); }
+
+/* motion.js setzt .is-tor: das Tor wird zur Ebene über dem ganzen Abschnitt */
+.hero.is-tor .hero__slot { position: static; }
+.hero.is-tor .tor { border-radius: 0; will-change: clip-path; }
+.hero.is-tor .tor__label { left: var(--label-x, 50%); }
+
+@media (min-width: 56em) {
+  .hero__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-rows: 1fr;
+    column-gap: clamp(2.5rem, 6vw, 6rem);
+    padding-top: clamp(2.5rem, 6vh, 4.5rem);
+  }
+  .hero__text { padding-bottom: clamp(3rem, 8vh, 6rem); }
+  .hero__slot { min-height: 0; width: auto; justify-self: stretch; }
+  .hero__aktionen .btn { flex: 0 0 auto; }
+}
+
+/* ==========================================================================
+   Im Trauerfall / Highlight 2 – „Lichter am Weg“
+   ========================================================================== */
+.trauerfall {
+  --linie: var(--linie-hell);
+  background-color: var(--granit);
+  background-image: var(--korn);
+  color: var(--auf-dunkel);
+}
+.trauerfall :focus-visible { outline-color: var(--licht); }
+.trauerfall .lead { color: var(--auf-dunkel-2); }
+.trauerfall__grid {
+  display: grid;
+  gap: 3rem;
+}
+.trauerfall__kopf .lead { margin-top: 1rem; margin-bottom: 2rem; }
+
+.weg {
+  --licht-gr: 3.25rem;
+  position: relative;
+}
+.weg__bahn { position: relative; }
+.weg__pfad {
+  position: absolute;
+  left: calc(var(--licht-gr) / 2 - 1px);
+  top: calc(var(--licht-gr) / 2);
+  bottom: 0;
+  width: 2px;
+  background: rgb(236 235 229 / 0.14);
+}
+.weg__glut {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--licht), #B8935A);
+  transform-origin: 50% 0;
+}
+.weg__liste {
+  list-style: none;
+  display: grid;
+  gap: clamp(2.5rem, 7vh, 4.5rem);
+}
+.weg__schritt {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--licht-gr) minmax(0, 1fr);
+  column-gap: clamp(1.25rem, 3vw, 2.25rem);
+}
+/* Ohne JS: Linie unterhalb des letzten Lichts abdecken (mit JS kürzt main.js den Pfad) */
+html:not(.js) .weg__schritt:last-child::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--licht-gr) / 2 - 3px);
+  top: calc(var(--licht-gr) / 2);
+  bottom: 0;
+  width: 6px;
+  background: var(--granit);
+}
+.weg__licht {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--licht-gr);
+  height: var(--licht-gr);
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background-color: var(--granit);
+  color: var(--granit);
+  font-family: var(--font-serif);
+  font-size: 1.375rem;
+  line-height: 1;
+  isolation: isolate;
+  transition:
+    border-color var(--motion-duration) var(--motion-ease),
+    color var(--motion-duration) var(--motion-ease);
+}
+/* Die Flamme: warmes Glas, von innen hell */
+.weg__licht::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #F7E2B0 0%, var(--licht) 48%, #C9974F 100%);
+  transition: opacity var(--motion-duration) var(--motion-ease);
+}
+.weg__licht::after {
+  content: "";
+  position: absolute;
+  inset: -1.25rem;
+  z-index: -2;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(232 196 131 / 0.3) 0%, rgb(232 196 131 / 0.1) 45%, rgb(232 196 131 / 0) 70%);
+  pointer-events: none;
+  transition: opacity var(--motion-duration) var(--motion-ease);
+}
+.weg__text {
+  padding-top: 0.55rem;
+  transition: opacity var(--motion-duration) var(--motion-ease);
+}
+.weg__text h3 { margin-bottom: 0.6rem; }
+.weg__text p { color: var(--auf-dunkel-2); }
+.weg__text a { color: var(--auf-dunkel); font-weight: 700; white-space: nowrap; }
+.weg__hinweis {
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--linie);
+  font-size: 1.0625rem;
+  color: var(--auf-dunkel-2);
+}
+
+/* Mit Bewegung: Lichter sind zunächst aus und werden beim Scrollen entzündet */
+.motion-ok .weg__schritt:not(.is-lit) .weg__licht {
+  border-color: rgb(236 235 229 / 0.38);
+  color: var(--auf-dunkel-2);
+}
+.motion-ok .weg__schritt:not(.is-lit) .weg__licht::before,
+.motion-ok .weg__schritt:not(.is-lit) .weg__licht::after { opacity: 0; }
+.motion-ok .weg__schritt:not(.is-lit) .weg__text { opacity: 0.75; }
+.motion-ok .weg__schritt.is-lit .weg__licht::after {
+  animation: flackern 4.2s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+.motion-ok .trauerfall.is-sichtbar .weg__schritt.is-lit .weg__licht::after {
+  animation-play-state: running;
+}
+@keyframes flackern {
+  0%   { opacity: 0.75; transform: scale(0.97); }
+  45%  { opacity: 1;    transform: scale(1.03); }
+  70%  { opacity: 0.85; transform: scale(0.99); }
+  100% { opacity: 1;    transform: scale(1.02); }
+}
+
+@media (min-width: 56em) {
+  .trauerfall__grid {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    column-gap: clamp(3rem, 7vw, 7rem);
+    align-items: start;
+  }
+  .trauerfall__kopf {
+    position: sticky;
+    top: calc(var(--header-h) + 3rem);
+  }
+}
+
+/* ==========================================================================
+   Bestattungsarten
+   ========================================================================== */
+.arten__grid {
+  display: grid;
+  gap: 3rem;
+}
+.arten__intro .lead { margin-top: 1rem; }
+.arten__intro .ph {
+  margin-top: 2.5rem;
+  max-width: 24rem;
+}
+.arten__notiz { margin-top: 0.75rem; font-size: 1rem; }
+.arten__pruefen { margin-top: 0.5rem; font-size: 1rem; }
+
+.liste { list-style: none; }
+.liste__eintrag {
+  display: grid;
+  gap: 0.4rem;
+  padding-bottom: 1.6rem;
+}
+.liste__eintrag .rule { margin-bottom: 1.4rem; }
+.liste__eintrag p { color: var(--text-2); }
+
+@media (min-width: 56em) {
+  .arten__grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: clamp(3rem, 7vw, 7rem);
+  }
+  .arten .liste { padding-top: 0.75rem; }
+  .liste__eintrag {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    column-gap: 2rem;
+    align-items: baseline;
+  }
+  .liste__eintrag .rule { grid-column: 1 / -1; }
+}
+
+/* ==========================================================================
+   Vorsorge
+   ========================================================================== */
+.vorsorge { background-color: var(--kalk-tief); }
+.vorsorge__grid {
+  display: grid;
+  gap: 2rem;
+}
+.vorsorge__satz {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.625rem);
+  line-height: 1.18;
+  max-width: 20ch;
+  margin: 0 0 2rem;
+  text-wrap: balance;
+}
+.vorsorge__text .rule { margin-bottom: 2rem; }
+.punkte {
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.75rem 0 2.25rem;
+}
+.punkte li {
+  position: relative;
+  padding-left: 1.75rem;
+}
+/* kleiner Bogen als Aufzählungszeichen */
+.punkte li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.42em;
+  width: 0.7rem;
+  height: 0.85rem;
+  border: 1.5px solid var(--salbei-tief);
+  border-bottom: 0;
+  border-radius: 999px 999px 0 0;
+}
+
+@media (min-width: 56em) {
+  .vorsorge__grid {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    column-gap: clamp(3rem, 7vw, 7rem);
+    align-items: start;
+  }
+}
+
+/* ==========================================================================
+   Tischlerei (Holzton)
+   ========================================================================== */
+.tischlerei {
+  --linie: rgb(106 77 49 / 0.3);
+  background-color: var(--holz-hell);
+}
+.tischlerei__grid {
+  display: grid;
+  gap: 3rem;
+}
+.tischlerei__bilder {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: end;
+}
+.tischlerei__bild-1 { grid-column: 1 / 6; grid-row: 1; aspect-ratio: 5 / 4; }
+.tischlerei__bild-2 {
+  grid-column: 4 / 7;
+  grid-row: 1;
+  aspect-ratio: 3 / 4;
+  margin-bottom: -2.5rem;
+  box-shadow: 0 0 0 6px var(--holz-hell);
+}
+.tischlerei__text .lead { margin-top: 1rem; margin-bottom: 2rem; }
+.liste--holz h3 { color: var(--holz-tief); }
+.tischlerei__text > p { margin-block: 0.5rem 1.75rem; font-size: 1rem; }
+
+@media (min-width: 56em) {
+  .tischlerei__grid {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    column-gap: clamp(3rem, 7vw, 7rem);
+    align-items: center;
+  }
+  .liste--holz .liste__eintrag { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); }
+}
+
+/* ==========================================================================
+   Über uns
+   ========================================================================== */
+.ueber__grid {
+  display: grid;
+  gap: 3rem;
+}
+.ueber__bild { max-width: 22rem; }
+.ueber__bild figcaption { margin-top: 0.75rem; font-size: 1rem; }
+.ueber__text .lead { margin-top: 1rem; }
+.fakten { margin: 2.5rem 0 0; }
+.fakten__zeile {
+  display: grid;
+  gap: 0.25rem;
+  padding-bottom: 1.1rem;
+}
+.fakten__zeile .rule { margin-bottom: 1.1rem; }
+.fakten dt { font-weight: 700; }
+.fakten dd { margin: 0; }
+
+@media (min-width: 56em) {
+  .ueber__grid {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    column-gap: clamp(3rem, 8vw, 8rem);
+    align-items: start;
+  }
+  .ueber__bild { margin-top: 4rem; }
+  .fakten__zeile { grid-template-columns: 10rem minmax(0, 1fr); column-gap: 1.5rem; }
+  .fakten__zeile .rule { grid-column: 1 / -1; }
+}
+
+/* ==========================================================================
+   Kontakt und Anfahrt
+   ========================================================================== */
+.kontakt {
+  --linie: var(--linie-hell);
+  background-color: var(--granit-2);
+  background-image: var(--korn);
+  color: var(--auf-dunkel);
+}
+.kontakt :focus-visible { outline-color: var(--licht); }
+.kontakt__grid {
+  display: grid;
+  gap: 3.5rem;
+}
+.kontakt__label {
+  margin-top: 2.25rem;
+  margin-bottom: 0.25rem;
+  color: var(--auf-dunkel-2);
+}
+.kontakt__tel {
+  display: inline-block;
+  font-family: var(--font-sans);   /* Ziffern maximal eindeutig (Atkinson) */
+  font-weight: 700;
+  font-size: clamp(2.125rem, 1.5rem + 2.8vw, 3.5rem);
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.kontakt__tel:hover { text-decoration: underline; text-decoration-thickness: 2px; }
+.kontakt__adresse {
+  margin: 2rem 0 1.5rem;
+  font-size: var(--fs-lead);
+  line-height: 1.45;
+}
+.kontakt__haupt p { color: var(--auf-dunkel-2); }
+.kontakt__haupt p a { color: var(--auf-dunkel); }
+.kontakt__anfahrt h3 { margin-bottom: 1.5rem; }
+.anfahrt { margin: 0 0 2rem; display: grid; gap: 1.1rem; }
+.anfahrt > div {
+  display: grid;
+  gap: 0.2rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--linie);
+}
+.anfahrt dt { font-weight: 700; }
+.anfahrt dd { margin: 0; color: var(--auf-dunkel-2); }
+.kontakt__karten {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.kontakt__extern {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: var(--auf-dunkel-2);
+}
+
+@media (min-width: 56em) {
+  .kontakt__grid {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    column-gap: clamp(3rem, 7vw, 7rem);
+  }
+  .kontakt__anfahrt { padding-top: 0.5rem; }
+  .anfahrt > div { grid-template-columns: 8.5rem minmax(0, 1fr); column-gap: 1rem; }
+}
+
+/* ---------- Fuß ---------- */
+.fuss {
+  padding-block: 3.5rem 3rem;
+  background: var(--granit);
+  color: var(--auf-dunkel-2);
+  font-size: 1.0625rem;
+  border-top: 1px solid var(--linie-hell);
+}
+.fuss :focus-visible { outline-color: var(--licht); }
+.fuss a { color: var(--auf-dunkel); }
+.fuss__grid { display: grid; gap: 2rem; }
+.fuss__marke {
+  display: flex;
+  flex-direction: column;
+  color: var(--auf-dunkel);
+  line-height: 1.15;
+}
+.fuss__marke .marke__zusatz { color: var(--auf-dunkel-2); }
+.fuss__links { list-style: none; display: grid; gap: 0.25rem; }
+.fuss__links a { display: inline-flex; align-items: center; min-height: 2.75rem; }
+.fuss__hinweis {
+  max-width: 70ch;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--linie-hell);
+  font-size: 1rem;
+}
+@media (min-width: 56em) {
+  .fuss__grid { grid-template-columns: 1.2fr 1fr 1fr; }
+  .fuss__hinweis { grid-column: 1 / -1; }
+}
+
+/* ---------- Mobile Schnellzugriff: Anrufen + Anfahrt ---------- */
+.schnellzugriff {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+  padding: 0.625rem var(--gutter) calc(0.625rem + env(safe-area-inset-bottom, 0px));
+  background: var(--kalk-hell);
+  border-top: 1px solid var(--linie);
+  box-shadow: 0 -10px 24px -16px rgb(37 40 38 / 0.35);
+}
+.schnell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 3.5rem;
+  border-radius: var(--radius);
+  font-size: 1.1875rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 160ms ease-out;
+}
+.schnell:active { transform: scale(0.98); }
+.schnell--anrufen { background: var(--granit); color: var(--kalk-hell); }
+.schnell--anfahrt { border: 1px solid var(--granit); color: var(--granit); }
+
+@media (min-width: 64em) {
+  .schnellzugriff { display: none; }
+}
+
+/* ---------- Unterseiten (Impressum, Datenschutz) ---------- */
+.unterseite { padding-block: var(--abstand); }
+.unterseite h1 { font-size: var(--fs-h2); margin-bottom: 1.5rem; }
+.unterseite .btn { margin-top: 2rem; }
+
+/* ---------- Bewegung reduzieren ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+  .btn:active, .schnell:active { transform: none; }
+  /* Lichter brennen ruhig, ohne Flackern; Inhalte sind sofort sichtbar.
+     motion.js legt in diesem Modus keine Scroll-Animationen an. */
+}
