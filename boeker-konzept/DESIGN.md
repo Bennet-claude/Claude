@@ -22,10 +22,12 @@ Hell im Alltag, dunkel dort, wo es ernst wird (Trauerfall, Kontakt).
 - Rundbogen als Leitmotiv: Tor im Einstieg, Bildfenster, Aufzählungszeichen, Favicon.
 - Tischlerei: gerade Kanten, Holzflächen.
 - Feine 1-px-Linien als Gliederung, keine Karten, keine Icon-Raster.
-- Leichte Asymmetrie: Überschrift links (4/11), Inhalt rechts (7/11).
+- Dicht statt luftig: Start plus drei Kapitel von je etwa einer Bildschirmhöhe.
+- Kapitel 2 zeigt drei Materialien nebeneinander: Stein (Bestattungsarten als Liste), Moos (Vorsorge im Bogenfeld), Holz (Tischlerei als Tafel).
+- Kapitel 3 teilt den Bildschirm: links hell (Über uns), rechts dunkel (Kontakt).
 
 ## Bewegung
 - Highlight 1 „Das Tor öffnet sich“ (Pin + Scrub, `clip-path` vom Bogen zum Vollbild, Dämmerung).
-- Highlight 2 „Lichter am Weg“ (Scrub-Linie, Lichter per CSS-Übergang, leises Flackern nur im Sichtbereich).
+- Highlight 2 „Lichter am Weg“ (Scrub-Linie, ab 72em waagerecht; Lichter gehen an, sobald die Glut sie erreicht; leises Flackern nur im Sichtbereich).
 - Ruhig: Linien (scaleX), Bogenfenster (clip-path von unten), Einblenden (opacity + 24 px).
 - Grundtempo 1,6 s, Scrub-Nachlauf 1,2–1,4 s. Ohne JS und bei reduzierter Bewegung ist alles sofort sichtbar.

@@ -4,6 +4,7 @@
 > Die Seite ist mit `noindex, nofollow` gekennzeichnet. Es wurden keine Logos, Fotos oder Texte der bestehenden Website übernommen; die Wortmarke ist reiner Text.
 
 Ruhige One-Page-Landingpage (Scrollseite) für einen Bestatter mit Tischlerei in Hannover-Ricklingen.
+Kompakt aufgebaut: Start mit Tor-Animation, danach drei dichte Kapitel von je etwa einer Bildschirmhöhe.
 Statisch: HTML, CSS, Vanilla-JS. Kein Framework, kein Build-Schritt, keine externen Ressourcen.
 
 ## Starten
@@ -35,17 +36,14 @@ boeker-konzept/
 └── README.md
 ```
 
-### Abschnitte (jeweils `<section data-section="…">`)
+### Aufbau (jede Einheit ist ein `<section data-section="…">`)
 
-| `data-section`      | Inhalt                                                          |
-|---------------------|-----------------------------------------------------------------|
-| `start`             | Einstieg, Anrufen-Button, Bogen „Eingang“ → Highlight 1          |
-| `trauerfall`        | Was ist im Trauerfall zu tun? 4 Schritte (Ablauf) → Highlight 2 |
-| `bestattungsarten`  | Erd-, Feuer-, Baum-, Seebestattung, eigener Abschied             |
-| `vorsorge`          | Bestattungsvorsorge, Gesprächstermin per Telefon                 |
-| `tischlerei`        | Möbelbau, Türen, Fenster (Holzton)                               |
-| `ueber-uns`         | Betrieb, Fakten (alle als [PRÜFEN] markiert)                     |
-| `kontakt`           | Telefon, Adresse, E-Mail, Anfahrt, externe Kartenlinks           |
+| Teil | `data-section` | Inhalt |
+|---|---|---|
+| Start | `start` | Einstieg, Anrufen-Button, Bogen „Eingang“ → Highlight 1, danach Kernsatz mit drei Fakten |
+| Kapitel 1 | `trauerfall` | Was ist im Trauerfall zu tun? 4 Schritte → Highlight 2 (ab 1152 px waagerecht) |
+| Kapitel 2 | `bestattungsarten`, `vorsorge`, `tischlerei` | Drei Spalten in drei Materialien: Stein (Liste), Moos (Bogenfeld), Holz (Tafel) |
+| Kapitel 3 | `ueber-uns`, `kontakt` | Hell und dunkel nebeneinander: Über uns mit Fakten, Kontakt mit Anfahrt und Kartenlinks |
 
 Mobil (unter 1024 px) gibt es eine feste untere Leiste mit **Anrufen** (`tel:`) und **Anfahrt** (Sprung zum Abschnitt Anfahrt).
 
@@ -56,9 +54,9 @@ Langsam und ruhig, alle an das Scrollen gekoppelt. Grundtempo in `style.css`: `-
 | | Name | Abschnitt | Was passiert |
 |---|---|---|---|
 | **Highlight 1** | Das Tor öffnet sich | Start | Der Abschnitt bleibt stehen. Der Bogen (wie ein Friedhofstor) weitet sich langsam zum ganzen Bild, es dämmert, dann erscheint „Bestattungen und Tischlerei unter einem Dach.“ |
-| **Highlight 2** | Lichter am Weg | Im Trauerfall | Eine warme Linie wächst mit dem Scrollen den Weg entlang. An jedem der vier Schritte entzündet sich ein Licht (wie ein Grablicht) und flackert leise. |
-| ruhig 1 | Feine Linien | Listen, Fakten, Vorsorge | Trennlinien ziehen sich von links nach rechts. |
-| ruhig 2 | Bogenfenster | Bild-Platzhalter | Bilder öffnen sich langsam von unten. |
+| **Highlight 2** | Lichter am Weg | Im Trauerfall | Eine warme Linie wächst mit dem Scrollen den Weg entlang, auf großen Bildschirmen waagerecht, auf dem Handy senkrecht. Erreicht sie einen Schritt, entzündet sich dort ein Licht (wie ein Grablicht) und flackert leise. |
+| ruhig 1 | Feine Linien | Listen, Fakten | Trennlinien ziehen sich von links nach rechts. |
+| ruhig 2 | Bogenfenster | Vorsorge-Bogen, Bild-Platzhalter | Flächen öffnen sich langsam von unten. |
 | ruhig 3 | Ruhiges Einblenden | Überschriften, Texte, Listen | Inhalte erscheinen sanft und nacheinander. |
 
 **Sicherheitsnetz**
@@ -101,7 +99,7 @@ Langsam und ruhig, alle an das Scrollen gekoppelt. Grundtempo in `style.css`: `-
 
 ## Qualitätscheck (lokal gemessen)
 
-- Lighthouse Mobil: Performance 95, Barrierefreiheit 100, Best Practices 100. SEO 60 nur wegen des gewollten `noindex`.
+- Lighthouse Mobil (drei Läufe): Performance 91–97, Barrierefreiheit 100, Best Practices 100. SEO 60 nur wegen des gewollten `noindex`.
   Gemessen auf `python3 -m http.server` ohne Kompression. Mit gzip/Brotli und Caching beim Hoster ist mehr zu erwarten.
 - Screenshots für Desktop (1440 px), Tablet (800 px) und Mobil (390 px) geprüft, mit und ohne Bewegung, keine Konsolenfehler.
 - Design-Detektor (impeccable): Hinweise zu Off-White, Kerzenlicht und Schraffur der Platzhalter sind bewusste Entscheidungen aus dem Briefing. Die Hinweise „cramped padding“ bei Abschnitten sind Fehlalarme: Die Abstände entstehen über `.wrap` und `padding-block`.
@@ -135,7 +133,7 @@ Alles hier ist im Entwurf sichtbar markiert und muss vom Betrieb bestätigt oder
 
 **Zusätzlich gegenlesen lassen:** die allgemeinen Hinweise im Abschnitt „Im Trauerfall“ (116 117, 112, Unterlagen). Sie sind als Orientierung formuliert und ersetzen keine Rechtsberatung.
 
-**Benötigte Fotos:** Eingang Beekestraße 66–68, Trauerhalle, Werkstatt, Möbelstück, Inhaber/Inhaberin.
+**Benötigte Fotos:** Eingang Beekestraße 66–68, Werkstatt, Inhaber/Inhaberin.
 
 ## Recherche
 
@@ -145,6 +143,12 @@ Sichtbar waren nur Zusammenfassungen aus Suchergebnissen. Die Seiten selbst ware
 - Mitgliedereintrag „Bestattungen Böker e. K.“ beim Bestatterverband Niedersachsen e. V.
 - Mitgliederliste der IG Ricklingen
 - Wikipedia „Stadtbahn Hannover“ und „Ricklingen (Stadtbezirk)“: Haltestelle Beekestraße, Linien 3, 7, 17
+
+## Artefakt-Vorschau
+
+Für die Vorschau als claude.ai-Artefakt wird eine Einzeldatei erzeugt: Schriften als data-URIs, CSS und JS eingebettet, GSAP 3.12.5 von cdnjs.
+Name, Adresse, Telefonnummer, E-Mail und Rechercheangaben sind dort durch Platzhalter („Mustermann“) ersetzt. Ein verlinkbares Artefakt mit den echten Daten würde wie die echte Website des Betriebs wirken.
+Die echten Daten stehen nur in diesem Projektordner.
 
 ## Lizenzen
 

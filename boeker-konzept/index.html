@@ -79,7 +79,7 @@
 
   <main id="inhalt">
 
-    <!-- Highlight 1: „Das Tor öffnet sich“ (motion.js) -->
+    <!-- Start · Highlight 1: „Das Tor öffnet sich“ (motion.js) -->
     <section class="hero" id="start" data-section="start" aria-labelledby="hero-titel">
       <div class="wrap hero__grid">
         <div class="hero__text">
@@ -109,16 +109,23 @@
         <div class="wrap">
           <p class="tor__satz">Bestattungen und Tischlerei unter einem Dach.</p>
           <p class="tor__ort">An der Beekestraße in Ricklingen. <mark class="pruefen">[PRÜFEN: seit 1961?]</mark></p>
+          <ul class="tor__fakten">
+            <li><strong>Bestattungen</strong> traditionell oder nach Ihren Wünschen</li>
+            <li><strong>Vorsorge</strong> Ihre Wünsche zu Lebzeiten festhalten</li>
+            <li><strong>Tischlerei</strong> Möbelbau, Türen und Fenster</li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <!-- Highlight 2: „Lichter am Weg“ (motion.js) -->
+    <!-- Kapitel 1 · Highlight 2: „Lichter am Weg“ (motion.js) -->
     <section class="trauerfall abschnitt" id="trauerfall" data-section="trauerfall" aria-labelledby="trauerfall-titel">
       <div class="wrap trauerfall__grid">
         <div class="trauerfall__kopf" data-fade>
-          <h2 id="trauerfall-titel">Im Trauerfall</h2>
-          <p class="lead">Was jetzt zu tun ist. Schritt für Schritt.</p>
+          <div>
+            <h2 id="trauerfall-titel">Im Trauerfall</h2>
+            <p class="lead">Was jetzt zu tun ist. Schritt für Schritt.</p>
+          </div>
           <a class="btn btn--hell" href="tel:+49511421717">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             <span>Anrufen: 0511&nbsp;/&nbsp;42&nbsp;17&nbsp;17</span>
@@ -127,167 +134,147 @@
 
         <div class="weg" data-weg>
           <div class="weg__bahn">
-          <div class="weg__pfad" aria-hidden="true"><span class="weg__glut" data-weg-glut></span></div>
-          <ol class="weg__liste">
-            <li class="weg__schritt" data-weg-schritt>
-              <span class="weg__licht" aria-hidden="true">1</span>
-              <div class="weg__text">
-                <h3>Ärztin oder Arzt rufen</h3>
-                <p>Zu Hause rufen Sie den Hausarzt oder den ärztlichen Bereitschaftsdienst unter <a href="tel:116117">116&nbsp;117</a>. Bei einem plötzlichen Tod wählen Sie <a href="tel:112">112</a>. Im Krankenhaus oder Pflegeheim kümmert sich das Haus darum.</p>
-              </div>
-            </li>
-            <li class="weg__schritt" data-weg-schritt>
-              <span class="weg__licht" aria-hidden="true">2</span>
-              <div class="weg__text">
-                <h3>Uns anrufen</h3>
-                <p>Unter <a href="tel:+49511421717">0511&nbsp;/&nbsp;42&nbsp;17&nbsp;17</a>. Wir hören zu und sagen Ihnen, was als Nächstes geschieht.</p>
-              </div>
-            </li>
-            <li class="weg__schritt" data-weg-schritt>
-              <span class="weg__licht" aria-hidden="true">3</span>
-              <div class="weg__text">
-                <h3>Unterlagen bereitlegen</h3>
-                <p>Die Todesbescheinigung, den Personalausweis und die Urkunden der verstorbenen Person. Was genau nötig ist, klären wir mit Ihnen.</p>
-              </div>
-            </li>
-            <li class="weg__schritt" data-weg-schritt>
-              <span class="weg__licht" aria-hidden="true">4</span>
-              <div class="weg__text">
-                <h3>Den Abschied planen</h3>
-                <p>Im persönlichen Gespräch planen wir Trauerfeier und Beisetzung. Bei uns oder bei Ihnen zu Hause. <mark class="pruefen">[PRÜFEN: Hausbesuche; Übernahme der Formalitäten]</mark></p>
-              </div>
-            </li>
-          </ol>
+            <div class="weg__pfad" aria-hidden="true"><span class="weg__glut" data-weg-glut></span></div>
+            <ol class="weg__liste">
+              <li class="weg__schritt" data-weg-schritt>
+                <span class="weg__licht" aria-hidden="true">1</span>
+                <div class="weg__text">
+                  <h3>Ärztin oder Arzt rufen</h3>
+                  <p>Zu Hause: Hausarzt oder ärztlicher Bereitschaftsdienst unter <a href="tel:116117">116&nbsp;117</a>. Bei einem plötzlichen Tod: <a href="tel:112">112</a>. Im Krankenhaus oder Pflegeheim kümmert sich das Haus darum.</p>
+                </div>
+              </li>
+              <li class="weg__schritt" data-weg-schritt>
+                <span class="weg__licht" aria-hidden="true">2</span>
+                <div class="weg__text">
+                  <h3>Uns anrufen</h3>
+                  <p>Unter <a href="tel:+49511421717">0511&nbsp;/&nbsp;42&nbsp;17&nbsp;17</a>. Wir hören zu und sagen Ihnen, was als Nächstes geschieht.</p>
+                </div>
+              </li>
+              <li class="weg__schritt" data-weg-schritt>
+                <span class="weg__licht" aria-hidden="true">3</span>
+                <div class="weg__text">
+                  <h3>Unterlagen bereitlegen</h3>
+                  <p>Todesbescheinigung, Personalausweis und Urkunden der verstorbenen Person. Was genau nötig ist, klären wir mit Ihnen.</p>
+                </div>
+              </li>
+              <li class="weg__schritt" data-weg-schritt>
+                <span class="weg__licht" aria-hidden="true">4</span>
+                <div class="weg__text">
+                  <h3>Den Abschied planen</h3>
+                  <p>Im persönlichen Gespräch planen wir Trauerfeier und Beisetzung, bei uns oder bei Ihnen zu Hause. <mark class="pruefen">[PRÜFEN: Hausbesuche; Übernahme der Formalitäten]</mark></p>
+                </div>
+              </li>
+            </ol>
           </div>
           <p class="weg__hinweis">Diese Hinweise sind eine allgemeine Orientierung. Sie ersetzen keine Rechtsberatung.</p>
         </div>
       </div>
     </section>
 
-    <section class="arten abschnitt" id="bestattungsarten" data-section="bestattungsarten" aria-labelledby="arten-titel">
-      <div class="wrap arten__grid">
-        <div class="arten__intro">
+    <!-- Kapitel 2 · Bestattungsarten, Vorsorge, Tischlerei -->
+    <div class="leistungen">
+      <div class="wrap leistungen__grid">
+
+        <section class="spalte spalte--arten" id="bestattungsarten" data-section="bestattungsarten" aria-labelledby="arten-titel">
           <div data-fade>
             <h2 id="arten-titel">Bestattungsarten</h2>
             <p class="lead">Traditionell oder ganz nach Ihren Wünschen.</p>
           </div>
-          <div class="ph ph--bogen ph--salbei" data-window role="img" aria-label="Platzhalter für ein Foto: Trauerhalle">
-            <span class="ph__label">[Foto: Trauerhalle]</span>
-          </div>
-          <p class="arten__notiz"><mark class="pruefen">[PRÜFEN: eigene Trauerhalle – laut Firmeneintrag auf hannover.de]</mark></p>
-        </div>
-
-        <div class="arten__liste">
-        <ul class="liste" data-fade-list>
-          <li class="liste__eintrag">
-            <span class="rule" data-line aria-hidden="true"></span>
-            <h3>Erdbestattung</h3>
-            <p>Die Beisetzung im Sarg auf einem Friedhof.</p>
-          </li>
-          <li class="liste__eintrag">
-            <span class="rule" data-line aria-hidden="true"></span>
-            <h3>Feuerbestattung</h3>
-            <p>Nach der Einäscherung wird die Urne beigesetzt, etwa in einem Urnengrab.</p>
-          </li>
-          <li class="liste__eintrag">
-            <span class="rule" data-line aria-hidden="true"></span>
-            <h3>Baum&shy;bestattung</h3>
-            <p>Die Urne ruht an den Wurzeln eines Baumes, in einem dafür bestimmten Wald oder Friedhofsbereich.</p>
-          </li>
-          <li class="liste__eintrag">
-            <span class="rule" data-line aria-hidden="true"></span>
-            <h3>Seebestattung</h3>
-            <p>Die Urne wird auf See beigesetzt.</p>
-          </li>
-          <li class="liste__eintrag">
-            <span class="rule" data-line aria-hidden="true"></span>
-            <h3>Ihr eigener Abschied</h3>
-            <p>Musik, Worte, Blumen, Ort: Wir gestalten die Trauerfeier so, wie es zu Ihnen passt.</p>
-          </li>
-        </ul>
-        <p class="arten__pruefen"><mark class="pruefen">[PRÜFEN: Welche Bestattungsarten bietet der Betrieb an?]</mark></p>
-        </div>
-      </div>
-    </section>
-
-    <section class="vorsorge abschnitt" id="vorsorge" data-section="vorsorge" aria-labelledby="vorsorge-titel">
-      <div class="wrap vorsorge__grid">
-        <h2 id="vorsorge-titel" data-fade>Vorsorge</h2>
-        <div class="vorsorge__text">
-          <p class="vorsorge__satz" data-fade>Sie legen heute fest, wie Ihr Abschied sein soll.</p>
-          <span class="rule" data-line aria-hidden="true"></span>
-          <div data-fade>
-            <p>Das gibt Ihnen Sicherheit und entlastet Ihre Angehörigen. Wir besprechen Ihre Wünsche mit Ihnen und halten sie schriftlich fest.</p>
-            <ul class="punkte">
-              <li>Ihre Wünsche zu Trauerfeier und Grab</li>
-              <li>Eine klare Übersicht der Kosten</li>
-              <li><mark class="pruefen">[PRÜFEN: Finanzielle Absicherung, z.&nbsp;B. Treuhandkonto oder Sterbegeldversicherung?]</mark></li>
-            </ul>
-            <a class="btn btn--primary" href="tel:+49511421717">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              <span>Vorsorgegespräch vereinbaren</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="tischlerei abschnitt" id="tischlerei" data-section="tischlerei" aria-labelledby="tischlerei-titel">
-      <div class="wrap tischlerei__grid">
-        <div class="tischlerei__bilder">
-          <div class="ph ph--rechteck ph--holz tischlerei__bild-1" data-window role="img" aria-label="Platzhalter für ein Foto: Werkstatt">
-            <span class="ph__label">[Foto: Werkstatt]</span>
-          </div>
-          <div class="ph ph--rechteck ph--holz-hell tischlerei__bild-2" data-window role="img" aria-label="Platzhalter für ein Foto: Möbelstück aus der Werkstatt">
-            <span class="ph__label">[Foto: Möbelstück]</span>
-          </div>
-        </div>
-
-        <div class="tischlerei__text">
-          <div data-fade>
-            <h2 id="tischlerei-titel">Tischlerei</h2>
-            <p class="lead">Unser zweites Standbein. In der eigenen Werkstatt bauen wir Möbel, Türen und Fenster.</p>
-          </div>
-          <ul class="liste liste--holz" data-fade-list>
+          <ul class="liste" data-fade-list>
             <li class="liste__eintrag">
               <span class="rule" data-line aria-hidden="true"></span>
-              <h3>Möbelbau</h3>
-              <p>Möbel für Ihr Zuhause, passend zu Ihren Räumen.</p>
+              <h3>Erdbestattung</h3>
+              <p>Die Beisetzung im Sarg auf einem Friedhof.</p>
             </li>
             <li class="liste__eintrag">
               <span class="rule" data-line aria-hidden="true"></span>
-              <h3>Türen</h3>
-              <p>Innentüren und Haustüren.</p>
+              <h3>Feuerbestattung</h3>
+              <p>Nach der Einäscherung wird die Urne beigesetzt, etwa in einem Urnengrab.</p>
             </li>
             <li class="liste__eintrag">
               <span class="rule" data-line aria-hidden="true"></span>
-              <h3>Fenster</h3>
-              <p>Neue Fenster und Austausch.</p>
+              <h3>Baumbestattung</h3>
+              <p>Die Urne ruht an den Wurzeln eines Baumes.</p>
+            </li>
+            <li class="liste__eintrag">
+              <span class="rule" data-line aria-hidden="true"></span>
+              <h3>Seebestattung</h3>
+              <p>Die Urne wird auf See beigesetzt.</p>
+            </li>
+            <li class="liste__eintrag">
+              <span class="rule" data-line aria-hidden="true"></span>
+              <h3>Ihr eigener Abschied</h3>
+              <p>Musik, Worte, Blumen, Ort: so, wie es zu Ihnen passt.</p>
             </li>
           </ul>
-          <p><mark class="pruefen">[PRÜFEN: Leistungsumfang der Tischlerei; eigene Rufnummer?]</mark></p>
-          <a class="btn btn--holz" href="tel:+49511421717">
+          <p class="spalte__notiz"><mark class="pruefen">[PRÜFEN: Welche Bestattungsarten bietet der Betrieb an?]</mark></p>
+        </section>
+
+        <section class="spalte vorsorge-bogen" id="vorsorge" data-section="vorsorge" data-window aria-labelledby="vorsorge-titel">
+          <h2 id="vorsorge-titel">Vorsorge</h2>
+          <p class="vorsorge__satz">Sie legen heute fest, wie Ihr Abschied sein soll.</p>
+          <p>Das entlastet Ihre Angehörigen. Wir besprechen Ihre Wünsche und halten sie schriftlich fest.</p>
+          <ul class="punkte">
+            <li>Wünsche zu Trauerfeier und Grab</li>
+            <li>Klare Übersicht der Kosten</li>
+            <li><mark class="pruefen">[PRÜFEN: Treuhandkonto, Sterbegeldversicherung?]</mark></li>
+          </ul>
+          <a class="btn btn--primary" href="tel:+49511421717">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span>Tischlerei anrufen</span>
+            <span>Gespräch vereinbaren</span>
           </a>
-        </div>
-      </div>
-    </section>
+        </section>
 
-    <section class="ueber abschnitt" id="ueber-uns" data-section="ueber-uns" aria-labelledby="ueber-titel">
-      <div class="wrap ueber__grid">
-        <figure class="ueber__bild">
-          <div class="ph ph--bogen ph--stein" data-window role="img" aria-label="Platzhalter für ein Foto: Inhaberin oder Inhaber">
-            <span class="ph__label">[Foto: Inhaber]</span>
+        <section class="spalte tischlerei-tafel" id="tischlerei" data-section="tischlerei" aria-labelledby="tischlerei-titel">
+          <div class="ph ph--rechteck ph--holz" data-window role="img" aria-label="Platzhalter für ein Foto: Werkstatt">
+            <span class="ph__label">[Foto: Werkstatt]</span>
           </div>
-          <figcaption><mark class="pruefen">[PRÜFEN: Name und Funktion]</mark></figcaption>
-        </figure>
+          <div class="tischlerei-tafel__text">
+            <div data-fade>
+              <h2 id="tischlerei-titel">Tischlerei</h2>
+              <p class="lead">Unser zweites Standbein, mit eigener Werkstatt.</p>
+            </div>
+            <ul class="liste" data-fade-list>
+              <li class="liste__eintrag">
+                <span class="rule" data-line aria-hidden="true"></span>
+                <h3>Möbelbau</h3>
+                <p>Möbel für Ihr Zuhause, passend zu Ihren Räumen.</p>
+              </li>
+              <li class="liste__eintrag">
+                <span class="rule" data-line aria-hidden="true"></span>
+                <h3>Türen</h3>
+                <p>Innentüren und Haustüren.</p>
+              </li>
+              <li class="liste__eintrag">
+                <span class="rule" data-line aria-hidden="true"></span>
+                <h3>Fenster</h3>
+                <p>Neue Fenster und Austausch.</p>
+              </li>
+            </ul>
+            <p class="spalte__notiz"><mark class="pruefen">[PRÜFEN: Leistungsumfang; eigene Rufnummer?]</mark></p>
+            <a class="btn btn--holz" href="tel:+49511421717">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>Tischlerei anrufen</span>
+            </a>
+          </div>
+        </section>
 
-        <div class="ueber__text">
-          <div data-fade>
-            <h2 id="ueber-titel">Über uns</h2>
-            <p class="lead">Ein Betrieb mit zwei Bereichen, an der Beekestraße in Ricklingen.</p>
-            <p><mark class="pruefen">[PRÜFEN: Zwei, drei Sätze zur Geschichte des Hauses und zu den Menschen, die hier arbeiten.]</mark></p>
+      </div>
+    </div>
+
+    <!-- Kapitel 3 · Über uns (hell) und Kontakt (dunkel) nebeneinander -->
+    <div class="haus">
+      <section class="haus__teil haus__teil--ueber" id="ueber-uns" data-section="ueber-uns" aria-labelledby="ueber-titel">
+        <div class="haus__innen">
+          <div class="ueber__kopf">
+            <div class="ph ph--bogen ph--stein ueber__bild" data-window role="img" aria-label="Platzhalter für ein Foto: Inhaberin oder Inhaber">
+              <span class="ph__label">[Foto: Inhaber]</span>
+            </div>
+            <div data-fade>
+              <h2 id="ueber-titel">Über uns</h2>
+              <p class="lead">Ein Betrieb mit zwei Bereichen, an der Beekestraße in Ricklingen.</p>
+              <p><mark class="pruefen">[PRÜFEN: Zwei, drei Sätze zur Geschichte des Hauses und zu den Menschen. Name und Funktion zum Foto.]</mark></p>
+            </div>
           </div>
           <dl class="fakten" data-fade-list>
             <div class="fakten__zeile">
@@ -308,55 +295,57 @@
             <div class="fakten__zeile">
               <span class="rule" data-line aria-hidden="true"></span>
               <dt>Verband</dt>
-              <dd><mark class="pruefen">[PRÜFEN: Mitglied im Bestatterverband Niedersachsen e.&nbsp;V.]</mark></dd>
+              <dd><mark class="pruefen">[PRÜFEN: Bestatterverband Niedersachsen e.&nbsp;V.]</mark></dd>
             </div>
           </dl>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="kontakt abschnitt" id="kontakt" data-section="kontakt" aria-labelledby="kontakt-titel">
-      <div class="wrap kontakt__grid">
-        <div class="kontakt__haupt" data-fade>
-          <h2 id="kontakt-titel">Kontakt und Anfahrt</h2>
-          <p class="kontakt__label">Telefon</p>
-          <a class="kontakt__tel" href="tel:+49511421717">0511&nbsp;/&nbsp;42&nbsp;17&nbsp;17</a>
-          <address class="kontakt__adresse">
-            Böker Bestattungen und Tischlerei<br>
-            Beekestraße 66–68<br>
-            30459 Hannover
-          </address>
-          <p>E-Mail: <a href="mailto:bestattungen@boeker-hannover.de">bestattungen@boeker-hannover.de</a><br>
-            <mark class="pruefen">[PRÜFEN: E-Mail-Adresse – aus einem Firmeneintrag übernommen]</mark></p>
-          <p>Öffnungszeiten: <mark class="pruefen">[PRÜFEN: Öffnungszeiten]</mark></p>
-        </div>
-
-        <div class="kontakt__anfahrt" id="anfahrt" data-fade>
-          <h3>Anfahrt</h3>
-          <dl class="anfahrt">
-            <div><dt>Stadtbahn</dt><dd>Haltestelle Beekestraße <mark class="pruefen">[PRÜFEN: Linien 3, 7 und 17; Fußweg]</mark></dd></div>
-            <div><dt>Parken</dt><dd><mark class="pruefen">[PRÜFEN: Parkmöglichkeiten]</mark></dd></div>
-            <div><dt>Zugang</dt><dd><mark class="pruefen">[PRÜFEN: stufenloser Zugang?]</mark></dd></div>
-          </dl>
-          <div class="kontakt__karten">
-            <a class="btn btn--hell" href="https://www.openstreetmap.org/search?query=Beekestra%C3%9Fe%2066%2C%2030459%20Hannover">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span>Karte öffnen (OpenStreetMap)</span>
-            </a>
-            <a class="btn btn--linie-hell" href="https://www.google.com/maps/search/?api=1&amp;query=Beekestra%C3%9Fe%2066-68%2C%2030459%20Hannover">
-              <span>Route in Google Maps</span>
-            </a>
+      <section class="haus__teil haus__teil--kontakt" id="kontakt" data-section="kontakt" aria-labelledby="kontakt-titel">
+        <div class="haus__innen">
+          <div data-fade>
+            <h2 id="kontakt-titel">Kontakt und Anfahrt</h2>
+            <p class="kontakt__label">Telefon</p>
+            <a class="kontakt__tel" href="tel:+49511421717">0511&nbsp;/&nbsp;42&nbsp;17&nbsp;17</a>
           </div>
-          <p class="kontakt__extern">Beide Links führen zu externen Kartendiensten. Dort gelten deren Datenschutzhinweise.</p>
+          <div class="kontakt__daten" data-fade>
+            <address>
+              Böker Bestattungen und Tischlerei<br>
+              Beekestraße 66–68<br>
+              30459 Hannover
+            </address>
+            <div>
+              <p>E-Mail: <a href="mailto:bestattungen@boeker-hannover.de">bestattungen@boeker-hannover.de</a> <mark class="pruefen">[PRÜFEN: aus Firmeneintrag]</mark></p>
+              <p>Öffnungszeiten: <mark class="pruefen">[PRÜFEN]</mark></p>
+            </div>
+          </div>
+          <div class="kontakt__anfahrt" id="anfahrt" data-fade>
+            <h3>Anfahrt</h3>
+            <dl class="anfahrt">
+              <div><dt>Stadtbahn</dt><dd>Haltestelle Beekestraße <mark class="pruefen">[PRÜFEN: Linien 3, 7, 17; Fußweg]</mark></dd></div>
+              <div><dt>Parken</dt><dd><mark class="pruefen">[PRÜFEN: Parkmöglichkeiten]</mark></dd></div>
+              <div><dt>Zugang</dt><dd><mark class="pruefen">[PRÜFEN: stufenlos?]</mark></dd></div>
+            </dl>
+            <div class="kontakt__karten">
+              <a class="btn btn--hell" href="https://www.openstreetmap.org/search?query=Beekestra%C3%9Fe%2066%2C%2030459%20Hannover">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>Karte (OpenStreetMap)</span>
+              </a>
+              <a class="btn btn--linie-hell" href="https://www.google.com/maps/search/?api=1&amp;query=Beekestra%C3%9Fe%2066-68%2C%2030459%20Hannover">
+                <span>Route in Google Maps</span>
+              </a>
+            </div>
+            <p class="kontakt__extern">Externe Kartendienste. Dort gelten deren Datenschutzhinweise.</p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </main>
 
   <footer class="fuss">
     <div class="wrap fuss__grid">
       <p class="fuss__marke"><span class="marke__name">Böker</span><span class="marke__zusatz">Bestattungen und Tischlerei</span></p>
-      <p>Beekestraße 66–68<br>30459 Hannover<br><a href="tel:+49511421717">0511&nbsp;/&nbsp;42&nbsp;17&nbsp;17</a></p>
+      <p>Beekestraße 66–68, 30459 Hannover<br><a href="tel:+49511421717">0511&nbsp;/&nbsp;42&nbsp;17&nbsp;17</a></p>
       <ul class="fuss__links">
         <li><a href="impressum.html">Impressum</a></li>
         <li><a href="datenschutz.html">Datenschutz</a></li>

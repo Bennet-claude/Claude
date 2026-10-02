@@ -4,8 +4,9 @@
    Zwei Highlights
      H1  „Das Tor öffnet sich“  – Start: Der Bogen weitet sich zum ganzen Bild,
                                    es dämmert, die Aussage erscheint.
-     H2  „Lichter am Weg“       – Im Trauerfall: Eine Linie wächst mit dem Scrollen,
-                                   an jedem Schritt entzündet sich ein Licht.
+     H2  „Lichter am Weg“       – Im Trauerfall: Eine Linie wächst mit dem Scrollen
+                                   (ab 72em waagerecht, sonst senkrecht), an jedem
+                                   Schritt entzündet sich ein Licht.
    Drei ruhige Animationen
      R1  Feine Linien           – Trennlinien ziehen sich von links nach rechts.
      R2  Bogenfenster           – Bild-Platzhalter öffnen sich von unten.
@@ -35,7 +36,8 @@
     {
       ok: '(prefers-reduced-motion: no-preference)',
       reduce: '(prefers-reduced-motion: reduce)',
-      desktop: '(min-width: 64em)'
+      desktop: '(min-width: 64em)',
+      quer: '(min-width: 72em)'
     },
     function (context) {
       var c = context.conditions;
@@ -47,7 +49,7 @@
 
       var cleanup = [];
       cleanup.push(tor(c.desktop));
-      cleanup.push(lichterAmWeg());
+      cleanup.push(lichterAmWeg(c.quer));
       feineLinien();
       bogenfenster();
       ruhigesEinblenden();
@@ -132,32 +134,51 @@
   /* ------------------------------------------------------------------------
      H2 – Lichter am Weg
      ------------------------------------------------------------------------ */
-  function lichterAmWeg() {
+  function lichterAmWeg(quer) {
     var abschnitt = document.querySelector('.trauerfall');
+    var bahn = document.querySelector('.weg__bahn');
     var pfad = document.querySelector('.weg__pfad');
     var glut = document.querySelector('[data-weg-glut]');
     var schritte = gsap.utils.toArray('[data-weg-schritt]');
-    if (!abschnitt || !pfad || !glut) return;
+    if (!abschnitt || !bahn || !pfad || !glut) return;
+    var lichter = schritte.map(function (s) { return s.querySelector('.weg__licht'); });
 
-    var linie = '62%';   // Höhe im Fenster, an der die Glut „ankommt“
     // Pfadlänge (main.js) vor jeder Neuberechnung aktualisieren
     var pfadKuerzen = window.boekerPfadKuerzen || function () {};
     ScrollTrigger.addEventListener('refreshInit', pfadKuerzen);
 
-    gsap.fromTo(glut, { scaleY: 0 }, {
-      scaleY: 1,
-      ease: 'none',
-      scrollTrigger: { trigger: pfad, start: 'top ' + linie, end: 'bottom ' + linie, scrub: 1.2 }
-    });
-
-    schritte.forEach(function (schritt) {
-      ScrollTrigger.create({
-        trigger: schritt.querySelector('.weg__licht'),
-        start: 'center ' + linie,
-        onEnter: function () { schritt.classList.add('is-lit'); },
-        onLeaveBack: function () { schritt.classList.remove('is-lit'); }
+    // An welcher Stelle der Linie (0–1) sitzt welches Licht?
+    var schwellen = [];
+    function messen() {
+      var p = pfad.getBoundingClientRect();
+      schwellen = lichter.map(function (l) {
+        var r = l.getBoundingClientRect();
+        var pos = quer
+          ? (r.left + r.width / 2 - p.left) / (p.width || 1)
+          : (r.top + r.height / 2 - p.top) / (p.height || 1);
+        return Math.max(0.02, Math.min(1, pos) - 0.01);
       });
-    });
+    }
+    messen();
+    ScrollTrigger.addEventListener('refresh', messen);
+
+    var achse = quer ? 'scaleX' : 'scaleY';
+    var von = {}; von[achse] = 0;
+    var bis = {
+      ease: 'none',
+      // Das Licht geht an, sobald die Glut es erreicht
+      onUpdate: function () {
+        var fortschritt = this.progress();
+        schritte.forEach(function (s, i) {
+          s.classList.toggle('is-lit', fortschritt >= schwellen[i]);
+        });
+      },
+      scrollTrigger: quer
+        ? { trigger: bahn, start: 'top 82%', end: 'top 32%', scrub: 1.5 }
+        : { trigger: pfad, start: 'top 62%', end: 'bottom 62%', scrub: 1.2 }
+    };
+    bis[achse] = 1;
+    gsap.fromTo(glut, von, bis);
 
     // Flackern nur, solange der Abschnitt zu sehen ist
     ScrollTrigger.create({
@@ -169,6 +190,7 @@
 
     return function () {
       ScrollTrigger.removeEventListener('refreshInit', pfadKuerzen);
+      ScrollTrigger.removeEventListener('refresh', messen);
       schritte.forEach(function (s) { s.classList.remove('is-lit'); });
       abschnitt.classList.remove('is-sichtbar');
     };

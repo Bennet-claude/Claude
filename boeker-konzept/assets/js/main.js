@@ -18,6 +18,12 @@
     if (!bahn || !pfad || !letztes) return;
     var b = bahn.getBoundingClientRect();
     var l = letztes.getBoundingClientRect();
+    var erstes = lichter[0].getBoundingClientRect();
+    if (Math.abs(erstes.top - l.top) < 2) {
+      // waagerechter Weg (große Bildschirme): Länge regelt das CSS
+      pfad.style.removeProperty('bottom');
+      return;
+    }
     pfad.style.bottom = Math.round(b.bottom - (l.top + l.height / 2)) + 'px';
   }
   window.boekerPfadKuerzen = pfadKuerzen;
