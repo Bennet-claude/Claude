@@ -1,7 +1,15 @@
 /* ==========================================================================
-   Böker Bestattungen und Tischlerei – Konzeptentwurf (Studio Leine)
+   Böker Bestattungen und Tischlerei, Konzeptentwurf (Studio Leine)
    Mobile-first. Keine externen Ressourcen. Schriften lokal (OFL).
-   Welt: Stein, Moos, Holz – und Licht in der Nacht.
+
+   Palette aus der Welt des Betriebs (Skill „farbe-ohne-ki-look“):
+     Granit hell  #DADBD8  heller Grabstein-Granit         Grundfläche
+     Basalt       #2E3030  dunkle Basalt-Schrifttafel       Text, Buttons
+     Schwarz      #000000  polierter schwarzer Granit       Nacht
+     Efeu         #3D4A36  Efeu und Buchsbaum auf Gräbern   Hauptfarbe
+     Eiche        #5E4630  geräucherte Eiche der Werkstatt  Tischlerei
+     Grablicht    #9E2F25  rote Hülle der Grablichter       Akzent, 1x pro Bildschirm
+   Kerzenflamme #F1C26A erscheint nur im gezeichneten Licht.
    ========================================================================== */
 
 /* ---------- Schriften (lokal, keine CDN-Einbindung) ---------- */
@@ -36,25 +44,19 @@
 
 /* ---------- Tokens ---------- */
 :root {
-  --kalk: #EDEDE7;          /* Off-White, Kalkstein */
-  --kalk-hell: #F7F7F3;
-  --kalk-tief: #E3E4DC;
-  --stein-linie: #BEC1B6;
-  --granit: #222523;        /* Anthrazit */
-  --nacht: #0D110F;         /* Friedhof bei Nacht */
-  --nacht-2: #151A17;
-  --text: #222523;
-  --text-2: #4B5049;
-  --salbei: #7E8C77;        /* gedämpftes Salbeigrün */
-  --salbei-tief: #42503C;
-  --salbei-hell: #D3D9CC;
-  --holz-tief: #6A4D31;     /* dezenter Holzton */
-  --holz-hell: #EAE2D6;
-  --licht: #E8C483;         /* Kerzenlicht */
-  --auf-dunkel: #EEEDE7;
-  --auf-dunkel-2: #B8BCB3;
-  --linie: rgb(34 37 35 / 0.18);
-  --linie-hell: rgb(238 237 231 / 0.16);
+  --granit-hell: #DADBD8;
+  --kalkstein: #EBECE9;      /* hellere Stufe derselben Steinfamilie */
+  --basalt: #2E3030;
+  --basalt-2: #474A47;
+  --schwarz: #000000;
+  --efeu: #3D4A36;
+  --eiche: #5E4630;
+  --grablicht: #9E2F25;
+  --flamme: #F1C26A;         /* nur Illustration */
+  --auf-dunkel: #E7E7E2;
+  --auf-dunkel-2: #A9ACA6;
+  --linie: rgb(46 48 48 / 0.2);
+  --linie-hell: rgb(231 231 226 / 0.16);
   --pruefen-text: #5A3F0E;
   --pruefen-bg: #F2E5C4;
   --pruefen-rand: #A07A32;
@@ -62,7 +64,7 @@
   --font-serif: "Libre Caslon Display", "Libre Caslon Text", "Baskerville", "Times New Roman", serif;
   --font-sans: "Golos Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
 
-  --fs-body: clamp(1.1875rem, 1.13rem + 0.2vw, 1.3125rem);   /* 19–21 px */
+  --fs-body: clamp(1.1875rem, 1.13rem + 0.2vw, 1.3125rem);   /* 19-21 px */
   --fs-klein: 1.125rem;                                        /* 18 px */
   --fs-lead: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem);
   --fs-h1: clamp(3rem, 1.7rem + 4.6vw, 6rem);
@@ -74,23 +76,19 @@
   --abstand: clamp(4.5rem, 3rem + 5vw, 8rem);
   --radius: 10px;
 
-  /* Bewegung – motion.js liest --motion-duration */
   --motion-duration: 1.6s;
   --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);          /* Emil Kowalski: kräftiges ease-out */
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
-  --header-h: 0px;   /* Kopf ist mobil nicht fixiert */
-  --bar-h: calc(4.75rem + env(safe-area-inset-bottom, 0px)); /* untere Leiste */
+  --header-h: 0px;
+  --bar-h: calc(4.75rem + env(safe-area-inset-bottom, 0px));
 
-  --korn: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='k'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .14 0 0 0 0 .15 0 0 0 0 .14 0 0 0 .9 -.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23k)' opacity='.16'/%3E%3C/svg%3E");
+  /* Granitkorn: feine dunkle und helle Körner wie in hellem Grabstein-Granit (256 px Kachel) */
+  --granitkorn: url("../img/granit.png");
 }
 
 @media (min-width: 64em) {
-  :root {
-    --header-h: 5rem;
-    --bar-h: 0px;
-  }
+  :root { --header-h: 5rem; --bar-h: 0px; }
 }
 
 /* ---------- Basis ---------- */
@@ -104,7 +102,7 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-padding-top: calc(var(--header-h) + 1rem);
-  scrollbar-color: var(--salbei) var(--kalk-tief);
+  scrollbar-color: var(--basalt-2) var(--granit-hell);
 }
 
 body {
@@ -113,15 +111,14 @@ body {
   font-family: var(--font-sans);
   font-size: var(--fs-body);
   line-height: 1.6;
-  color: var(--text);
-  background-color: var(--kalk);
-  background-image: var(--korn);
-  caret-color: var(--salbei-tief);
+  color: var(--basalt);
+  background-color: var(--granit-hell);
+  background-image: var(--granitkorn);
+  caret-color: var(--efeu);
   -webkit-font-smoothing: antialiased;
-  font-variant-numeric: lining-nums;
 }
 
-::selection { background: var(--salbei-hell); color: var(--granit); }
+::selection { background: var(--efeu); color: var(--auf-dunkel); }
 
 h1, h2, h3 {
   margin: 0;
@@ -146,7 +143,7 @@ a {
 a:hover { text-decoration-thickness: 2px; }
 
 :focus-visible {
-  outline: 3px solid var(--salbei-tief);
+  outline: 3px solid var(--efeu);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -159,6 +156,8 @@ figure { margin: 0; }
   width: min(100% - 2 * var(--gutter), var(--wrap));
   margin-inline: auto;
 }
+
+.svg-vorrat { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 .visually-hidden {
   position: absolute !important;
@@ -174,8 +173,8 @@ figure { margin: 0; }
   z-index: 100;
   padding: 0.75rem 1.25rem;
   border-radius: 999px;
-  background: var(--granit);
-  color: var(--kalk-hell);
+  background: var(--basalt);
+  color: var(--kalkstein);
   font-weight: 600;
 }
 .skip-link:focus { top: 1rem; }
@@ -183,10 +182,10 @@ figure { margin: 0; }
 .lead {
   font-size: var(--fs-lead);
   line-height: 1.45;
-  color: var(--text-2);
+  color: var(--basalt-2);
 }
 
-/* [PRÜFEN]-Markierungen: sichtbar, aber ruhig */
+/* [PRÜFEN]-Markierungen: eine Anmerkungsebene, nicht Teil der Palette */
 .pruefen {
   display: inline;
   padding: 0.05em 0.4em;
@@ -205,24 +204,20 @@ figure { margin: 0; }
 
 .notiz { margin-top: 1.5rem; font-size: 1rem; }
 
-/* ---------- Icons ---------- */
+/* ---------- Icons (Phosphor, regular) ---------- */
 .icon {
-  width: 1.2em;
-  height: 1.2em;
+  width: 1.25em;
+  height: 1.25em;
   flex: none;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.75;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  fill: currentColor;
 }
 
 /* ---------- Buttons: Pillenform mit rundem Symbol-Knopf ---------- */
 .btn {
-  --btn-bg: var(--granit);
-  --btn-fg: var(--kalk-hell);
-  --chip-bg: var(--licht);
-  --chip-fg: var(--granit);
+  --btn-bg: var(--basalt);
+  --btn-fg: var(--kalkstein);
+  --chip-bg: var(--kalkstein);
+  --chip-fg: var(--basalt);
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
@@ -237,7 +232,6 @@ figure { margin: 0; }
   font-size: 1.0625rem;
   font-weight: 500;
   line-height: 1.2;
-  letter-spacing: 0.005em;
   text-align: left;
   text-decoration: none;
   cursor: pointer;
@@ -260,49 +254,47 @@ figure { margin: 0; }
   color: var(--chip-fg);
   transition: transform 350ms var(--ease-out), background-color 250ms var(--ease-out);
 }
-.btn__chip .icon { width: 1.15rem; height: 1.15rem; }
+.btn__chip .icon { width: 1.2rem; height: 1.2rem; }
 .btn--klein { min-height: 3rem; padding-left: 1.25rem; padding-block: 0.3rem; gap: 0.75rem; }
 .btn--klein .btn__chip { width: 2.35rem; height: 2.35rem; }
 
-.btn--primary { --btn-bg: var(--granit); --btn-fg: var(--kalk-hell); --chip-bg: var(--licht); --chip-fg: var(--granit); }
+.btn--primary { --btn-bg: var(--basalt); --btn-fg: var(--kalkstein); --chip-bg: var(--kalkstein); --chip-fg: var(--basalt); }
 .btn--linie {
-  --btn-bg: transparent; --btn-fg: var(--granit); --chip-bg: var(--granit); --chip-fg: var(--kalk-hell);
-  border-color: rgb(34 37 35 / 0.32);
+  --btn-bg: transparent; --btn-fg: var(--basalt); --chip-bg: var(--basalt); --chip-fg: var(--kalkstein);
+  border-color: rgb(46 48 48 / 0.35);
 }
-.btn--hell { --btn-bg: var(--kalk-hell); --btn-fg: var(--granit); --chip-bg: var(--granit); --chip-fg: var(--licht); }
+.btn--hell { --btn-bg: var(--kalkstein); --btn-fg: var(--basalt); --chip-bg: var(--basalt); --chip-fg: var(--kalkstein); }
 .btn--linie-hell {
-  --btn-bg: transparent; --btn-fg: var(--auf-dunkel); --chip-bg: var(--auf-dunkel); --chip-fg: var(--granit);
-  border-color: rgb(238 237 231 / 0.32);
+  --btn-bg: transparent; --btn-fg: var(--auf-dunkel); --chip-bg: var(--auf-dunkel); --chip-fg: var(--basalt);
+  border-color: rgb(231 231 226 / 0.35);
 }
-.btn--holz { --btn-bg: var(--holz-tief); --btn-fg: var(--kalk-hell); --chip-bg: var(--holz-hell); --chip-fg: var(--holz-tief); }
+/* der Akzent: nur „Ein Licht entzünden“ */
+.btn--licht { --btn-bg: var(--grablicht); --btn-fg: #F7EFEA; --chip-bg: rgb(0 0 0 / 0.3); --chip-fg: var(--flamme); }
 
-/* Hover nur bei echter Maus – auf Touch-Geräten bleibt nichts „hängen“ */
 @media (hover: hover) and (pointer: fine) {
   .btn:hover .btn__chip { transform: translateX(3px) scale(1.06); }
-  .btn--primary:hover { --btn-bg: #353A36; }
-  .btn--linie:hover { --btn-bg: rgb(34 37 35 / 0.06); border-color: var(--granit); }
+  .btn--primary:hover { --btn-bg: #414444; }
+  .btn--linie:hover { --btn-bg: rgb(46 48 48 / 0.07); border-color: var(--basalt); }
   .btn--hell:hover { --btn-bg: #FFFFFF; }
-  .btn--linie-hell:hover { --btn-bg: rgb(238 237 231 / 0.08); border-color: var(--auf-dunkel); }
-  .btn--holz:hover { --btn-bg: #5A3F27; }
+  .btn--linie-hell:hover { --btn-bg: rgb(231 231 226 / 0.08); border-color: var(--auf-dunkel); }
+  .btn--licht:hover { --btn-bg: #8A271F; }
+  .btn--licht:hover .btn__chip { transform: scale(1.08); }
 }
 
-/* ---------- Konzept-Hinweis ---------- */
+/* ---------- Konzept-Hinweis und Kopf: eine Fläche, kein Farbsprung ---------- */
 .konzept-hinweis {
-  background: var(--salbei-hell);
-  color: var(--granit);
-  font-size: 1rem;
+  background: var(--kalkstein);
+  color: var(--basalt);
+  font-size: 0.9375rem;
   line-height: 1.45;
+  border-bottom: 1px solid var(--linie);
 }
-.konzept-hinweis p {
-  max-width: none;
-  padding-block: 0.65rem;
-}
+.konzept-hinweis p { max-width: none; padding-block: 0.6rem; }
 
-/* ---------- Kopf ---------- */
 .kopf {
   position: relative;
   z-index: 50;
-  background: var(--kalk-hell);
+  background: var(--kalkstein);
   border-bottom: 1px solid var(--linie);
 }
 .kopf__inner {
@@ -311,7 +303,6 @@ figure { margin: 0; }
   gap: 1rem;
   min-height: 4.75rem;
 }
-
 .marke {
   display: flex;
   flex-direction: column;
@@ -319,16 +310,8 @@ figure { margin: 0; }
   text-decoration: none;
   line-height: 1;
 }
-.marke__name {
-  font-family: var(--font-serif);
-  font-size: 2rem;
-  letter-spacing: -0.01em;
-}
-.marke__zusatz {
-  margin-top: 0.2rem;
-  font-size: 0.9375rem;
-  color: var(--text-2);
-}
+.marke__name { font-family: var(--font-serif); font-size: 2rem; letter-spacing: -0.01em; }
+.marke__zusatz { margin-top: 0.2rem; font-size: 0.9375rem; color: var(--basalt-2); }
 
 .nav__toggle {
   display: inline-flex;
@@ -336,17 +319,16 @@ figure { margin: 0; }
   gap: 0.5rem;
   min-height: 3rem;
   padding: 0.5rem 1.1rem;
-  border: 1px solid rgb(34 37 35 / 0.32);
+  border: 1px solid rgb(46 48 48 / 0.35);
   border-radius: 999px;
   background: transparent;
-  color: var(--granit);
+  color: var(--basalt);
   font: 500 1.0625rem/1 var(--font-sans);
   cursor: pointer;
   transition: background-color 250ms var(--ease-out), color 250ms var(--ease-out);
 }
-.nav__toggle[aria-expanded="true"] { background: var(--granit); color: var(--kalk-hell); }
+.nav__toggle[aria-expanded="true"] { background: var(--basalt); color: var(--kalkstein); }
 
-/* Ohne JS: Liste immer sichtbar. Mit JS: aufklappbar. */
 .nav__liste { list-style: none; }
 .js .nav__liste {
   display: none;
@@ -355,9 +337,9 @@ figure { margin: 0; }
   left: 0;
   right: 0;
   padding: 0.5rem var(--gutter) 1.25rem;
-  background: var(--kalk-hell);
+  background: var(--kalkstein);
   border-bottom: 1px solid var(--linie);
-  box-shadow: 0 24px 40px -24px rgb(34 37 35 / 0.4);
+  box-shadow: 0 24px 40px -24px rgb(46 48 48 / 0.45);
 }
 .js .nav__liste.is-offen { display: block; }
 .nav__liste a {
@@ -371,17 +353,10 @@ figure { margin: 0; }
 .nav__liste li:last-child a { border-bottom: 0; }
 
 .kopf__tel { display: none; }
-
-@media (min-width: 40em) {
-  .kopf__tel { display: inline-flex; }
-}
+@media (min-width: 40em) { .kopf__tel { display: inline-flex; } }
 
 @media (min-width: 64em) {
-  .kopf {
-    position: sticky;
-    top: env(safe-area-inset-top, 0px);
-    background: rgb(247 247 243 / 0.97);
-  }
+  .kopf { position: sticky; top: env(safe-area-inset-top, 0px); }
   .kopf__inner { min-height: var(--header-h); }
 }
 
@@ -404,7 +379,6 @@ figure { margin: 0; }
     font-size: 1.0625rem;
     font-weight: 500;
   }
-  /* feine Unterstreichung wächst von links */
   .nav__liste a::after {
     content: "";
     position: absolute;
@@ -421,59 +395,39 @@ figure { margin: 0; }
 
 /* ---------- Gemeinsame Bausteine ---------- */
 .abschnitt { padding-block: var(--abstand); }
+.abschnitt--eng { padding-top: 0; }
 
 .kopfzeile {
   display: grid;
-  gap: 1rem 3rem;
+  gap: 1.25rem 3rem;
   margin-bottom: clamp(2.5rem, 5vw, 4rem);
 }
-.kopfzeile .lead { margin: 0; }
+.kopfzeile .lead { margin-top: 0.75rem; margin-bottom: 0; }
 @media (min-width: 56em) {
-  .kopfzeile {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-  }
-  .kopfzeile .lead { max-width: 30ch; }
+  .kopfzeile { grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
 }
 
-/* ---------- Platzhalter-Bilder ---------- */
+/* ---------- Platzhalter-Bilder: Text in der Fläche statt Pille ---------- */
 .ph {
   position: relative;
   overflow: hidden;
-  background-color: var(--salbei-hell);
-  background-image:
-    repeating-linear-gradient(135deg, rgb(34 37 35 / 0.055) 0 1px, transparent 1px 14px),
-    var(--korn);
+  background-color: var(--ph-bg, #C8C9C6);
+  background-image: var(--granitkorn);
 }
-.ph--bogen {
-  aspect-ratio: 4 / 5;
-  border-radius: 999px 999px 0 0;
-}
-.ph--salbei { background-color: #BFC8B8; }
-.ph--stein { background-color: #C9CBC3; }
-.ph--holz { background-color: #C7B49B; }
-
-.ph__label {
+.ph--bogen { aspect-ratio: 4 / 5; border-radius: 999px 999px 0 0; }
+.ph__text {
   position: absolute;
-  left: 1rem;
-  bottom: 1rem;
-  padding: 0.3rem 0.7rem;
-  border-radius: 999px;
-  background: rgb(247 247 243 / 0.9);
-  color: var(--granit);
+  inset: auto 0 1.1rem 0;
+  text-align: center;
   font-size: 1rem;
-  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--ph-text, var(--basalt-2));
 }
 
 /* ==========================================================================
-   Start / Highlight 1 – „Lichtermeer“
-   Der Bogen ist ein Fenster in einen nächtlichen Friedhof voller Grablichter.
-   Beim Scrollen öffnet er sich zum ganzen Bild, die Kamera gleitet hinein.
+   Start / Highlight: „Lichtermeer“
    ========================================================================== */
-.hero {
-  position: relative;
-  overflow: hidden;
-}
+.hero { position: relative; overflow: hidden; }
 .hero__grid {
   display: grid;
   grid-template-rows: auto auto;
@@ -488,23 +442,13 @@ figure { margin: 0; }
   margin-top: 1.5rem;
   font-size: var(--fs-lead);
   line-height: 1.45;
-  color: var(--text-2);
+  color: var(--basalt-2);
   max-width: 34ch;
 }
-.hero__aktionen {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 2rem;
-}
+.hero__aktionen { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
 .hero__aktionen .btn { flex: 1 1 17rem; }
-.hero__adresse {
-  margin-top: 1.5rem;
-  font-size: 1.0625rem;
-  color: var(--text-2);
-}
 
-/* Bogen – der Platz für das Tor. Mobil steht er oben, damit das Lichtermeer sofort zu sehen ist. */
+/* Mobil steht der Bogen oben, damit das Lichtermeer sofort zu sehen ist */
 .hero__slot {
   position: relative;
   order: -1;
@@ -512,52 +456,42 @@ figure { margin: 0; }
   width: min(62%, 15rem);
   justify-self: end;
 }
-.hero__adresse { display: none; }
 .tor {
   position: absolute;
   inset: 0;
   z-index: 2;
   overflow: hidden;
   border-radius: 999px 999px 0 0;
-  background: linear-gradient(180deg, #090C0B 0%, #1C231F 45%, #0B0E0C 100%);
+  background: var(--schwarz);
+  cursor: pointer;
 }
 .tor::after {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
   height: 18%;
-  background: linear-gradient(180deg, rgb(13 17 15 / 0), var(--nacht));
+  background: linear-gradient(180deg, rgb(0 0 0 / 0), var(--schwarz));
   pointer-events: none;
 }
-.tor__meer {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
+.tor__meer { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .tor__schatten {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgb(8 11 9 / 0.86) 0%, rgb(8 11 9 / 0.55) 42%, rgb(8 11 9 / 0) 72%);
+  background: linear-gradient(180deg, rgb(0 0 0 / 0.86) 0%, rgb(0 0 0 / 0.55) 42%, rgb(0 0 0 / 0) 72%);
   opacity: 0;
   pointer-events: none;
 }
-/* feiner goldener Umriss, der sich beim Laden um den Bogen zieht */
-.tor__umriss {
-  position: absolute;
-  z-index: 3;
-  overflow: visible;
-  pointer-events: none;
-}
+/* feiner Umriss aus Kerzenlicht, der sich beim Laden um den Bogen zieht */
+.tor__umriss { position: absolute; z-index: 3; overflow: visible; pointer-events: none; }
 .tor__umriss path {
   fill: none;
-  stroke: var(--licht);
+  stroke: var(--flamme);
   stroke-width: 1.25;
   vector-effect: non-scaling-stroke;
+  opacity: 0.85;
 }
 
-/* Aussage – ohne Bewegung ein ruhiges Band unter dem Bogen */
+/* Aussage: ohne Bewegung ein ruhiges Band unter dem Bogen */
 .tor__aussage {
   padding-block: clamp(2.5rem, 6vw, 4rem);
   border-top: 1px solid var(--linie);
@@ -571,37 +505,21 @@ figure { margin: 0; }
   margin-bottom: 0.9rem;
   text-wrap: balance;
 }
-.tor__ort { color: var(--text-2); font-size: var(--fs-lead); }
-.tor__fakten {
-  list-style: none;
-  display: grid;
-  gap: 0.9rem 2rem;
-  max-width: 66rem;
+.tor__ort { color: var(--basalt-2); font-size: var(--fs-lead); }
+.tor__aktion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
   margin-top: 2rem;
 }
-.tor__fakten li {
-  padding-top: 0.8rem;
-  border-top: 1px solid var(--linie);
-  font-size: var(--fs-klein);
-  line-height: 1.45;
-  color: var(--text-2);
-}
-.tor__fakten strong {
-  display: block;
-  font-family: var(--font-serif);
-  font-size: 1.625rem;
-  font-weight: 400;
-  color: var(--text);
-}
+.tor__hinweis { margin: 0; font-size: 1rem; color: var(--basalt-2); }
 
 /* Mit Bewegung: Aussage liegt im Tor und erscheint erst beim Scrollen */
-.motion-ok .hero__grid {
-  height: calc(100svh - var(--header-h) - var(--bar-h));
-}
+.motion-ok .hero__grid { height: calc(100svh - var(--header-h) - var(--bar-h)); }
 .motion-ok .tor__aussage {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 0; right: 0;
   top: clamp(2.5rem, 9vh, 6rem);
   z-index: 4;
   padding: 0;
@@ -610,20 +528,15 @@ figure { margin: 0; }
   opacity: 0;
   pointer-events: none;
 }
-.motion-ok .tor__ort { color: var(--auf-dunkel-2); }
-.motion-ok .tor__fakten li { border-top-color: var(--linie-hell); color: var(--auf-dunkel-2); }
-.motion-ok .tor__fakten strong { color: var(--auf-dunkel); }
-/* Sicherheitsnetz: falls das Einstiegs-Skript ausfällt, erscheint das Bild trotzdem */
+.motion-ok .tor__aussage.ist-sichtbar .tor__aktion { pointer-events: auto; }
+.motion-ok .tor__aussage :focus-visible { outline-color: var(--auf-dunkel); }
+.motion-ok .tor__ort,
+.motion-ok .tor__hinweis { color: var(--auf-dunkel-2); }
 .motion-ok .tor { opacity: 0; animation: tor-sicher 0s 3.5s forwards; }
 @keyframes tor-sicher { to { opacity: 1; } }
 
-/* motion.js setzt .is-tor: das Tor wird zur Ebene über dem ganzen Abschnitt */
 .hero.is-tor .hero__slot { position: static; }
-.hero.is-tor .tor { border-radius: 0; will-change: clip-path; }
-
-@media (min-width: 48em) {
-  .tor__fakten { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
+.hero.is-tor .tor { border-radius: 0; }
 
 @media (min-width: 56em) {
   .hero__grid {
@@ -635,43 +548,36 @@ figure { margin: 0; }
   }
   .hero__text { padding-bottom: clamp(3rem, 8vh, 6rem); }
   .hero__slot { order: 0; height: auto; min-height: 0; width: auto; justify-self: stretch; }
-  .hero__adresse { display: block; }
   .hero__aktionen .btn { flex: 0 0 auto; }
 }
 
 /* ==========================================================================
-   Im Trauerfall / Highlight 2 – „Lichter am Weg“
-   Mobil und Tablet senkrecht, ab 72em waagerecht in vier Spalten
+   Im Trauerfall: Lichter am Weg (mobil senkrecht, ab 72em waagerecht)
    ========================================================================== */
 .trauerfall {
   --linie: var(--linie-hell);
-  background-color: var(--nacht);
-  background-image: var(--korn);
+  background-color: var(--schwarz);
   color: var(--auf-dunkel);
 }
-.trauerfall :focus-visible { outline-color: var(--licht); }
-.trauerfall .lead { color: var(--auf-dunkel-2); margin-top: 0.75rem; }
+.trauerfall :focus-visible { outline-color: var(--auf-dunkel); }
+.trauerfall .lead { color: var(--auf-dunkel-2); }
 
 .weg { --licht-gr: 3.25rem; }
-.weg__bahn {
-  --weg-gap: clamp(1.5rem, 2.4vw, 2.5rem);
-  position: relative;
-}
+.weg__bahn { --weg-gap: clamp(1.5rem, 2.4vw, 2.5rem); position: relative; }
 .weg__pfad {
   position: absolute;
   left: calc(var(--licht-gr) / 2 - 1px);
   top: calc(var(--licht-gr) / 2);
   bottom: 0;
   width: 2px;
-  background: rgb(238 237 231 / 0.12);
+  background: rgb(231 231 226 / 0.12);
 }
 .weg__glut {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #B8935A, var(--licht));
+  background: linear-gradient(180deg, #B8935A, var(--flamme));
   transform-origin: 50% 0;
 }
-/* der Funke an der Spitze der Glut */
 .weg__funke {
   position: absolute;
   left: 50%;
@@ -679,16 +585,12 @@ figure { margin: 0; }
   width: 0.9rem;
   height: 0.9rem;
   border-radius: 50%;
-  background: radial-gradient(circle, #FFF6E0 0%, #F3D399 35%, rgb(232 196 131 / 0) 72%);
+  background: radial-gradient(circle, #FFF6E0 0%, #F3D399 35%, rgb(241 194 106 / 0) 72%);
   opacity: 0;
   pointer-events: none;
   transition: opacity 400ms var(--ease-out);
 }
-.weg__liste {
-  list-style: none;
-  display: grid;
-  gap: clamp(2.25rem, 6vh, 3.5rem);
-}
+.weg__liste { list-style: none; display: grid; gap: clamp(2.25rem, 6vh, 3.5rem); }
 .weg__schritt {
   position: relative;
   display: grid;
@@ -696,7 +598,6 @@ figure { margin: 0; }
   grid-template-columns: var(--licht-gr) minmax(0, 1fr);
   column-gap: clamp(1.25rem, 3vw, 2rem);
 }
-/* Ohne JS: Linie unterhalb des letzten Lichts abdecken (mit JS kürzt main.js den Pfad) */
 html:not(.js) .weg__schritt:last-child::before {
   content: "";
   position: absolute;
@@ -704,7 +605,7 @@ html:not(.js) .weg__schritt:last-child::before {
   top: calc(var(--licht-gr) / 2);
   bottom: 0;
   width: 6px;
-  background: var(--nacht);
+  background: var(--schwarz);
 }
 .weg__licht {
   position: relative;
@@ -714,24 +615,21 @@ html:not(.js) .weg__schritt:last-child::before {
   height: var(--licht-gr);
   border: 1px solid transparent;
   border-radius: 50%;
-  background-color: var(--nacht);
-  color: var(--granit);
+  background-color: var(--flamme);
+  color: var(--basalt);
   font-family: var(--font-serif);
   font-size: 1.5rem;
   line-height: 1;
   isolation: isolate;
-  transition:
-    border-color var(--motion-duration) var(--motion-ease),
-    color var(--motion-duration) var(--motion-ease);
+  transition: border-color var(--motion-duration) var(--motion-ease), color var(--motion-duration) var(--motion-ease), background-color var(--motion-duration) var(--motion-ease);
 }
-/* Die Flamme: warmes Glas, von innen hell */
 .weg__licht::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 38%, #F7E2B0 0%, var(--licht) 48%, #C9974F 100%);
+  background: radial-gradient(circle at 50% 38%, #F7E2B0 0%, var(--flamme) 48%, #C9974F 100%);
   transition: opacity var(--motion-duration) var(--motion-ease);
 }
 .weg__licht::after {
@@ -740,14 +638,11 @@ html:not(.js) .weg__schritt:last-child::before {
   inset: -1.4rem;
   z-index: -2;
   border-radius: 50%;
-  background: radial-gradient(circle, rgb(232 196 131 / 0.32) 0%, rgb(232 196 131 / 0.1) 45%, rgb(232 196 131 / 0) 70%);
+  background: radial-gradient(circle, rgb(241 194 106 / 0.3) 0%, rgb(241 194 106 / 0.1) 45%, rgb(241 194 106 / 0) 70%);
   pointer-events: none;
   transition: opacity var(--motion-duration) var(--motion-ease);
 }
-.weg__text {
-  padding-top: 0.55rem;
-  transition: opacity var(--motion-duration) var(--motion-ease);
-}
+.weg__text { padding-top: 0.55rem; transition: opacity var(--motion-duration) var(--motion-ease); }
 .weg__text h3 { margin-bottom: 0.6rem; font-size: clamp(1.625rem, 1.5rem + 0.4vw, 1.875rem); }
 .weg__text p { font-size: var(--fs-klein); color: var(--auf-dunkel-2); }
 .weg__text a { color: var(--auf-dunkel); font-weight: 600; white-space: nowrap; }
@@ -759,11 +654,7 @@ html:not(.js) .weg__schritt:last-child::before {
   color: var(--auf-dunkel-2);
 }
 
-/* Mit Bewegung: Lichter sind zunächst aus und werden entzündet, sobald die Glut sie erreicht */
-.motion-ok .weg__schritt:not(.is-lit) .weg__licht {
-  border-color: rgb(238 237 231 / 0.36);
-  color: var(--auf-dunkel-2);
-}
+.motion-ok .weg__schritt:not(.is-lit) .weg__licht { border-color: rgb(231 231 226 / 0.36); color: var(--auf-dunkel-2); background-color: var(--schwarz); }
 .motion-ok .weg__schritt:not(.is-lit) .weg__licht::before,
 .motion-ok .weg__schritt:not(.is-lit) .weg__licht::after { opacity: 0; }
 .motion-ok .weg__schritt:not(.is-lit) .weg__text { opacity: 0.75; }
@@ -772,14 +663,11 @@ html:not(.js) .weg__schritt:last-child::before {
   animation: flackern 4.2s ease-in-out infinite alternate;
   animation-play-state: paused;
 }
-.motion-ok .trauerfall.is-sichtbar .weg__schritt.is-lit .weg__licht::after {
-  animation-play-state: running;
-}
-/* beim Entzünden: ein kurzer Lichtring, der sich ausbreitet */
+.motion-ok .trauerfall.is-sichtbar .weg__schritt.is-lit .weg__licht::after { animation-play-state: running; }
 @keyframes zuenden {
-  0%   { transform: scale(0.86); box-shadow: 0 0 0 0 rgb(232 196 131 / 0.6); }
+  0%   { transform: scale(0.86); box-shadow: 0 0 0 0 rgb(241 194 106 / 0.55); }
   35%  { transform: scale(1.08); }
-  100% { transform: scale(1);    box-shadow: 0 0 0 30px rgb(232 196 131 / 0); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 30px rgb(241 194 106 / 0); }
 }
 @keyframes flackern {
   0%   { opacity: 0.75; transform: scale(0.97); }
@@ -789,16 +677,9 @@ html:not(.js) .weg__schritt:last-child::before {
 }
 
 @media (min-width: 72em) {
-  .weg__liste {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: var(--weg-gap);
-  }
-  .weg__schritt {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 1.5rem;
-  }
+  .weg__liste { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--weg-gap); }
+  .weg__schritt { grid-template-columns: minmax(0, 1fr); row-gap: 1.5rem; }
   .weg__text { padding-top: 0; padding-right: 0.5rem; }
-  /* Der Pfad läuft waagerecht von Licht 1 bis Licht 4 */
   .weg__pfad {
     top: calc(var(--licht-gr) / 2 - 1px);
     bottom: auto;
@@ -807,89 +688,197 @@ html:not(.js) .weg__schritt:last-child::before {
     width: auto;
     height: 2px;
   }
-  .weg__glut {
-    background: linear-gradient(90deg, #B8935A, var(--licht));
-    transform-origin: 0 50%;
-  }
+  .weg__glut { background: linear-gradient(90deg, #B8935A, var(--flamme)); transform-origin: 0 50%; }
   .weg__funke { left: 0; top: 50%; }
   html:not(.js) .weg__schritt:last-child::before { display: none; }
 }
 
 /* ==========================================================================
-   Bestattungsarten – eine Reihe Grabsteine
+   Übergänge zwischen Nacht und Tag: weich statt abrupt
    ========================================================================== */
-.steine {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-  padding-top: 0.75rem;          /* Platz für das leichte Anheben */
+.uebergang {
+  position: relative;
+  height: clamp(12rem, 34vh, 22rem);
+  overflow: hidden;
 }
-.stein {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 15rem;
-  padding: 42% 1rem 1.5rem;
-  border: 1px solid var(--stein-linie);
-  border-radius: 999px 999px 4px 4px;
-  background-color: var(--kalk-hell);
-  background-image: var(--korn);
-  text-align: center;
-  transition: transform 450ms var(--ease-out), background-color 450ms var(--ease-out), border-color 450ms var(--ease-out);
+/* Schwarz läuft in Transparenz aus (geglättete Kurve statt linear),
+   darunter liegt die Granitfläche der Seite: keine Kante, kein Farbsprung */
+.uebergang--morgen { background: linear-gradient(180deg, rgb(0 0 0 / 1.000) 0%, rgb(0 0 0 / 0.995) 8.3%, rgb(0 0 0 / 0.965) 16.7%, rgb(0 0 0 / 0.896) 25%, rgb(0 0 0 / 0.790) 33.3%, rgb(0 0 0 / 0.653) 41.7%, rgb(0 0 0 / 0.500) 50%, rgb(0 0 0 / 0.347) 58.3%, rgb(0 0 0 / 0.210) 66.7%, rgb(0 0 0 / 0.104) 75%, rgb(0 0 0 / 0.035) 83.3%, rgb(0 0 0 / 0.005) 91.7%, rgb(0 0 0 / 0.000) 100%); }
+.uebergang--abend { background: linear-gradient(180deg, rgb(0 0 0 / 0.000) 0%, rgb(0 0 0 / 0.005) 8.3%, rgb(0 0 0 / 0.035) 16.7%, rgb(0 0 0 / 0.104) 25%, rgb(0 0 0 / 0.210) 33.3%, rgb(0 0 0 / 0.347) 41.7%, rgb(0 0 0 / 0.500) 50%, rgb(0 0 0 / 0.653) 58.3%, rgb(0 0 0 / 0.790) 66.7%, rgb(0 0 0 / 0.896) 75%, rgb(0 0 0 / 0.965) 83.3%, rgb(0 0 0 / 0.995) 91.7%, rgb(0 0 0 / 1.000) 100%); }
+/* kleine Lichter im dunklen Teil: morgens verlöschen sie, abends gehen sie an */
+.uebergang span {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFF1D2 0 2.5px, rgb(241 194 106 / 0.55) 3.5px, rgb(241 194 106 / 0.16) 7px, rgb(241 194 106 / 0) 17px);
+  opacity: 0;
 }
-.stein h3 {
-  font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.875rem);
-  hyphens: manual;
-}
-.stein p {
-  margin-top: 0.7rem;
-  font-size: var(--fs-klein);
-  line-height: 1.45;
-  color: var(--text-2);
-}
-.stein--eigen { grid-column: 1 / -1; padding-top: 22%; }
+.uebergang--morgen span { top: calc(8% + var(--i) * 3%); }
+.uebergang--abend span { bottom: calc(8% + var(--i) * 3%); }
+.uebergang span:nth-child(1) { --i: 1; left: 9%; }
+.uebergang span:nth-child(2) { --i: 3; left: 23%; }
+.uebergang span:nth-child(3) { --i: 0; left: 38%; }
+.uebergang span:nth-child(4) { --i: 4; left: 52%; }
+.uebergang span:nth-child(5) { --i: 2; left: 66%; }
+.uebergang span:nth-child(6) { --i: 5; left: 79%; }
+.uebergang span:nth-child(7) { --i: 1; left: 91%; }
+html:not(.motion-ok) .uebergang span { display: none; }
 
-@media (hover: hover) and (pointer: fine) {
-  .stein:hover {
-    transform: translateY(-6px);
-    background-color: #FBF7EE;
-    border-color: #B5A27F;
+/* ==========================================================================
+   Bestattungsarten: eine Reihe echter Grabsteine
+   ========================================================================== */
+.arten__kopf { margin-bottom: clamp(2.5rem, 5vw, 3.5rem); }
+.arten__kopf .lead { margin-top: 1rem; max-width: 40ch; }
+
+/* Handy und Tablet: Liste, links ein kleiner Stein, rechts der Text */
+.steinreihe { list-style: none; display: grid; gap: 1.75rem; }
+.grabstein {
+  --stein: #C8C8C1;
+  --schrift: #2A2B29;
+  --schrift-licht: rgb(255 255 255 / 0.35);
+  --schrift-schatten: rgb(0 0 0 / 0.18);
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.75rem minmax(0, 1fr);
+  column-gap: 1.25rem;
+  align-items: start;
+}
+.grabstein--kalk   { --stein: #C8C8C1; }
+.grabstein--granit { --stein: #3E3F3F; --schrift: #DAD8CF; --schrift-licht: rgb(0 0 0 / 0.55); --schrift-schatten: rgb(255 255 255 / 0.12); }
+.grabstein--sand   { --stein: #BDB5A5; }
+.grabstein--grau   { --stein: #B3B4AF; }
+.grabstein--hell   { --stein: #CEC7B8; }
+.grabstein__form {
+  display: block;
+  width: 100%;
+  height: auto;
+  fill: var(--stein);
+  overflow: visible;
+}
+.grabstein__inschrift h3 { font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.875rem); hyphens: manual; }
+.grabstein__inschrift p { margin-top: 0.5rem; font-size: var(--fs-klein); line-height: 1.45; color: var(--basalt-2); }
+.grabstein__licht { display: none; }
+.steinreihe__boden { display: none; }
+
+/* Ab 60em: die Steine stehen in einer Reihe, die Inschrift ist in den Stein gemeißelt */
+@media (min-width: 60em) {
+  .steinreihe {
+    grid-template-columns: 1fr 0.8fr 1.22fr 1.12fr 0.98fr;
+    align-items: end;
+    gap: clamp(1rem, 1.8vw, 1.75rem);
+    padding-top: 1.25rem;
+  }
+  .motion-ok .steinreihe { overflow: hidden; }   /* die Erde verdeckt die aufsteigenden Steine */
+  .grabstein { display: block; cursor: pointer; }
+  .grabstein--rund     { aspect-ratio: 200 / 270; }
+  .grabstein--stele    { aspect-ratio: 150 / 300; }
+  .grabstein--findling { aspect-ratio: 250 / 200; }
+  .grabstein--segment  { aspect-ratio: 230 / 210; }
+  .grabstein--schulter { aspect-ratio: 200 / 280; }
+  .grabstein__form { position: absolute; inset: 0; height: 100%; }
+  .grabstein__inschrift {
+    position: absolute;
+    inset: var(--oben, 32%) 8% 8% 8%;
+    text-align: center;
+    color: var(--schrift);
+    text-shadow: 0 1px 0 var(--schrift-licht), 0 -1px 0 var(--schrift-schatten);   /* gemeißelt */
+  }
+  .grabstein--rund .grabstein__inschrift     { --oben: 36%; }
+  .grabstein--stele .grabstein__inschrift    { --oben: 18%; inset-inline: 10%; }
+  .grabstein--findling .grabstein__inschrift { --oben: 30%; inset-inline: 12%; }
+  .grabstein--segment .grabstein__inschrift  { --oben: 30%; }
+  .grabstein--schulter .grabstein__inschrift { --oben: 26%; }
+  .grabstein__inschrift h3 { font-size: clamp(1.375rem, 0.9rem + 0.9vw, 1.75rem); }
+  .grabstein__inschrift p { margin-top: 0.6rem; color: inherit; }
+
+  /* Interaktion: ein Grablicht vor dem Stein, angestrahlt von unten */
+  .grabstein__licht {
+    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: 0.3rem;
+    width: 1rem;
+    height: 1.55rem;
+    margin-left: -0.5rem;
+    border-radius: 2px 2px 3px 3px;
+    z-index: 2;
+    background: linear-gradient(90deg, #4E140E, #9E2F25 45%, #4A120C);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
+    pointer-events: none;
+  }
+  .grabstein__flamme {
+    position: absolute;
+    left: 50%;
+    top: -0.7rem;
+    width: 0.56rem;
+    height: 0.95rem;
+    margin-left: -0.28rem;
+    border-radius: 50% 50% 45% 45% / 65% 65% 35% 35%;
+    background: radial-gradient(circle at 50% 70%, #FFF7E3 0%, var(--flamme) 55%, rgb(241 194 106 / 0) 100%);
+    transform-origin: 50% 100%;
+  }
+  .grabstein::after {   /* warmer Schein auf dem unteren Teil des Steins */
+    content: "";
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    bottom: -12%;
+    height: 70%;
+    background: radial-gradient(ellipse 60% 70% at 50% 100%, rgb(255 190 110 / 0.85) 0%, rgb(240 150 80 / 0.35) 38%, rgb(220 120 60 / 0) 72%);
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    transition: opacity 700ms var(--ease-out);
+    pointer-events: none;
+  }
+  .grabstein.brennt .grabstein__licht { opacity: 1; transform: none; }
+  .grabstein.brennt::after { opacity: 1; }
+  .grabstein.brennt .grabstein__flamme { animation: flamme 2.4s ease-in-out infinite alternate; }
+
+  /* Erde: eine feine Kante, darunter ein kurzer weicher Schatten */
+  .steinreihe__boden {
+    display: block;
+    height: 0.9rem;
+    border-top: 1px solid rgb(46 48 48 / 0.5);
+    background: radial-gradient(ellipse 50% 100% at 50% 0%, rgb(46 48 48 / 0.16), rgb(46 48 48 / 0));
+    transform-origin: left center;
+  }
+  /* Kontaktschatten am Fuß jedes Steins */
+  .grabstein::before {
+    content: "";
+    position: absolute;
+    left: 2%;
+    right: 2%;
+    bottom: 0;
+    height: 0.9rem;
+    background: linear-gradient(180deg, rgb(0 0 0 / 0), rgb(0 0 0 / 0.16));
+    pointer-events: none;
+    z-index: 1;
   }
 }
-@media (min-width: 48em) {
-  .steine { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .stein--eigen { grid-column: auto; padding-top: 42%; }
-}
-@media (min-width: 72em) {
-  .steine {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 1rem;
-    border-bottom: 1px solid var(--stein-linie);   /* die Erde, auf der sie stehen */
-  }
-  .stein { min-height: 21rem; padding-inline: 1.25rem; border-bottom: 0; border-radius: 999px 999px 0 0; }
-  /* Mit Bewegung steigen die Steine aus der Erde: die Linie unten ist der Boden */
-  .motion-ok .steine { overflow: hidden; }
+@keyframes flamme {
+  0%   { transform: scaleY(0.92) skewX(-2deg); }
+  50%  { transform: scaleY(1.06) skewX(1.5deg); }
+  100% { transform: scaleY(0.98) skewX(-1deg); }
 }
 
 /* ==========================================================================
-   Vorsorge und Tischlerei – zwei gleich gebaute Tafeln
+   Vorsorge und Tischlerei: zwei gleich gebaute Tafeln in Efeu und Eiche
    ========================================================================== */
-.tafeln {
-  background-color: var(--kalk-tief);
-}
-.tafeln__grid {
-  display: grid;
-  gap: 1.5rem;
-}
+.tafeln__grid { display: grid; gap: 1.5rem; }
 .tafel {
   display: grid;
   grid-template-rows: auto 1fr;
   overflow: hidden;
   border-radius: var(--radius);
+  color: var(--auf-dunkel);
 }
-.tafel--vorsorge { background-color: var(--salbei-hell); }
-.tafel--holz { background-color: var(--holz-hell); }
+.tafel :focus-visible { outline-color: var(--auf-dunkel); }
+.tafel--efeu { background-color: var(--efeu); --ph-bg: #56634D; --ph-text: var(--auf-dunkel); }
+.tafel--eiche { background-color: var(--eiche); --ph-bg: #765B42; --ph-text: var(--auf-dunkel); }
 .tafel__bild { aspect-ratio: 16 / 9; }
 .tafel__text {
   display: flex;
@@ -901,23 +890,12 @@ html:not(.js) .weg__schritt:last-child::before {
   margin: 1rem 0 1.5rem;
   font-size: var(--fs-lead);
   line-height: 1.45;
-  color: var(--text-2);
+  color: rgb(231 231 226 / 0.88);
 }
 .tafel .btn { margin-top: auto; }
-.tafel--holz h2 { color: var(--holz-tief); }
-.punkte {
-  list-style: none;
-  display: grid;
-  gap: 0.6rem;
-  margin: 0 0 2rem;
-  font-size: var(--fs-klein);
-}
-.punkte li {
-  position: relative;
-  padding-left: 1.7rem;
-}
-/* kleiner Bogen als Aufzählungszeichen */
-.punkte li::before {
+.punkte { list-style: none; display: grid; gap: 0.6rem; margin: 0 0 2rem; font-size: var(--fs-klein); }
+.punkte li { position: relative; padding-left: 1.7rem; }
+.punkte li::before {   /* kleiner Bogen als Aufzählungszeichen */
   content: "";
   position: absolute;
   left: 0;
@@ -936,25 +914,13 @@ html:not(.js) .weg__schritt:last-child::before {
 /* ==========================================================================
    Über uns
    ========================================================================== */
-.ueber__grid {
-  display: grid;
-  gap: 2.5rem;
-}
+.ueber { padding-bottom: clamp(3rem, 2rem + 4vw, 5.5rem); }
+.ueber__grid { display: grid; gap: 2.5rem; }
 .ueber__bild { max-width: 22rem; }
 .ueber__bild figcaption { margin-top: 0.75rem; font-size: 1rem; }
 .ueber__text .lead { margin-top: 1rem; }
-.fakten {
-  display: grid;
-  gap: 0;
-  margin: 2rem 0 0;
-  border-top: 1px solid var(--linie);
-}
-.fakten > div {
-  display: grid;
-  gap: 0.2rem;
-  padding-block: 1rem;
-  border-bottom: 1px solid var(--linie);
-}
+.fakten { display: grid; margin: 2rem 0 0; border-top: 1px solid var(--linie); }
+.fakten > div { display: grid; gap: 0.2rem; padding-block: 1rem; border-bottom: 1px solid var(--linie); }
 .fakten dt { font-weight: 600; }
 .fakten dd { margin: 0; }
 @media (min-width: 40em) {
@@ -969,23 +935,19 @@ html:not(.js) .weg__schritt:last-child::before {
 }
 
 /* ==========================================================================
-   Kontakt und Anfahrt – ruhiger Abschluss bei Nacht
+   Kontakt und Anfahrt: ruhiger Abschluss bei Nacht
    ========================================================================== */
 .kontakt {
   --linie: var(--linie-hell);
-  padding-block: var(--abstand) clamp(3.5rem, 6vw, 5.5rem);
-  background-color: var(--nacht);
+  padding-block: clamp(2rem, 4vw, 3.5rem) clamp(3.5rem, 6vw, 5.5rem);
+  background-color: var(--schwarz);
   color: var(--auf-dunkel);
 }
-.kontakt :focus-visible { outline-color: var(--licht); }
-.kontakt__oben {
-  display: grid;
-  justify-items: center;
-  text-align: center;
-}
+.kontakt :focus-visible { outline-color: var(--auf-dunkel); }
+.kontakt__oben { display: grid; justify-items: center; text-align: center; }
 .kontakt__tel {
   margin-top: 1.25rem;
-  font-family: var(--font-sans);   /* Ziffern maximal eindeutig */
+  font-family: var(--font-sans);
   font-weight: 500;
   font-size: clamp(2.5rem, 1.4rem + 4.4vw, 5rem);
   letter-spacing: -0.02em;
@@ -994,15 +956,8 @@ html:not(.js) .weg__schritt:last-child::before {
   text-decoration: none;
   white-space: nowrap;
 }
-.kontakt__tel:hover { color: var(--licht); }
-.kontakt__aktionen {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: 2rem;
-}
-/* ein ferner Lichterstreifen als ruhige Trennlinie */
+.kontakt__tel:hover { text-decoration: underline; text-decoration-thickness: 2px; }
+.kontakt__aktionen { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 2rem; }
 .kontakt__horizont {
   position: relative;
   height: clamp(8rem, 16vw, 13rem);
@@ -1010,34 +965,19 @@ html:not(.js) .weg__schritt:last-child::before {
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
   mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
 }
-.kontakt__horizont canvas {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-.kontakt__spalten {
-  display: grid;
-  gap: 2rem;
-}
-.kontakt__spalte {
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--linie);
-}
+.kontakt__horizont canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.kontakt__spalten { display: grid; gap: 2rem; }
+.kontakt__spalte { padding-top: 1.25rem; border-top: 1px solid var(--linie); }
 .kontakt__spalte h3 {
   margin-bottom: 0.75rem;
   font-family: var(--font-sans);
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--licht);
-}
-.kontakt__spalte address,
-.kontakt__spalte p {
-  font-size: var(--fs-klein);
   color: var(--auf-dunkel-2);
 }
+.kontakt__spalte address,
+.kontakt__spalte p { font-size: var(--fs-klein); color: var(--auf-dunkel-2); }
 .kontakt__spalte address { color: var(--auf-dunkel); }
 .kontakt__spalte p { margin-bottom: 0.6rem; }
 .kontakt__spalte a { color: var(--auf-dunkel); overflow-wrap: anywhere; }
@@ -1048,59 +988,42 @@ html:not(.js) .weg__schritt:last-child::before {
 /* ---------- Fuß ---------- */
 .fuss {
   padding-block: 2.25rem 2.5rem;
-  background: var(--nacht-2);
+  background: var(--schwarz);
   color: var(--auf-dunkel-2);
   font-size: 1rem;
+  border-top: 1px solid var(--linie-hell);
 }
-.fuss :focus-visible { outline-color: var(--licht); }
+.fuss :focus-visible { outline-color: var(--auf-dunkel); }
 .fuss a { color: var(--auf-dunkel); }
-.fuss__grid {
-  display: grid;
-  gap: 1.25rem 2rem;
-  align-items: center;
-}
-.fuss__marke {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  color: var(--auf-dunkel);
-  line-height: 1.05;
-}
+.fuss__grid { display: grid; gap: 1.25rem 2rem; align-items: center; }
+.fuss__marke { display: flex; flex-direction: column; margin: 0; color: var(--auf-dunkel); line-height: 1.05; }
 .fuss__marke .marke__name { font-size: 1.625rem; }
 .fuss__marke .marke__zusatz { color: var(--auf-dunkel-2); }
 .fuss__links { list-style: none; display: flex; flex-wrap: wrap; gap: 0.25rem 1.75rem; }
 .fuss__links a { display: inline-flex; align-items: center; min-height: 2.75rem; }
-.fuss__hinweis {
-  max-width: none;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--linie-hell);
-}
+.fuss__hinweis { max-width: none; padding-top: 1.25rem; border-top: 1px solid var(--linie-hell); }
 @media (min-width: 56em) {
   .fuss__grid { grid-template-columns: auto 1fr; }
   .fuss__links { justify-content: flex-end; }
   .fuss__hinweis { grid-column: 1 / -1; }
 }
 
-/* ---------- Mobile Schnellzugriff: Anrufen + Anfahrt ---------- */
+/* ---------- Mobile Schnellzugriff: Anrufen und Anfahrt ---------- */
 .schnellzugriff {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: 0; right: 0; bottom: 0;
   z-index: 60;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
   padding: 0.6rem var(--gutter) calc(0.6rem + env(safe-area-inset-bottom, 0px));
-  background: var(--kalk-hell);
+  background: var(--kalkstein);
   border-top: 1px solid var(--linie);
-  box-shadow: 0 -12px 28px -18px rgb(34 37 35 / 0.4);
+  box-shadow: 0 -12px 28px -18px rgb(46 48 48 / 0.45);
 }
 .schnell { font-size: 1.125rem; padding-left: 1.25rem; }
-.schnellzugriff .btn--linie { background: var(--kalk-hell); }
-@media (min-width: 64em) {
-  .schnellzugriff { display: none; }
-}
+.schnellzugriff .btn--linie { background: var(--kalkstein); }
+@media (min-width: 64em) { .schnellzugriff { display: none; } }
 
 /* ---------- Unterseiten (Impressum, Datenschutz) ---------- */
 .unterseite { padding-block: var(--abstand); }
@@ -1115,7 +1038,6 @@ html:not(.js) .weg__schritt:last-child::before {
     scroll-behavior: auto !important;
   }
   .btn:active { transform: none; }
-  .stein:hover { transform: none; }
-  /* Lichter brennen ruhig, das Lichtermeer ist ein Standbild.
-     motion.js legt in diesem Modus keine Scroll-Animationen an. */
+  /* Lichter brennen ruhig, das Lichtermeer ist ein Standbild,
+     motion.js legt keine Scroll-Animationen an. */
 }

@@ -10,10 +10,14 @@
      H2  „Lichter am Weg“   – Im Trauerfall läuft ein Funke die goldene Linie
                               entlang und entzündet jeden Schritt.
    Drei ruhige Animationen
-     R1  Steine             – Die Bestattungsarten steigen wie Grabsteine aus der Erde
-                              (in einer Reihe ab 72em, sonst sanftes Einblenden).
+     R1  Steine             – Eine Erdlinie zieht sich über die Breite, die Steine
+                              steigen nacheinander aus ihr auf, die Inschrift wird
+                              von links nach rechts eingemeißelt (ab 60em, an den
+                              Scroll gekoppelt, läuft genau einmal; sonst Einblenden).
      R2  Bildfenster        – Bild-Platzhalter öffnen sich von unten.
      R3  Einblenden         – Textgruppen erscheinen sanft nacheinander.
+   Dazu zwei leise Übergänge zwischen Nacht und Tag: Am Morgen verlöschen kleine
+   Lichter, am Abend gehen sie an.
 
    Grundsatz: Ohne JavaScript oder bei „Bewegung reduzieren“ ist alles sofort
    sichtbar. Startzustände setzt erst dieses Skript.
@@ -41,7 +45,8 @@
       ok: '(prefers-reduced-motion: no-preference)',
       reduce: '(prefers-reduced-motion: reduce)',
       desktop: '(min-width: 64em)',
-      quer: '(min-width: 72em)'
+      quer: '(min-width: 72em)',
+      reihe: '(min-width: 60em)'
     },
     function (context) {
       var c = context.conditions;
@@ -54,7 +59,8 @@
       var aufraeumen = [];
       aufraeumen.push(lichtermeer(c.desktop));
       aufraeumen.push(lichterAmWeg(c.quer));
-      steine(c.quer);
+      aufraeumen.push(steine(c.reihe));
+      uebergaenge();
       bildfenster();
       einblenden();
 
@@ -100,14 +106,27 @@
         horizont: (s.top - h.top + s.height * 0.42) / (h.height || 1)
       };
     }
-    function bogen() {
-      var g = geo();
-      return 'inset(' + g.t + 'px ' + g.r + 'px ' + g.b + 'px ' + g.l + 'px round ' +
-        g.rad + 'px ' + g.rad + 'px 0px 0px)';
+    // Der Bogen als Pfad: ein inset() mit runden Ecken wird über einem Canvas
+    // in Chrome nur grob ausgeschnitten, path() ist exakt.
+    var form = { k: 0 };
+    var G = null;
+    function bogenSetzen() {
+      if (!G) G = geo();
+      var k = form.k;
+      var W = hero.clientWidth, H = hero.clientHeight;
+      var L = mischen(G.l, 0, k), T = mischen(G.t, 0, k);
+      var R = mischen(G.l + G.breite, W, k), B = mischen(G.t + G.hoehe, H, k);
+      var rr = Math.min(mischen(G.rad, 0, k), (R - L) / 2);
+      var z = function (v) { return Math.round(v * 10) / 10; };
+      torEl.style.clipPath = 'path(\'M ' + z(L) + ' ' + z(B) + ' V ' + z(T + rr) +
+        ' A ' + z(rr) + ' ' + z(rr) + ' 0 0 1 ' + z(L + rr) + ' ' + z(T) +
+        ' H ' + z(R - rr) + ' A ' + z(rr) + ' ' + z(rr) + ' 0 0 1 ' + z(R) + ' ' + z(T + rr) +
+        ' V ' + z(B) + ' Z\')';
     }
-    var offen = 'inset(0px 0px 0px 0px round 0px 0px 0px 0px)';
+    function neuVermessen() { G = geo(); bogenSetzen(); }
 
     hero.classList.add('is-tor');
+    neuVermessen();
 
     // goldener Umriss um den Bogen
     var NS = 'http://www.w3.org/2000/svg';
@@ -142,7 +161,7 @@
       if (!meer) return;
       var g = geo();
       meer.setFlucht(mischen(g.mitte, 0.5, kamera.f));
-      meer.setHorizont(mischen(g.horizont, 0.42, kamera.f));
+      meer.setHorizont(mischen(g.horizont, 0.47, kamera.f));
     }
     function fahrtSetzen() {
       if (meer) meer.setFortschritt(kamera.p);
@@ -176,13 +195,15 @@
         scrub: 1.2,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        onRefresh: fluchtSetzen
+        onRefresh: function () { neuVermessen(); fluchtSetzen(); },
+        // der Button in der Aussage ist erst bedienbar, wenn sie zu lesen ist
+        onUpdate: function (self) { aussage.classList.toggle('ist-sichtbar', self.progress > 0.8); }
       }
     });
 
     tl.to(text, { autoAlpha: 0, y: -40, duration: 0.24 }, 0)
       .to(umriss, { opacity: 0, duration: 0.1 }, 0)
-      .fromTo(torEl, { clipPath: bogen }, { clipPath: offen, duration: 0.46, ease: 'power2.inOut' }, 0.03)
+      .to(form, { k: 1, duration: 0.46, ease: 'power2.inOut', onUpdate: bogenSetzen }, 0.03)
       .to(kamera, { f: 1, duration: 0.46, ease: 'power2.inOut', onUpdate: fluchtSetzen }, 0.03)
       .to(kamera, { p: 1, duration: 0.95, ease: 'power1.inOut', onUpdate: fahrtSetzen }, 0.05)
       .to(schatten, { opacity: 1, duration: 0.28 }, 0.5)
@@ -191,11 +212,23 @@
         { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.26, ease: 'power2.out' }, 0.64)
       .to({}, { duration: 0.08 });   // kurz verweilen
 
+    // Tastatur: Bekommt der Button in der Aussage den Fokus, bevor sie zu sehen ist,
+    // springt die Seite ans Ende der Kamerafahrt, damit er sichtbar wird.
+    function fokusZeigen() {
+      if (!aussage.classList.contains('ist-sichtbar') && tl.scrollTrigger) {
+        window.scrollTo(0, Math.ceil(tl.scrollTrigger.end));
+      }
+    }
+    aussage.addEventListener('focusin', fokusZeigen);
+
     return function () {
       ScrollTrigger.removeEventListener('refreshInit', umrissSetzen);
+      aussage.removeEventListener('focusin', fokusZeigen);
       intro.kill();
       if (umriss.parentNode) umriss.parentNode.removeChild(umriss);
       hero.classList.remove('is-tor');
+      aussage.classList.remove('ist-sichtbar');
+      torEl.style.clipPath = '';
       if (meer) { meer.setFortschritt(0); meer.setFlucht(0.5); meer.setHorizont(null); }
     };
   }
@@ -280,30 +313,90 @@
 
   /* ------------------------------------------------------------------------
      R1 – Steine steigen aus der Erde
+     Eine Choreografie, an den Scroll gekoppelt: Sie ist fertig, wenn die Reihe
+     ganz zu sehen ist, und bleibt danach stehen (kein Absinken beim Zurückscrollen).
      ------------------------------------------------------------------------ */
   function steine(reihe1) {
     var reihe = document.querySelector('[data-steine]');
+    var boden = document.querySelector('[data-steine-boden]');
     if (!reihe) return;
-    if (reihe1) {
-      // eine Reihe auf gemeinsamer Erde: die Steine steigen nacheinander auf
-      gsap.from(reihe.children, {
-        yPercent: 104,
-        duration: D * 1.15,
-        ease: 'power3.out',
-        stagger: 0.14,
-        scrollTrigger: { trigger: reihe, start: 'top 82%', once: true }
-      });
-    } else {
-      // mehrere Reihen (Handy, Tablet): sanft einblenden
-      gsap.from(reihe.children, {
-        autoAlpha: 0,
-        y: 36,
+    var alle = gsap.utils.toArray(reihe.children);
+
+    if (!reihe1) {
+      // Handy und Tablet: Liste, sanft einblenden
+      gsap.from(alle, {
+        opacity: 0,
+        y: 28,
         duration: D,
         ease: EASE,
-        stagger: 0.12,
+        stagger: 0.14,
         scrollTrigger: { trigger: reihe, start: 'top 85%', once: true }
       });
+      return;
     }
+
+    var inschriften = alle.map(function (s) { return s.querySelector('.grabstein__inschrift'); });
+
+    var tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: reihe,
+        start: 'top 92%',
+        end: 'bottom 78%',
+        scrub: 1.4,
+        invalidateOnRefresh: true
+      },
+      onComplete: function () {
+        // einmal ganz aufgebaut: stehen lassen
+        if (tl.scrollTrigger) tl.scrollTrigger.kill(false);
+      }
+    });
+
+    // 1. die Erdlinie zieht sich von links nach rechts
+    if (boden) tl.fromTo(boden, { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: 'power1.inOut' }, 0);
+
+    // 2. jeder Stein steigt dort auf, wo die Linie gerade angekommen ist
+    alle.forEach(function (stein, i) {
+      var beginn = 0.12 + i * 0.13;
+      tl.fromTo(stein,
+        { yPercent: 101 },
+        { yPercent: 0, duration: 0.42, ease: 'power2.out' }, beginn);
+      // 3. die Inschrift wird von links nach rechts eingemeißelt
+      if (inschriften[i]) {
+        tl.fromTo(inschriften[i],
+          { clipPath: 'inset(0% 100% 0% 0%)' },
+          { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.3, ease: 'power1.inOut' }, beginn + 0.3);
+      }
+    });
+
+    return function () {
+      gsap.set(alle, { clearProps: 'transform' });
+      gsap.set(inschriften, { clearProps: 'clipPath' });
+      if (boden) gsap.set(boden, { clearProps: 'transform' });
+    };
+  }
+
+  /* ------------------------------------------------------------------------
+     Übergänge zwischen Nacht und Tag: kleine Lichter verlöschen und gehen an
+     ------------------------------------------------------------------------ */
+  function uebergaenge() {
+    gsap.utils.toArray('[data-uebergang]').forEach(function (zone) {
+      var lichter = zone.querySelectorAll('span');
+      if (!lichter.length) return;
+      var morgen = zone.getAttribute('data-uebergang') === 'morgen';
+      var reihenfolge = gsap.utils.shuffle(gsap.utils.toArray(lichter).slice());
+      gsap.fromTo(reihenfolge,
+        { opacity: morgen ? 0.95 : 0, scale: morgen ? 1 : 0.4 },
+        {
+          opacity: morgen ? 0 : 0.95,
+          scale: morgen ? 0.4 : 1,
+          ease: 'power1.inOut',
+          stagger: 0.18,
+          scrollTrigger: morgen
+            ? { trigger: zone, start: 'top 75%', end: 'bottom 35%', scrub: 1.5 }
+            : { trigger: zone, start: 'top 85%', end: 'bottom 55%', scrub: 1.5 }
+        });
+    });
   }
 
   /* ------------------------------------------------------------------------
@@ -311,14 +404,14 @@
      ------------------------------------------------------------------------ */
   function bildfenster() {
     gsap.utils.toArray('[data-window]').forEach(function (el) {
-      var label = el.querySelector('.ph__label');
+      var label = el.querySelector('.ph__text');
       var tl = gsap.timeline({
         scrollTrigger: { trigger: el, start: 'top 85%', once: true }
       });
       tl.fromTo(el,
           { clipPath: 'inset(100% 0% 0% 0%)' },
           { clipPath: 'inset(0% 0% 0% 0%)', duration: D * 1.3, ease: 'power3.inOut', clearProps: 'clipPath' });
-      if (label) tl.from(label, { autoAlpha: 0, y: 8, duration: D * 0.5, ease: EASE }, '-=0.5');
+      if (label) tl.from(label, { opacity: 0, y: 8, duration: D * 0.5, ease: EASE }, '-=0.5');
     });
   }
 
@@ -330,7 +423,7 @@
       var einzeln = gruppe.matches('h1, h2, h3, p') || !gruppe.children.length;
       var teile = einzeln ? [gruppe] : gsap.utils.toArray(gruppe.children);
       gsap.from(teile, {
-        autoAlpha: 0,
+        opacity: 0,
         y: 24,
         duration: D,
         ease: EASE,
