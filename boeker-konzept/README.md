@@ -3,8 +3,7 @@
 > **Unverbindlicher Konzeptentwurf von Studio Leine – nicht im Auftrag von Böker Bestattungen und Tischlerei erstellt. Alle Texte und Bilder sind Platzhalter.**
 > Die Seite ist mit `noindex, nofollow` gekennzeichnet. Es wurden keine Logos, Fotos oder Texte der bestehenden Website übernommen; die Wortmarke ist reiner Text.
 
-Ruhige One-Page-Landingpage (Scrollseite) für einen Bestatter mit Tischlerei in Hannover-Ricklingen.
-Kompakt aufgebaut: Start mit Tor-Animation, danach drei dichte Kapitel von je etwa einer Bildschirmhöhe.
+Ruhige Scroll-Landingpage für einen Bestatter mit Tischlerei in Hannover-Ricklingen.
 Statisch: HTML, CSS, Vanilla-JS. Kein Framework, kein Build-Schritt, keine externen Ressourcen.
 
 ## Starten
@@ -14,8 +13,6 @@ cd boeker-konzept
 python3 -m http.server 8000
 # dann http://localhost:8000 öffnen
 ```
-
-`index.html` lässt sich auch direkt per Doppelklick öffnen. Für die Scroll-Animationen ist ein lokaler Server zuverlässiger.
 
 ## Struktur
 
@@ -27,10 +24,11 @@ boeker-konzept/
 ├── favicon.svg             Bogen-Symbol
 ├── assets/
 │   ├── css/style.css       Tokens, Layout, Komponenten (mobile-first)
-│   ├── js/main.js          Menü, Absicherung ohne GSAP, Pfadlänge im Trauerfall-Weg
+│   ├── js/lichtermeer.js   Der nächtliche Friedhof mit Grablichtern (Canvas 2D, ohne Bibliothek)
+│   ├── js/main.js          Menü, Absicherung ohne GSAP, Lichtermeer anlegen, Pfadlänge im Trauerfall-Weg
 │   ├── js/motion.js        Alle Scroll-Animationen (GSAP + ScrollTrigger)
 │   ├── vendor/             gsap.min.js, ScrollTrigger.min.js (3.15.0, lokal)
-│   └── fonts/              Marcellus, Atkinson Hyperlegible Next (woff2, lokal, OFL)
+│   └── fonts/              Libre Caslon Display, Golos Text (woff2, lokal, OFL)
 ├── PRODUCT.md              Produktwahrheit (Zielgruppen, Ton, Grenzen)
 ├── DESIGN.md               Gestaltungsentscheidungen
 └── README.md
@@ -38,57 +36,56 @@ boeker-konzept/
 
 ### Aufbau (jede Einheit ist ein `<section data-section="…">`)
 
-| Teil | `data-section` | Inhalt |
-|---|---|---|
-| Start | `start` | Einstieg, Anrufen-Button, Bogen „Eingang“ → Highlight 1, danach Kernsatz mit drei Fakten |
-| Kapitel 1 | `trauerfall` | Was ist im Trauerfall zu tun? 4 Schritte → Highlight 2 (ab 1152 px waagerecht) |
-| Kapitel 2 | `bestattungsarten`, `vorsorge`, `tischlerei` | Drei Spalten in drei Materialien: Stein (Liste), Moos (Bogenfeld), Holz (Tafel) |
-| Kapitel 3 | `ueber-uns`, `kontakt` | Hell und dunkel nebeneinander: Über uns mit Fakten, Kontakt mit Anfahrt und Kartenlinks |
+| `data-section` | Inhalt |
+|---|---|
+| `start` | Einstieg mit Anrufen-Button. Rechts (mobil oben) ein Bogen mit dem Lichtermeer → Highlight 1 |
+| `trauerfall` | Was ist im Trauerfall zu tun? 4 Schritte → Highlight 2 |
+| `bestattungsarten` | Fünf Bestattungsarten als Reihe von Grabsteinen |
+| `vorsorge`, `tischlerei` | Zwei gleich gebaute Tafeln nebeneinander: Moos und Holz |
+| `ueber-uns` | Foto im Bogen, Text, vier Fakten |
+| `kontakt` | Große Telefonnummer, zwei Buttons, ferner Lichterstreifen, drei Spalten: Adresse, Erreichbarkeit, Anfahrt |
 
-Mobil (unter 1024 px) gibt es eine feste untere Leiste mit **Anrufen** (`tel:`) und **Anfahrt** (Sprung zum Abschnitt Anfahrt).
+Mobil (unter 1024 px) gibt es eine feste untere Leiste mit **Anrufen** (`tel:`) und **Anfahrt**.
 
 ## Animationen
 
-Langsam und ruhig, alle an das Scrollen gekoppelt. Grundtempo in `style.css`: `--motion-duration: 1.6s`, `--motion-ease`. `motion.js` liest `--motion-duration` aus.
+| | Name | Was passiert |
+|---|---|---|
+| **Highlight 1** | Lichtermeer | Beim Laden zieht sich ein goldener Umriss um den Bogen. Darin erscheint ein Friedhof bei Nacht, die Grablichter gehen von vorn nach hinten an und flackern leise. Mit der Maus verschiebt sich der Blick ein wenig. Beim Scrollen öffnet sich der Bogen zum ganzen Bild, die Kamera gleitet langsam über das Lichtermeer, dann erscheint „Bestattungen und Tischlerei unter einem Dach.“ |
+| **Highlight 2** | Lichter am Weg | Ein Funke läuft die goldene Linie entlang (groß: waagerecht, Handy: senkrecht) und entzündet jeden Schritt mit einem kurzen Lichtring. Startet, sobald der Weg ins Bild kommt. Ist der Abschnitt ganz zu sehen, brennen alle vier Lichter. |
+| ruhig 1 | Steine | Die Bestattungsarten steigen nacheinander wie Grabsteine aus der Erde (auf dem Handy: sanftes Einblenden). |
+| ruhig 2 | Bildfenster | Bild-Platzhalter öffnen sich langsam von unten. |
+| ruhig 3 | Einblenden | Textgruppen erscheinen sanft nacheinander. |
 
-| | Name | Abschnitt | Was passiert |
-|---|---|---|---|
-| **Highlight 1** | Das Tor öffnet sich | Start | Der Abschnitt bleibt stehen. Der Bogen (wie ein Friedhofstor) weitet sich langsam zum ganzen Bild, es dämmert, dann erscheint „Bestattungen und Tischlerei unter einem Dach.“ |
-| **Highlight 2** | Lichter am Weg | Im Trauerfall | Eine warme Linie wächst mit dem Scrollen den Weg entlang, auf großen Bildschirmen waagerecht, auf dem Handy senkrecht. Erreicht sie einen Schritt, entzündet sich dort ein Licht (wie ein Grablicht) und flackert leise. |
-| ruhig 1 | Feine Linien | Listen, Fakten | Trennlinien ziehen sich von links nach rechts. |
-| ruhig 2 | Bogenfenster | Vorsorge-Bogen, Bild-Platzhalter | Flächen öffnen sich langsam von unten. |
-| ruhig 3 | Ruhiges Einblenden | Überschriften, Texte, Listen | Inhalte erscheinen sanft und nacheinander. |
+Dazu im Kontakt ein ferner Lichterstreifen als stilles Echo des Einstiegs.
+
+**Technik:** Das Lichtermeer ist ein Canvas-2D-Renderer ohne Bibliothek (Perspektive, Grabsteine, Lichter mit vorberechneten Leucht-Sprites, zwischengespeicherter Hintergrund). Es läuft nur, solange es sichtbar ist, startet erst nach dem Laden und zeichnet auf kleinen Bildschirmen mit 30 statt 60 Bildern pro Sekunde.
 
 **Sicherheitsnetz**
 
-- Ohne JavaScript oder wenn GSAP nicht lädt: Alles ist sofort sichtbar (`main.js` entfernt dann die Klasse `motion-ok`).
-- Bei „Bewegung reduzieren“ im Betriebssystem: keine Scroll-Animationen, Lichter brennen ruhig, kein Flackern (`gsap.matchMedia()` + `@media (prefers-reduced-motion: reduce)`).
-- Das Flackern läuft nur, solange der Abschnitt sichtbar ist.
+- Ohne JavaScript oder wenn GSAP nicht lädt: Alles ist sofort sichtbar.
+- Bei „Bewegung reduzieren“: keine Scroll-Animationen, das Lichtermeer ist ein ruhiges Standbild, die Lichter am Weg brennen ohne Flackern.
 
-**Anpassen**
-
-- Tempo: `--motion-duration` in `assets/css/style.css`.
-- Länge von Highlight 1: `end` in `tor()` in `motion.js` (Faktor 1.15 bzw. 0.95 der Fensterhöhe).
-- Eine Animation abschalten: in `motion.js` den Aufruf im `mm.add(…)`-Block entfernen (z. B. `bogenfenster();`).
+**Anpassen:** Tempo über `--motion-duration` in `style.css`. Länge der Kamerafahrt: `end` in `lichtermeer()` in `motion.js`. Dichte der Lichter: `dichte` in `main.js`.
 
 ## Gestaltung
 
-- **Farben:** Kalkstein-Off-White `#EDEDE7`, Anthrazit `#252826`, gedämpftes Salbeigrün `#7E8C77` / `#44513E`, Holzton `#9A7A58` / `#6A4D31` (nur Tischlerei), Kerzenlicht `#E8C483` (nur im Trauerfall-Weg). Feines Steinkorn als Textur.
-- **Schriften (lokal):** *Marcellus* für Überschriften – angelehnt an römische Inschriften, also an gemeißelte Buchstaben in Stein. *Atkinson Hyperlegible Next* für Text – vom Braille Institute für Menschen mit eingeschränktem Sehvermögen entwickelt. Die Null hat bewusst einen Schrägstrich, damit sie nicht mit „O“ verwechselt wird.
-- **Formsprache:** Der Rundbogen (Tor, Kapellenfenster, Grabstein) zieht sich durch die Seite. Die Tischlerei hat bewusst gerade Kanten.
-- Keine Verläufe als Schmuck, kein Glassmorphism, keine Icon-Karten-Raster, keine Stock-Fotos.
+- **Farben:** Kalkstein `#EDEDE7`, Anthrazit `#222523`, Nacht `#0D110F`, gedämpftes Salbeigrün `#7E8C77`, Holzton `#6A4D31`, Kerzenlicht `#E8C483`.
+- **Schriften (lokal):** *Libre Caslon Display* für Überschriften, feierlich und mit starken Kontrasten. *Golos Text* für Fließtext und Bedienung, sehr gut lesbar.
+- **Buttons:** Pillenform mit rundem Symbol-Knopf (Telefon, Pfeil, Kartennadel). Beim Drücken geben sie leicht nach, bei Maus-Hover rückt der Knopf ein Stück vor.
+- **Formsprache:** Der Rundbogen (Tor, Grabstein, Kapellenfenster) zieht sich durch die Seite.
 
 ## Barrierefreiheit (ältere Besucher im Blick)
 
-- Fließtext 19–21 px, Buttons mindestens 56 px hoch, Telefonnummer überall als `tel:`-Link.
-- Kontraste nach WCAG AA geprüft (Fließtext 6,8 : 1 und mehr; gedimmte Schritte 5,1 : 1).
-- Sichtbarer Tastaturfokus, „Zum Inhalt springen“-Link, Menü-Button mit Text „Menü“ (nicht nur Symbol), Escape schließt das Menü.
-- Semantisches HTML: `header`, `nav`, `main`, `section`, `ol` für die Schritte, `address`, `dl` für Fakten.
+- Fließtext 19–21 px, Buttons mindestens 56 px hoch (Kopfzeile 48 px), Telefonnummer überall als `tel:`-Link.
+- Alle Farbpaare nach WCAG AA geprüft (Fließtext ab 5,7 : 1).
+- Sichtbarer Tastaturfokus, „Zum Inhalt springen“, Menü-Button mit Text, Escape schließt das Menü.
+- Das Lichtermeer ist für Screenreader als Stimmungsbild beschrieben.
 
 ## Datenschutz und Technik
 
 - Schriften und GSAP liegen lokal, keine Google-Fonts- oder CDN-Einbindung.
-- Keine Google-Maps-Einbettung: Adresse als Text, dazu zwei externe Kartenlinks (OpenStreetMap, Google Maps).
+- Keine Karten-Einbettung: Adresse als Text, dazu externe Links (Google Maps, OpenStreetMap).
 - Keine Tracker, keine Cookies, kein Formular. Kontakt nur über `tel:` und `mailto:`.
 
 ## SEO
@@ -99,10 +96,10 @@ Langsam und ruhig, alle an das Scrollen gekoppelt. Grundtempo in `style.css`: `-
 
 ## Qualitätscheck (lokal gemessen)
 
-- Lighthouse Mobil (drei Läufe): Performance 91–97, Barrierefreiheit 100, Best Practices 100. SEO 60 nur wegen des gewollten `noindex`.
-  Gemessen auf `python3 -m http.server` ohne Kompression. Mit gzip/Brotli und Caching beim Hoster ist mehr zu erwarten.
-- Screenshots für Desktop (1440 px), Tablet (800 px) und Mobil (390 px) geprüft, mit und ohne Bewegung, keine Konsolenfehler.
-- Design-Detektor (impeccable): Hinweise zu Off-White, Kerzenlicht und Schraffur der Platzhalter sind bewusste Entscheidungen aus dem Briefing. Die Hinweise „cramped padding“ bei Abschnitten sind Fehlalarme: Die Abstände entstehen über `.wrap` und `padding-block`.
+- Lighthouse Mobil (drei Läufe): Performance 90–94, Barrierefreiheit 100, Best Practices 100. SEO 60 nur wegen des gewollten `noindex`.
+  Gemessen auf `python3 -m http.server` ohne Kompression.
+- Lichtermeer in einer Testumgebung ohne Grafikkarte: rund 54 Bilder pro Sekunde auf dem Desktop.
+- Screenshots für Desktop (1440 px), Tablet und Mobil (390 px) geprüft, mit und ohne Bewegung, keine Konsolenfehler, kein seitliches Scrollen.
 
 ## [PRÜFEN]-Liste
 
@@ -111,7 +108,7 @@ Alles hier ist im Entwurf sichtbar markiert und muss vom Betrieb bestätigt oder
 **Aus der Recherche – vom Betrieb zu bestätigen**
 1. Gründungsjahr 1961 (Start und Über uns)
 2. Familienbetrieb, Meister- und Ausbildungsbetrieb
-3. Eigene Trauerhalle (Bestattungsarten und Über uns)
+3. Eigene Trauerhalle
 4. E-Mail-Adresse `bestattungen@boeker-hannover.de`
 5. Mitgliedschaft im Bestatterverband Niedersachsen e. V.
 6. Stadtbahn-Haltestelle Beekestraße: Linien 3, 7 und 17, Fußweg
@@ -123,17 +120,16 @@ Alles hier ist im Entwurf sichtbar markiert und muss vom Betrieb bestätigt oder
 9. Öffnungszeiten
 10. Welche Bestattungsarten werden angeboten?
 11. Finanzielle Vorsorge: Treuhandkonto, Sterbegeldversicherung?
-12. Leistungsumfang der Tischlerei, eigene Rufnummer?
+12. Leistungsumfang der Tischlerei
 13. Text zur Geschichte des Hauses und zu den Menschen
 14. Name und Funktion für das Inhaberfoto
-15. Parkmöglichkeiten
-16. Stufenloser Zugang?
-17. Impressum (Rechtstext vom Betrieb, mit Generator)
-18. Datenschutzerklärung (Rechtstext vom Betrieb, mit Generator)
+15. Parkplätze, stufenloser Zugang?
+16. Impressum (Rechtstext vom Betrieb, mit Generator)
+17. Datenschutzerklärung (Rechtstext vom Betrieb, mit Generator)
 
 **Zusätzlich gegenlesen lassen:** die allgemeinen Hinweise im Abschnitt „Im Trauerfall“ (116 117, 112, Unterlagen). Sie sind als Orientierung formuliert und ersetzen keine Rechtsberatung.
 
-**Benötigte Fotos:** Eingang Beekestraße 66–68, Werkstatt, Inhaber/Inhaberin.
+**Benötigte Fotos:** Beratungsgespräch, Werkstatt, Inhaber/Inhaberin. Das Lichtermeer ist eine gezeichnete Szene und braucht kein Foto.
 
 ## Recherche
 
@@ -153,12 +149,12 @@ Die echten Daten stehen nur in diesem Projektordner.
 ## Lizenzen
 
 - GSAP 3.15.0 und ScrollTrigger: kostenlose „Standard License“ von GreenSock, auch für kommerzielle Nutzung (https://gsap.com/standard-license)
-- Marcellus und Atkinson Hyperlegible Next: SIL Open Font License 1.1 (Lizenztexte in `assets/fonts/`)
+- Libre Caslon Display und Golos Text: SIL Open Font License 1.1 (Lizenztexte in `assets/fonts/`)
 - Symbole für Telefon und Kartennadel: nach Lucide (ISC-Lizenz)
 
 ## Verwendete Skills
 
-- `greensock/gsap-skills`: ScrollTrigger (Pin, Scrub, `batch`), Timelines, `gsap.matchMedia()` für reduzierte Bewegung, Performance-Regeln
-- `frontend-design` (Anthropic): eigenständige Gestaltung statt Standard-Look, Schrift als Gestaltungselement
-- `impeccable`: Qualitätsboden (Kontrast, Fokus, Auswahlfarbe, Scrollleiste), Bewegungsregeln, Design-Detektor
-- `emil-design-eng` (Emil Kowalski): Easing, `scale(0.98)` beim Drücken, `clip-path`-Reveals, Hover nur mit Maus
+- `greensock/gsap-skills`: ScrollTrigger (Pin, Scrub), Timelines, `quickSetter`, `gsap.matchMedia()` für reduzierte Bewegung, Performance-Regeln
+- `frontend-design` (Anthropic): eigenständige Gestaltung, Schrift als Gestaltungselement
+- `impeccable` (overdrive, bolder, craft floor): Richtungen zur Wahl vorgelegt, ein starker Moment statt vieler, Qualitätsboden, Design-Detektor
+- `emil-design-eng`, `animate` (Emil Kowalski): Easing-Kurven, `scale(0.97)` beim Drücken, Hover nur mit Maus, `clip-path`-Reveals, Stagger

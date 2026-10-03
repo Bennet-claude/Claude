@@ -1,15 +1,31 @@
-/* Böker – Konzeptentwurf: Navigation und Absicherung (Vanilla JS, kein Framework) */
+/* Böker – Konzeptentwurf: Grundfunktionen (Vanilla JS, kein Framework)
+   Menü, Absicherung ohne GSAP, Pfadlänge im Trauerfall-Weg, Lichtermeer anlegen. */
 (function () {
   'use strict';
 
   var root = document.documentElement;
+  var ruhig = !(window.matchMedia && matchMedia('(prefers-reduced-motion: no-preference)').matches);
 
   // Falls GSAP nicht geladen wurde: Bewegungs-Layout abschalten, damit alle Inhalte sichtbar sind.
   if (!window.gsap || !window.ScrollTrigger) {
     root.classList.remove('motion-ok');
   }
 
-  // Weg im Trauerfall: Die Linie endet genau in der Mitte des letzten Lichts
+  /* ---------- Lichtermeer: Start (Feld) und Kontakt (Horizont) ---------- */
+  window.boekerMeer = {};
+  if (window.Lichtermeer) {
+    var klein = window.innerWidth < 700;
+    var feld = document.querySelector('[data-meer]');
+    var horizont = document.querySelector('[data-meer-horizont]');
+    if (feld) {
+      window.boekerMeer.feld = window.Lichtermeer(feld, { modus: 'feld', dichte: klein ? 0.55 : 1, ruhig: ruhig, seed: 7, beobachten: feld.closest('section') });
+    }
+    if (horizont) {
+      window.boekerMeer.horizont = window.Lichtermeer(horizont, { modus: 'horizont', dichte: klein ? 0.5 : 0.8, ruhig: ruhig, seed: 11, beobachten: horizont.parentElement });
+    }
+  }
+
+  /* ---------- Weg im Trauerfall: Die Linie endet genau in der Mitte des letzten Lichts ---------- */
   var bahn = document.querySelector('.weg__bahn');
   var pfad = document.querySelector('.weg__pfad');
   function pfadKuerzen() {
@@ -30,7 +46,7 @@
   pfadKuerzen();
   if (bahn && 'ResizeObserver' in window) new ResizeObserver(pfadKuerzen).observe(bahn);
 
-  // Menü (mobil und Tablet)
+  /* ---------- Menü (mobil und Tablet) ---------- */
   var toggle = document.querySelector('.nav__toggle');
   var liste = document.getElementById('nav-liste');
   if (!toggle || !liste) return;
