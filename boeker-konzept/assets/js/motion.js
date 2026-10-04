@@ -2,11 +2,9 @@
    Böker – Konzeptentwurf: Bewegung (GSAP + ScrollTrigger, lokal)
 
    Zwei Highlights
-     H1  „Lichtermeer“      – Beim Laden zieht sich ein goldener Umriss um den
-                              Bogen, darin erscheint ein Friedhof bei Nacht, die
-                              Grablichter gehen nacheinander an. Beim Scrollen
-                              öffnet sich der Bogen zum ganzen Bild und die Kamera
-                              gleitet langsam über das Lichtermeer.
+     H1  „Abendgang“        – Zehn Szenen eines Spaziergangs im Abendlicht gehen
+                              ruhig ineinander über. Reines CSS (style.css), Start
+                              und Pause in main.js, deshalb nicht in dieser Datei.
      H2  „Lichter am Weg“   – Im Trauerfall läuft ein Funke die goldene Linie
                               entlang und entzündet jeden Schritt.
    Drei ruhige Animationen
@@ -36,15 +34,12 @@
   var D = parseFloat(getComputedStyle(root).getPropertyValue('--motion-duration')) || 1.6;
   var EASE = 'power2.out';
 
-  function mischen(a, b, t) { return a + (b - a) * t; }
-
   var mm = gsap.matchMedia();
 
   mm.add(
     {
       ok: '(prefers-reduced-motion: no-preference)',
       reduce: '(prefers-reduced-motion: reduce)',
-      desktop: '(min-width: 64em)',
       quer: '(min-width: 72em)',
       reihe: '(min-width: 60em)'
     },
@@ -57,7 +52,6 @@
       root.classList.add('motion-ok');
 
       var aufraeumen = [];
-      aufraeumen.push(lichtermeer(c.desktop));
       aufraeumen.push(lichterAmWeg(c.quer));
       aufraeumen.push(steine(c.reihe));
       uebergaenge();
@@ -73,164 +67,6 @@
   // Positionen neu berechnen, sobald die Schriften geladen sind
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
-  }
-
-  /* ------------------------------------------------------------------------
-     H1 – Lichtermeer
-     ------------------------------------------------------------------------ */
-  function lichtermeer(desktop) {
-    var hero = document.querySelector('.hero');
-    if (!hero) return;
-    var slot = hero.querySelector('[data-tor-slot]');
-    var torEl = hero.querySelector('[data-tor]');
-    var schatten = hero.querySelector('[data-tor-schatten]');
-    var aussage = hero.querySelector('[data-tor-aussage]');
-    var text = hero.querySelector('.hero__text');
-    var kopf = document.querySelector('.kopf');
-    var meer = window.boekerMeer && window.boekerMeer.feld;
-
-    // Geometrie des Bogens relativ zum Abschnitt
-    function geo() {
-      var h = hero.getBoundingClientRect();
-      var s = slot.getBoundingClientRect();
-      var r = Math.round;
-      return {
-        t: r(s.top - h.top),
-        r: r(h.right - s.right),
-        b: r(h.bottom - s.bottom),
-        l: r(s.left - h.left),
-        breite: r(s.width),
-        hoehe: r(s.height),
-        rad: Math.floor(s.width / 2),
-        mitte: (s.left - h.left + s.width / 2) / (h.width || 1),
-        horizont: (s.top - h.top + s.height * 0.42) / (h.height || 1)
-      };
-    }
-    // Der Bogen als Pfad: ein inset() mit runden Ecken wird über einem Canvas
-    // in Chrome nur grob ausgeschnitten, path() ist exakt.
-    var form = { k: 0 };
-    var G = null;
-    function bogenSetzen() {
-      if (!G) G = geo();
-      var k = form.k;
-      var W = hero.clientWidth, H = hero.clientHeight;
-      var L = mischen(G.l, 0, k), T = mischen(G.t, 0, k);
-      var R = mischen(G.l + G.breite, W, k), B = mischen(G.t + G.hoehe, H, k);
-      var rr = Math.min(mischen(G.rad, 0, k), (R - L) / 2);
-      var z = function (v) { return Math.round(v * 10) / 10; };
-      torEl.style.clipPath = 'path(\'M ' + z(L) + ' ' + z(B) + ' V ' + z(T + rr) +
-        ' A ' + z(rr) + ' ' + z(rr) + ' 0 0 1 ' + z(L + rr) + ' ' + z(T) +
-        ' H ' + z(R - rr) + ' A ' + z(rr) + ' ' + z(rr) + ' 0 0 1 ' + z(R) + ' ' + z(T + rr) +
-        ' V ' + z(B) + ' Z\')';
-    }
-    function neuVermessen() { G = geo(); bogenSetzen(); }
-
-    hero.classList.add('is-tor');
-    neuVermessen();
-
-    // goldener Umriss um den Bogen
-    var NS = 'http://www.w3.org/2000/svg';
-    var umriss = document.createElementNS(NS, 'svg');
-    umriss.setAttribute('class', 'tor__umriss');
-    umriss.setAttribute('aria-hidden', 'true');
-    var linie = document.createElementNS(NS, 'path');
-    umriss.appendChild(linie);
-    hero.appendChild(umriss);
-    function umrissSetzen() {
-      var g = geo();
-      var a = 8;
-      var bw = g.breite + 2 * a;
-      var bh = g.hoehe + a;
-      var r = bw / 2;
-      umriss.style.left = (g.l - a) + 'px';
-      umriss.style.top = (g.t - a) + 'px';
-      umriss.setAttribute('width', bw);
-      umriss.setAttribute('height', bh);
-      umriss.setAttribute('viewBox', '0 0 ' + bw + ' ' + bh);
-      linie.setAttribute('d', 'M0.5,' + bh + ' V' + r + ' A' + (r - 0.5) + ',' + (r - 0.5) + ' 0 0 1 ' + (bw - 0.5) + ',' + r + ' V' + bh);
-      var laenge = linie.getTotalLength();
-      linie.style.strokeDasharray = laenge;
-      return laenge;
-    }
-    var laenge = umrissSetzen();
-    ScrollTrigger.addEventListener('refreshInit', umrissSetzen);
-
-    // Blickpunkt: Fluchtpunkt und Horizont erst im Bogen, beim Öffnen in der Bildmitte
-    var kamera = { p: 0, f: 0 };
-    function fluchtSetzen() {
-      if (!meer) return;
-      var g = geo();
-      meer.setFlucht(mischen(g.mitte, 0.5, kamera.f));
-      meer.setHorizont(mischen(g.horizont, 0.47, kamera.f));
-    }
-    function fahrtSetzen() {
-      if (meer) meer.setFortschritt(kamera.p);
-    }
-    fluchtSetzen();
-
-    // Einstieg: Umriss zeichnet sich, die Nacht erscheint, die Lichter gehen an
-    var intro = gsap.timeline({ delay: 0.2 });
-    if (window.scrollY < 40) {
-      intro
-        .fromTo(linie, { strokeDashoffset: laenge }, { strokeDashoffset: 0, duration: 2.4, ease: 'power2.inOut' })
-        .fromTo(torEl, { opacity: 0 }, {
-          opacity: 1,
-          duration: 1.5,
-          ease: 'power1.out',
-          onStart: function () { if (meer) meer.neuEntzuenden(); }
-        }, 0.9);
-    } else {
-      gsap.set(linie, { strokeDashoffset: 0 });
-      gsap.set(torEl, { opacity: 1 });
-    }
-
-    // Scrollen: der Bogen öffnet sich, die Kamera gleitet über das Lichtermeer
-    var tl = gsap.timeline({
-      defaults: { ease: 'none' },
-      scrollTrigger: {
-        trigger: hero,
-        start: function () { return 'top ' + (desktop && kopf ? kopf.offsetHeight : 0) + 'px'; },
-        end: function () { return '+=' + Math.round(window.innerHeight * (desktop ? 1.5 : 1.2)); },
-        pin: true,
-        scrub: 1.2,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onRefresh: function () { neuVermessen(); fluchtSetzen(); },
-        // der Button in der Aussage ist erst bedienbar, wenn sie zu lesen ist
-        onUpdate: function (self) { aussage.classList.toggle('ist-sichtbar', self.progress > 0.8); }
-      }
-    });
-
-    tl.to(text, { autoAlpha: 0, y: -40, duration: 0.24 }, 0)
-      .to(umriss, { opacity: 0, duration: 0.1 }, 0)
-      .to(form, { k: 1, duration: 0.46, ease: 'power2.inOut', onUpdate: bogenSetzen }, 0.03)
-      .to(kamera, { f: 1, duration: 0.46, ease: 'power2.inOut', onUpdate: fluchtSetzen }, 0.03)
-      .to(kamera, { p: 1, duration: 0.95, ease: 'power1.inOut', onUpdate: fahrtSetzen }, 0.05)
-      .to(schatten, { opacity: 1, duration: 0.28 }, 0.5)
-      .fromTo(aussage,
-        { opacity: 0, y: 36, filter: 'blur(8px)' },
-        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.26, ease: 'power2.out' }, 0.64)
-      .to({}, { duration: 0.08 });   // kurz verweilen
-
-    // Tastatur: Bekommt der Button in der Aussage den Fokus, bevor sie zu sehen ist,
-    // springt die Seite ans Ende der Kamerafahrt, damit er sichtbar wird.
-    function fokusZeigen() {
-      if (!aussage.classList.contains('ist-sichtbar') && tl.scrollTrigger) {
-        window.scrollTo(0, Math.ceil(tl.scrollTrigger.end));
-      }
-    }
-    aussage.addEventListener('focusin', fokusZeigen);
-
-    return function () {
-      ScrollTrigger.removeEventListener('refreshInit', umrissSetzen);
-      aussage.removeEventListener('focusin', fokusZeigen);
-      intro.kill();
-      if (umriss.parentNode) umriss.parentNode.removeChild(umriss);
-      hero.classList.remove('is-tor');
-      aussage.classList.remove('ist-sichtbar');
-      torEl.style.clipPath = '';
-      if (meer) { meer.setFortschritt(0); meer.setFlucht(0.5); meer.setHorizont(null); }
-    };
   }
 
   /* ------------------------------------------------------------------------

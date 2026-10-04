@@ -1,5 +1,5 @@
 /* Böker – Konzeptentwurf: Grundfunktionen (Vanilla JS, kein Framework)
-   Menü, Absicherung ohne GSAP, Lichtermeer anlegen und bedienen,
+   Menü, Absicherung ohne GSAP, Abendgang (Bilderfolge) starten und anhalten,
    Grablichter an den Steinen, Pfadlänge im Trauerfall-Weg. */
 (function () {
   'use strict';
@@ -12,59 +12,65 @@
     root.classList.remove('motion-ok');
   }
 
-  /* ---------- Lichtermeer: Start (Feld) und Kontakt (Horizont) ---------- */
-  window.boekerMeer = {};
-  if (window.Lichtermeer) {
-    var klein = window.innerWidth < 700;
-    var feld = document.querySelector('[data-meer]');
-    var horizont = document.querySelector('[data-meer-horizont]');
-    if (feld) {
-      window.boekerMeer.feld = window.Lichtermeer(feld, { modus: 'feld', dichte: klein ? 0.55 : 1, ruhig: ruhig, seed: 7, beobachten: feld.closest('section') });
-    }
-    if (horizont) {
-      window.boekerMeer.horizont = window.Lichtermeer(horizont, { modus: 'horizont', dichte: klein ? 0.5 : 0.8, ruhig: ruhig, seed: 11, beobachten: horizont.parentElement });
-    }
-  }
-
-  /* ---------- Lichtermeer: Laterne unter der Maus, Klick entzündet ein Licht ---------- */
-  var meer = window.boekerMeer.feld;
-  var tor = document.querySelector('[data-tor]');
-  var meerCanvas = document.querySelector('[data-meer]');
-  var lichtKnopf = document.querySelector('[data-licht-button]');
-  var hinweis = document.querySelector('[data-licht-hinweis]');
-  var status = document.querySelector('[data-licht-status]');
   var maus = !!(window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches);
 
-  if (hinweis && !maus) hinweis.textContent = 'Oder tippen Sie in das Bild.';
+  /* ---------- Abendgang: die Bilderfolge im Einstieg ---------- */
+  // Der Ablauf selbst ist reines CSS (style.css, „Abendgang“). Hier wird er gestartet,
+  // sobald alle Szenen geladen sind, und angehalten: per Knopf, außerhalb des Bildes,
+  // bei verdecktem Tab. Bei „Bewegung reduzieren“ blättert der Knopf von Hand weiter.
+  var film = document.querySelector('[data-film]');
+  if (film) {
+    var knopf = film.querySelector('[data-film-knopf]');
+    var knopfText = film.querySelector('[data-film-text]');
+    var symbol = film.querySelector('[data-film-symbol]');
+    var szenen = film.querySelectorAll('.film__bild');
+    var titel = film.querySelectorAll('.film__titel span');
+    var SYMBOL = {   // Phosphor Icons (regular)
+      anhalten: 'M200,32H160a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,200,32Zm0,176H160V48h40ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Zm0,176H56V48H96Z',
+      abspielen: 'M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z',
+      weiter: 'M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z'
+    };
+    var angehalten = false, imBild = true, aktiv = 0;
 
-  function melden() {
-    if (!status || !meer) return;
-    var n = meer.anzahlEntzuendet();
-    status.textContent = n === 1 ? 'Ein Licht wurde entzündet.' : 'Sie haben ' + n + ' Lichter entzündet.';
-  }
-  function lokal(e) {
-    var r = meerCanvas.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top };
-  }
+    var zustand = function () {
+      film.classList.toggle('film--ruht', angehalten || !imBild || document.hidden);
+    };
+    var zeigen = function (n) {
+      aktiv = n;
+      Array.prototype.forEach.call(szenen, function (el, i) { el.classList.toggle('ist-aktiv', i === n); });
+      Array.prototype.forEach.call(titel, function (el, i) { el.classList.toggle('ist-aktiv', i === n); });
+    };
 
-  if (meer && tor && meerCanvas) {
-    tor.addEventListener('pointermove', function (e) {
-      if (e.pointerType !== 'mouse') return;
-      var p = lokal(e);
-      meer.setLaterne(p.x, p.y);
-    });
-    tor.addEventListener('pointerleave', function () { meer.setLaterne(null); });
-    tor.addEventListener('click', function (e) {
-      var p = lokal(e);
-      if (meer.entzuenden(p.x, p.y)) melden();
-    });
-  }
-  if (meer && lichtKnopf) {
-    lichtKnopf.addEventListener('click', function () {
-      if (meer.entzuendenZufaellig()) melden();
-    });
-  } else if (lichtKnopf) {
-    lichtKnopf.closest('.tor__aktion').hidden = true;
+    if (ruhig) {
+      film.classList.add('film--manuell');
+      knopfText.textContent = 'Nächstes Bild';
+      symbol.setAttribute('d', SYMBOL.weiter);
+      zeigen(0);
+      knopf.addEventListener('click', function () { zeigen((aktiv + 1) % szenen.length); });
+    } else {
+      knopf.addEventListener('click', function () {
+        angehalten = !angehalten;
+        knopfText.textContent = angehalten ? 'Abspielen' : 'Anhalten';
+        symbol.setAttribute('d', angehalten ? SYMBOL.abspielen : SYMBOL.anhalten);
+        zustand();
+      });
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (eintraege) {
+          imBild = eintraege[eintraege.length - 1].isIntersecting;
+          zustand();
+        }).observe(film);
+      }
+      document.addEventListener('visibilitychange', zustand);
+      // Erst starten, wenn alle Szenen dekodiert sind, sonst bliebe eine Überblendung leer.
+      // Bis dahin steht die erste Szene still, genau im Zustand, an dem der Ablauf einsetzt.
+      Promise.all(Array.prototype.map.call(film.querySelectorAll('img'), function (img) {
+        if (img.decode) return img.decode().catch(function () {});
+        return img.complete ? null : new Promise(function (fertig) { img.onload = img.onerror = fertig; });
+      })).then(function () {
+        zustand();
+        film.classList.add('film--laeuft');
+      });
+    }
   }
 
   /* ---------- Grabsteine: ein Grablicht bei Berührung, ein Klick lässt es brennen ---------- */

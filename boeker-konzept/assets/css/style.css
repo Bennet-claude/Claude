@@ -8,8 +8,8 @@
      Schwarz      #000000  polierter schwarzer Granit       Nacht
      Efeu         #3D4A36  Efeu und Buchsbaum auf Gräbern   Hauptfarbe
      Eiche        #5E4630  geräucherte Eiche der Werkstatt  Tischlerei
-     Grablicht    #9E2F25  rote Hülle der Grablichter       Akzent, 1x pro Bildschirm
-   Kerzenflamme #F1C26A erscheint nur im gezeichneten Licht.
+     Grablicht    #9E2F25  rote Hülle der Grablichter       Akzent, nur im Grablicht an den Steinen
+   Kerzenflamme #F1C26A erscheint nur in gezeichnetem Licht (Weg, Grablichter).
    ========================================================================== */
 
 /* ---------- Schriften (lokal, keine CDN-Einbindung) ---------- */
@@ -268,8 +268,6 @@ figure { margin: 0; }
   --btn-bg: transparent; --btn-fg: var(--auf-dunkel); --chip-bg: var(--auf-dunkel); --chip-fg: var(--basalt);
   border-color: rgb(231 231 226 / 0.35);
 }
-/* der Akzent: nur „Ein Licht entzünden“ */
-.btn--licht { --btn-bg: var(--grablicht); --btn-fg: #F7EFEA; --chip-bg: rgb(0 0 0 / 0.3); --chip-fg: var(--flamme); }
 
 @media (hover: hover) and (pointer: fine) {
   .btn:hover .btn__chip { transform: translateX(3px) scale(1.06); }
@@ -277,8 +275,6 @@ figure { margin: 0; }
   .btn--linie:hover { --btn-bg: rgb(46 48 48 / 0.07); border-color: var(--basalt); }
   .btn--hell:hover { --btn-bg: #FFFFFF; }
   .btn--linie-hell:hover { --btn-bg: rgb(231 231 226 / 0.08); border-color: var(--auf-dunkel); }
-  .btn--licht:hover { --btn-bg: #8A271F; }
-  .btn--licht:hover .btn__chip { transform: scale(1.08); }
 }
 
 /* ---------- Konzept-Hinweis und Kopf: eine Fläche, kein Farbsprung ---------- */
@@ -425,130 +421,124 @@ figure { margin: 0; }
 }
 
 /* ==========================================================================
-   Start / Highlight: „Lichtermeer“
+   Start / Highlight: „Abendgang“
+   Zehn Szenen eines Spaziergangs im Abendlicht gehen ruhig ineinander über.
+   Reine CSS-Animation auf der Grafikkarte (nur opacity und transform), flach,
+   ohne 3D. main.js startet sie, sobald alle Bilder da sind, und pausiert sie.
    ========================================================================== */
-.hero { position: relative; overflow: hidden; }
-.hero__grid {
-  display: grid;
-  grid-template-rows: auto auto;
-  align-content: start;
-  gap: 1.75rem;
-  min-height: calc(100svh - var(--header-h) - var(--bar-h));
-  padding-top: clamp(2rem, 6vw, 4.5rem);
+.hero {
+  display: flex;
+  flex-direction: column;
+  padding-block: clamp(1.5rem, 4vw, 3rem) clamp(2.5rem, 5vw, 4.5rem);
 }
-.hero__text { align-self: center; }
-.hero__text h1 { max-width: 11ch; }
+.hero__grid { display: grid; gap: 1.25rem; }
+.hero__grid h1 { max-width: 11ch; }
 .hero__lead {
-  margin-top: 1.5rem;
+  margin: 0;
   font-size: var(--fs-lead);
   line-height: 1.45;
   color: var(--basalt-2);
   max-width: 34ch;
 }
-.hero__aktionen { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+.hero__aktionen { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
 .hero__aktionen .btn { flex: 1 1 17rem; }
 
-/* Mobil steht der Bogen oben, damit das Lichtermeer sofort zu sehen ist */
-.hero__slot {
+/* Handy: das Bildband steht oben, damit die Stimmung sofort da ist */
+.film { order: -1; margin: 0 auto 1.75rem; }
+.film__fenster {
   position: relative;
-  order: -1;
-  height: clamp(11rem, 30svh, 17rem);
-  width: min(62%, 15rem);
-  justify-self: end;
-}
-.tor {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
   overflow: hidden;
-  border-radius: 999px 999px 0 0;
-  background: var(--schwarz);
-  cursor: pointer;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius);
+  background: #2B211D;            /* dunkles Abendbraun, bis das erste Bild da ist */
+  isolation: isolate;
 }
-.tor::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 18%;
-  background: linear-gradient(180deg, rgb(0 0 0 / 0), var(--schwarz));
-  pointer-events: none;
+.film__bild { position: absolute; inset: 0; display: block; opacity: 0; }
+.film__bild:first-child { opacity: 1; }
+.film__bild img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--fx) 50%;     /* Bildmitte je Szene, wichtig für den Handy-Ausschnitt */
+  transform-origin: var(--fx) 55%;
+  backface-visibility: hidden;
 }
-.tor__meer { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
-.tor__schatten {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgb(0 0 0 / 0.86) 0%, rgb(0 0 0 / 0.55) 42%, rgb(0 0 0 / 0) 72%);
-  opacity: 0;
-  pointer-events: none;
-}
-/* feiner Umriss aus Kerzenlicht, der sich beim Laden um den Bogen zieht */
-.tor__umriss { position: absolute; z-index: 3; overflow: visible; pointer-events: none; }
-.tor__umriss path {
-  fill: none;
-  stroke: var(--flamme);
-  stroke-width: 1.25;
-  vector-effect: non-scaling-stroke;
-  opacity: 0.85;
-}
+/* Standbild (ohne JavaScript und bis zum Start): genau der Zustand, an dem die Animation einsetzt */
+.film__bild:first-child img { transform: scale(1.0174) translateX(calc(var(--dx) * 0.2487)); }
 
-/* Aussage: ohne Bewegung ein ruhiges Band unter dem Bogen */
-.tor__aussage {
-  padding-block: clamp(2.5rem, 6vw, 4rem);
-  border-top: 1px solid var(--linie);
-}
-.tor__satz {
-  font-family: var(--font-serif);
-  font-size: var(--fs-h2);
-  line-height: 1.02;
-  letter-spacing: -0.015em;
-  max-width: 16ch;
-  margin-bottom: 0.9rem;
-  text-wrap: balance;
-}
-.tor__ort { color: var(--basalt-2); font-size: var(--fs-lead); }
-.tor__aktion {
+.film__leiste {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem 1.5rem;
-  margin-top: 2rem;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.9rem;
 }
-.tor__hinweis { margin: 0; font-size: 1rem; color: var(--basalt-2); }
-
-/* Mit Bewegung: Aussage liegt im Tor und erscheint erst beim Scrollen */
-.motion-ok .hero__grid { height: calc(100svh - var(--header-h) - var(--bar-h)); }
-.motion-ok .tor__aussage {
-  position: absolute;
-  left: 0; right: 0;
-  top: clamp(2.5rem, 9vh, 6rem);
-  z-index: 4;
-  padding: 0;
-  border: 0;
-  color: var(--auf-dunkel);
-  opacity: 0;
-  pointer-events: none;
+.film__titel {
+  display: grid;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
+  line-height: 1.2;
 }
-.motion-ok .tor__aussage.ist-sichtbar .tor__aktion { pointer-events: auto; }
-.motion-ok .tor__aussage :focus-visible { outline-color: var(--auf-dunkel); }
-.motion-ok .tor__ort,
-.motion-ok .tor__hinweis { color: var(--auf-dunkel-2); }
-.motion-ok .tor { opacity: 0; animation: tor-sicher 0s 3.5s forwards; }
-@keyframes tor-sicher { to { opacity: 1; } }
+.film__titel span { grid-area: 1 / 1; opacity: 0; }
+.film__titel span:first-child { opacity: 1; }
+.film__knopf { flex: none; }
+html:not(.js) .film__knopf { display: none; }
 
-.hero.is-tor .hero__slot { position: static; }
-.hero.is-tor .tor { border-radius: 0; }
+/* Ablauf: 10 Szenen zu je 6 s, Überblendung 2 s, Zyklus 60 s.
+   Jede Szene blendet über der vorigen ein (z-index 2), sinkt dann nach hinten und
+   verschwindet erst, wenn die nächste ganz deckt: nie scheint Schwarz durch,
+   auch nicht beim Sprung von Szene 10 zurück zu Szene 1. */
+.film--laeuft .film__bild { animation: film-blende 60s linear infinite; animation-delay: calc(var(--i) * 6s - 2s); }
+.film--laeuft .film__bild img { animation: film-zug 60s linear infinite; animation-delay: calc(var(--i) * 6s - 2s); }
+.film--laeuft .film__titel span { animation: film-titel 60s linear infinite; animation-delay: calc(var(--i) * 6s - 2.6s); }
+.film--ruht .film__bild,
+.film--ruht .film__bild img,
+.film--ruht .film__titel span { animation-play-state: paused; }
 
+@keyframes film-blende {
+  0%      { opacity: 0; z-index: 2; visibility: visible; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  3.333%  { opacity: 1; z-index: 2; }
+  9.999%  { opacity: 1; z-index: 2; }
+  10%     { opacity: 1; z-index: 1; }
+  13.4%   { opacity: 1; z-index: 1; visibility: visible; }
+  13.401% { opacity: 0; z-index: 1; visibility: hidden; }
+  100%    { opacity: 0; z-index: 1; visibility: hidden; }
+}
+/* langsamer Zug: 7 % näher und ein Stück zur Seite, gleichmäßig über die ganze Szene */
+@keyframes film-zug {
+  0%      { transform: scale(1) translateX(0); }
+  13.4%   { transform: scale(1.07) translateX(var(--dx)); }
+  13.401%, 100% { transform: scale(1) translateX(0); }
+}
+/* Bildunterschrift: kommt während der Überblendung, geht vor der nächsten */
+@keyframes film-titel {
+  0%, 2%  { opacity: 0; animation-timing-function: ease-out; }
+  4.333%  { opacity: 1; }
+  9.333%  { opacity: 1; animation-timing-function: ease-in; }
+  10.667%, 100% { opacity: 0; }
+}
+
+/* Bewegung reduziert: kein Ablauf; „Nächstes Bild“ zeigt die Szenen nacheinander */
+.film--manuell .film__bild,
+.film--manuell .film__titel span { opacity: 0; }
+.film--manuell .film__bild img { transform: none; }
+.film--manuell .film__bild.ist-aktiv,
+.film--manuell .film__titel span.ist-aktiv { opacity: 1; }
+
+@media (min-width: 40em) {
+  .film__fenster { aspect-ratio: 3.4 / 1; }
+}
 @media (min-width: 56em) {
   .hero__grid {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    grid-template-rows: 1fr;
-    align-content: stretch;
-    column-gap: clamp(2.5rem, 6vw, 6rem);
-    padding-top: clamp(2.5rem, 6vh, 4.5rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+    column-gap: clamp(2.5rem, 5vw, 5rem);
   }
-  .hero__text { padding-bottom: clamp(3rem, 8vh, 6rem); }
-  .hero__slot { order: 0; height: auto; min-height: 0; width: auto; justify-self: stretch; }
+  .hero__lead { max-width: 38ch; }
   .hero__aktionen .btn { flex: 0 0 auto; }
+  .film { order: 0; margin: clamp(1.75rem, 3vw, 2.5rem) auto 0; }
 }
 
 /* ==========================================================================
@@ -962,10 +952,18 @@ html:not(.motion-ok) .uebergang span { display: none; }
   position: relative;
   height: clamp(8rem, 16vw, 13rem);
   margin-block: clamp(2rem, 4vw, 3rem);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  /* „Ein letzter Blick“ läuft nach allen Seiten weich ins Schwarz aus */
+  -webkit-mask-image: radial-gradient(ellipse 54% 80% at 50% 50%, #000 50%, transparent 100%);
+  mask-image: radial-gradient(ellipse 54% 80% at 50% 50%, #000 50%, transparent 100%);
 }
-.kontakt__horizont canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.kontakt__horizont img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 55%;
+}
 .kontakt__spalten { display: grid; gap: 2rem; }
 .kontakt__spalte { padding-top: 1.25rem; border-top: 1px solid var(--linie); }
 .kontakt__spalte h3 {
