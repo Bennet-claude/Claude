@@ -150,7 +150,8 @@
   /* ------------------------------------------------------------------------
      R1 – Steine steigen aus der Erde
      Eine Choreografie, an den Scroll gekoppelt: Sie ist fertig, wenn die Reihe
-     ganz zu sehen ist, und bleibt danach stehen (kein Absinken beim Zurückscrollen).
+     ganz zu sehen ist. Beim Zurückscrollen sinken die Steine wieder, beim
+     nächsten Herunterscrollen steigen sie erneut auf, so oft man möchte.
      ------------------------------------------------------------------------ */
   function steine(reihe1) {
     var reihe = document.querySelector('[data-steine]');
@@ -166,7 +167,8 @@
         duration: D,
         ease: EASE,
         stagger: 0.14,
-        scrollTrigger: { trigger: reihe, start: 'top 85%', once: true }
+        // beim Zurückscrollen über den Anfang hinaus zurücksetzen, beim nächsten Mal wieder einblenden
+        scrollTrigger: { trigger: reihe, start: 'top 85%', toggleActions: 'play none none reverse' }
       });
       return;
     }
@@ -181,10 +183,6 @@
         end: 'bottom 78%',
         scrub: 1.4,
         invalidateOnRefresh: true
-      },
-      onComplete: function () {
-        // einmal ganz aufgebaut: stehen lassen
-        if (tl.scrollTrigger) tl.scrollTrigger.kill(false);
       }
     });
 

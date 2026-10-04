@@ -1,6 +1,7 @@
 /* Böker – Konzeptentwurf: Grundfunktionen (Vanilla JS, kein Framework)
    Menü, Absicherung ohne GSAP, Abendgang (Bilderfolge) starten und anhalten,
-   Grablichter an den Steinen, Pfadlänge im Trauerfall-Weg. */
+   Grablichter an den Steinen, Pfadlänge im Trauerfall-Weg. Läuft auf allen Seiten;
+   was eine Seite nicht hat, wird übersprungen. */
 (function () {
   'use strict';
 
@@ -12,7 +13,6 @@
     root.classList.remove('motion-ok');
   }
 
-  var maus = !!(window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches);
 
   /* ---------- Abendgang: die Bilderfolge im Einstieg ---------- */
   // Der Ablauf selbst ist reines CSS (style.css, „Abendgang“). Hier wird er gestartet,
@@ -73,19 +73,16 @@
     }
   }
 
-  /* ---------- Grabsteine: ein Grablicht bei Berührung, ein Klick lässt es brennen ---------- */
+  /* ---------- Grabsteine: mit der Maus darüber steht ein Grablicht davor ---------- */
+  // Jeder Stein ist ein Link zur Seite „Bestattungsarten“; mit der Tastatur leuchtet
+  // das Licht über :focus-within (style.css).
   var steine = document.querySelectorAll('.grabstein');
   Array.prototype.forEach.call(steine, function (stein) {
     stein.addEventListener('pointerenter', function (e) {
       if (e.pointerType === 'mouse') stein.classList.add('brennt');
     });
     stein.addEventListener('pointerleave', function (e) {
-      if (e.pointerType === 'mouse' && !stein.classList.contains('bleibt')) stein.classList.remove('brennt');
-    });
-    stein.addEventListener('click', function () {
-      var bleibt = !stein.classList.contains('bleibt');
-      stein.classList.toggle('bleibt', bleibt);
-      stein.classList.toggle('brennt', bleibt || maus);
+      if (e.pointerType === 'mouse') stein.classList.remove('brennt');
     });
   });
 

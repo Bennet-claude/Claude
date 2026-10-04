@@ -10,6 +10,7 @@
      Eiche        #5E4630  geräucherte Eiche der Werkstatt  Tischlerei
      Grablicht    #9E2F25  rote Hülle der Grablichter       Akzent, nur im Grablicht an den Steinen
    Kerzenflamme #F1C26A erscheint nur in gezeichnetem Licht (Weg, Grablichter).
+   Seite „Bestattungsarten“: dazu Graberde #3A322B, Asche #E3E1DC, Gischt #DCE3E5.
    ========================================================================== */
 
 /* ---------- Schriften (lokal, keine CDN-Einbindung) ---------- */
@@ -53,6 +54,10 @@
   --eiche: #5E4630;
   --grablicht: #9E2F25;
   --flamme: #F1C26A;         /* nur Illustration */
+  /* Bereichsfarben der Seite „Bestattungsarten“ (hell und dunkel im Wechsel) */
+  --graberde: #3A322B;       /* frisch aufgeworfene Graberde */
+  --asche: #E3E1DC;          /* helle Asche, Kalkgrau */
+  --gischt: #DCE3E5;         /* Gischt über der Nordsee */
   --auf-dunkel: #E7E7E2;
   --auf-dunkel-2: #A9ACA6;
   --linie: rgb(46 48 48 / 0.2);
@@ -730,11 +735,37 @@ html:not(.motion-ok) .uebergang span { display: none; }
   --schrift-licht: rgb(255 255 255 / 0.35);
   --schrift-schatten: rgb(0 0 0 / 0.18);
   position: relative;
+}
+/* Jeder Stein ist ein Link zur Seite „Bestattungsarten“ */
+.grabstein__link {
   display: grid;
   grid-template-columns: 4.75rem minmax(0, 1fr);
   column-gap: 1.25rem;
   align-items: start;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 6px;
 }
+.grabstein__link:focus-visible { outline-offset: 6px; }
+.grabstein__mehr {
+  display: inline-block;
+  margin-top: 0.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+.grabstein__mehr::after { content: " →"; }
+.arten__fuss {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin-top: 2rem;
+}
+.arten__fuss p { margin: 0; color: var(--basalt-2); }
 .grabstein--kalk   { --stein: #C8C8C1; }
 .grabstein--granit { --stein: #3E3F3F; --schrift: #DAD8CF; --schrift-licht: rgb(0 0 0 / 0.55); --schrift-schatten: rgb(255 255 255 / 0.12); }
 .grabstein--sand   { --stein: #BDB5A5; }
@@ -748,7 +779,7 @@ html:not(.motion-ok) .uebergang span { display: none; }
   overflow: visible;
 }
 .grabstein__inschrift h3 { font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.875rem); hyphens: manual; }
-.grabstein__inschrift p { margin-top: 0.5rem; font-size: var(--fs-klein); line-height: 1.45; color: var(--basalt-2); }
+.grabstein__inschrift p { margin: 0.5rem 0 0; font-size: var(--fs-klein); line-height: 1.45; color: var(--basalt-2); }
 .grabstein__licht { display: none; }
 .steinreihe__boden { display: none; }
 
@@ -761,7 +792,9 @@ html:not(.motion-ok) .uebergang span { display: none; }
     padding-top: 1.25rem;
   }
   .motion-ok .steinreihe { overflow: hidden; }   /* die Erde verdeckt die aufsteigenden Steine */
-  .grabstein { display: block; cursor: pointer; }
+  .grabstein { display: block; }
+  .grabstein__link { position: absolute; inset: 0; display: block; }
+  .grabstein__mehr { font-size: 0.9375rem; }
   .grabstein--rund     { aspect-ratio: 200 / 270; }
   .grabstein--stele    { aspect-ratio: 150 / 300; }
   .grabstein--findling { aspect-ratio: 250 / 200; }
@@ -784,14 +817,13 @@ html:not(.motion-ok) .uebergang span { display: none; }
   .grabstein__inschrift p { margin-top: 0.6rem; color: inherit; }
 
   /* Interaktion: ein Grablicht vor dem Stein, angestrahlt von unten */
-  .grabstein__licht {
+  .grabstein__licht {   /* am rechten Fuß, damit es die Inschrift nicht verdeckt */
     display: block;
     position: absolute;
-    left: 50%;
+    right: 13%;
     bottom: 0.3rem;
     width: 1rem;
     height: 1.55rem;
-    margin-left: -0.5rem;
     border-radius: 2px 2px 3px 3px;
     z-index: 2;
     background: linear-gradient(90deg, #4E140E, #9E2F25 45%, #4A120C);
@@ -818,15 +850,18 @@ html:not(.motion-ok) .uebergang span { display: none; }
     right: -10%;
     bottom: -12%;
     height: 70%;
-    background: radial-gradient(ellipse 60% 70% at 50% 100%, rgb(255 190 110 / 0.85) 0%, rgb(240 150 80 / 0.35) 38%, rgb(220 120 60 / 0) 72%);
+    background: radial-gradient(ellipse 50% 70% at 80% 100%, rgb(255 190 110 / 0.85) 0%, rgb(240 150 80 / 0.35) 38%, rgb(220 120 60 / 0) 72%);
     mix-blend-mode: soft-light;
     opacity: 0;
     transition: opacity 700ms var(--ease-out);
     pointer-events: none;
   }
-  .grabstein.brennt .grabstein__licht { opacity: 1; transform: none; }
-  .grabstein.brennt::after { opacity: 1; }
-  .grabstein.brennt .grabstein__flamme { animation: flamme 2.4s ease-in-out infinite alternate; }
+  .grabstein.brennt .grabstein__licht,
+  .grabstein:focus-within .grabstein__licht { opacity: 1; transform: none; }
+  .grabstein.brennt::after,
+  .grabstein:focus-within::after { opacity: 1; }
+  .grabstein.brennt .grabstein__flamme,
+  .grabstein:focus-within .grabstein__flamme { animation: flamme 2.4s ease-in-out infinite alternate; }
 
   /* Erde: eine feine Kante, darunter ein kurzer weicher Schatten */
   .steinreihe__boden {
@@ -981,6 +1016,274 @@ html:not(.motion-ok) .uebergang span { display: none; }
 .kontakt__spalte a { color: var(--auf-dunkel); overflow-wrap: anywhere; }
 @media (min-width: 56em) {
   .kontakt__spalten { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 2.5rem; }
+}
+
+/* ==========================================================================
+   Seite „Bestattungsarten“: fünf Abschnitte, jeder in seiner eigenen Farbe.
+   Hell und dunkel wechseln sich ab, so ist klar zu sehen, wo der nächste beginnt.
+   ========================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }   /* sanfter Wechsel zwischen den Seiten */
+}
+
+.unterkopf { padding-block: clamp(1.25rem, 3vw, 2.5rem) clamp(2.5rem, 5vw, 4rem); }
+.pfad ol {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.6rem;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  font-size: 1rem;
+  color: var(--basalt-2);
+}
+.pfad li + li::before { content: "/"; margin-right: 0.6rem; opacity: 0.6; }
+.pfad a { color: var(--basalt); }
+.unterkopf__raster { display: grid; gap: 1.75rem; align-items: end; }
+.unterkopf .lead { margin-top: 1.25rem; max-width: 40ch; }
+.unterkopf__hilfe p { margin-bottom: 0.6rem; color: var(--basalt-2); }
+@media (min-width: 56em) {
+  .unterkopf__raster { grid-template-columns: minmax(0, 1fr) auto; }
+}
+
+/* die fünf Steine als Inhaltsverzeichnis */
+.wahl {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+  align-items: end;
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+.wahl a {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.25rem;
+  border-radius: 8px;
+  color: var(--basalt);
+  text-align: center;
+  text-decoration: none;
+}
+.wahl svg { height: clamp(3.25rem, 9vw, 6.5rem); width: auto; overflow: visible; transition: transform 300ms var(--ease-out); }
+.wahl span { font-size: clamp(0.875rem, 0.8rem + 0.4vw, 1.0625rem); font-weight: 500; line-height: 1.25; hyphens: manual; }
+/* Handy: als Liste, Stein und Name nebeneinander */
+@media (max-width: 39.99em) {
+  .wahl { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; }
+  .wahl a { grid-template-columns: 3rem minmax(0, 1fr); justify-items: start; align-items: center; gap: 1rem; padding: 0.4rem 0; text-align: left; }
+  .wahl svg { height: 2.75rem; justify-self: center; }
+  .wahl span { font-size: 1.125rem; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .wahl a:hover svg { transform: translateY(-4px); }
+  .wahl a:hover span { text-decoration: underline; text-underline-offset: 0.22em; }
+}
+
+/* mitlaufende Leiste: wo bin ich gerade? */
+.artenleiste {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 40;
+  background: var(--kalkstein);
+  border-block: 1px solid var(--linie);
+}
+.artenleiste ul {
+  list-style: none;
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+  padding-block: 0.5rem;
+  scrollbar-width: none;
+}
+.artenleiste ul::-webkit-scrollbar { display: none; }
+.artenleiste a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  color: var(--basalt);
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 300ms var(--ease-out), color 300ms var(--ease-out);
+}
+.artenleiste a::before {   /* Farbpunkt = Farbe des Abschnitts */
+  content: "";
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--punkt);
+  box-shadow: inset 0 0 0 1px rgb(46 48 48 / 0.35);
+}
+.artenleiste a[data-leiste="erdbestattung"]    { --punkt: var(--graberde); }
+.artenleiste a[data-leiste="feuerbestattung"]  { --punkt: var(--asche); }
+.artenleiste a[data-leiste="baumbestattung"]   { --punkt: var(--efeu); }
+.artenleiste a[data-leiste="seebestattung"]    { --punkt: var(--gischt); }
+.artenleiste a[data-leiste="eigener-abschied"] { --punkt: var(--eiche); }
+.artenleiste a.ist-aktiv { background: var(--basalt); color: var(--kalkstein); }
+.artenleiste a.ist-aktiv::before { box-shadow: inset 0 0 0 1px rgb(231 231 226 / 0.6); }
+@media (hover: hover) and (pointer: fine) {
+  .artenleiste a:not(.ist-aktiv):hover { background: rgb(46 48 48 / 0.07); }
+}
+
+/* die Abschnitte */
+.art {
+  --zweit: var(--basalt-2);
+  --marke-bg: var(--basalt);
+  --marke-fg: var(--kalkstein);
+  --flaeche: rgb(255 255 255 / 0.55);
+  --flaeche-linie: rgb(46 48 48 / 0.14);
+  padding-block: clamp(3.5rem, 7vw, 6.5rem);
+  scroll-margin-top: 3rem;   /* plus scroll-padding der Seite: knapp unter der mitlaufenden Leiste */
+  color: var(--basalt);
+}
+.art--erde, .art--efeu, .art--eiche {
+  --zweit: #D2D3CD;          /* Nebenschrift: auf Efeu und Eiche mindestens 5,8 : 1 */
+  --marke-bg: var(--auf-dunkel);
+  --marke-fg: var(--basalt);
+  --flaeche: rgb(255 255 255 / 0.05);
+  --flaeche-linie: rgb(231 231 226 / 0.14);
+  --linie: var(--linie-hell);
+  color: var(--auf-dunkel);
+}
+.art--erde   { background: var(--graberde); }
+.art--asche  { background: var(--asche); }
+.art--efeu   { background: var(--efeu); }
+.art--gischt { background: var(--gischt); }
+.art--eiche  { background: var(--eiche); }
+.art--erde :focus-visible, .art--efeu :focus-visible, .art--eiche :focus-visible { outline-color: var(--auf-dunkel); }
+
+.art__raster { display: grid; gap: clamp(2.25rem, 4vw, 3.5rem); }
+.art__nummer { margin-bottom: 0.75rem; font-size: 1rem; font-weight: 500; letter-spacing: 0.03em; color: var(--zweit); }
+.art h2 { display: flex; align-items: center; gap: 1rem; }
+.art__stein { flex: none; width: auto; height: clamp(2.75rem, 5vw, 4rem); overflow: visible; }
+.art__kurz { margin-top: 1.25rem; max-width: 40ch; font-size: var(--fs-lead); line-height: 1.45; }
+.art__listen { display: grid; gap: 1.75rem; margin-top: 2.25rem; }
+.art__listen h3 { margin-bottom: 0.75rem; font-family: var(--font-sans); font-size: 1.125rem; font-weight: 600; letter-spacing: 0; }
+.art .punkte { margin: 0; }
+.art__aktion { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; margin-top: 2.5rem; }
+.art__weiter { font-weight: 600; }
+.art__weiter::after { content: " ↓"; }
+@media (min-width: 40em) and (max-width: 63.99em) {
+  .art__listen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 64em) {
+  .art__raster { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: start; column-gap: clamp(3rem, 5vw, 5rem); }
+  .art--asche .buehne, .art--gischt .buehne { order: -1; }   /* im Wechsel links und rechts */
+  .buehne { position: sticky; top: calc(var(--header-h) + 5.5rem); }
+}
+
+/* Bühne: das Objekt zum Ansehen, Drehen und Zerlegen */
+.buehne { margin: 0; }
+.buehne__flaeche {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--flaeche);
+  border: 1px solid var(--flaeche-linie);
+}
+.buehne__flaeche--szene { background: none; border: 0; }
+.buehne__flaeche--drehen { cursor: grab; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+.buehne__flaeche--drehen:active { cursor: grabbing; }
+.obj { display: block; width: 100%; height: auto; }
+.obj [data-teil] { transition: filter 300ms var(--ease-out); }
+.obj .ist-hervorgehoben { filter: drop-shadow(0 0 6px rgb(241 194 106 / 0.95)) drop-shadow(0 0 2px rgb(241 194 106 / 0.9)); }
+.obj__marken { opacity: 0; }
+.obj__marken circle { fill: var(--marke-bg); stroke: var(--marke-fg); stroke-width: 2; }
+.obj__marken text { fill: var(--marke-fg); font: 600 15px var(--font-sans); text-anchor: middle; }
+.buehne__steuerung { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-top: 1rem; }
+.btn--symbol { gap: 0; padding: 0.3rem; }
+.buehne__hinweis, .buehne__text { margin-top: 0.75rem; font-size: 1rem; color: var(--zweit); }
+.legende { list-style: none; counter-reset: teil; display: grid; gap: 0.35rem; margin-top: 1.25rem; font-size: 1rem; }
+.legende li {
+  counter-increment: teil;
+  position: relative;
+  padding: 0.45rem 0.6rem 0.45rem 2.9rem;
+  border-radius: 8px;
+  line-height: 1.45;
+  transition: background-color 250ms var(--ease-out);
+}
+.legende li::before {
+  content: counter(teil);
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--marke-bg);
+  color: var(--marke-fg);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.legende strong { display: block; }
+.legende li.ist-hervorgehoben { background: var(--flaeche); }
+
+/* Zeitregler (Baumbestattung) */
+.buehne__steuerung--zeit { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.25rem 1rem; }
+.buehne__steuerung--zeit label { font-weight: 600; }
+.buehne__steuerung--zeit input { width: 100%; height: 2.75rem; accent-color: var(--flamme); cursor: pointer; }
+.buehne__phase { grid-column: 1 / -1; margin: 0; font-family: var(--font-serif); font-size: 1.5rem; }
+
+/* Schritte (Seebestattung) */
+.schritte { list-style: none; counter-reset: schritt; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem 1rem; margin-top: 1rem; font-size: 1rem; }
+.schritte li { counter-increment: schritt; opacity: 0.8; transition: opacity 400ms var(--ease-out); }
+.schritte li::before { content: counter(schritt) " "; font-weight: 600; }
+.schritte li.ist-aktiv { opacity: 1; font-weight: 600; }
+@media (min-width: 40em) { .schritte { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* Auswahl (Ihr eigener Abschied) */
+.buehne__steuerung--wahl { gap: 0.5rem; }
+.wahlknopf {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 3rem;
+  padding: 0.45rem 1.1rem;
+  border: 1px solid rgb(231 231 226 / 0.45);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--auf-dunkel);
+  font: 500 1.0625rem/1.2 var(--font-sans);
+  cursor: pointer;
+  transition: background-color 250ms var(--ease-out), color 250ms var(--ease-out), transform 160ms var(--ease-out);
+}
+.wahlknopf::before { content: "+"; font-weight: 600; }
+.wahlknopf[aria-pressed="true"] { background: var(--auf-dunkel); color: var(--eiche); border-color: var(--auf-dunkel); }
+.wahlknopf[aria-pressed="true"]::before { content: "✓"; }
+.wahlknopf:active { transform: scale(0.97); }
+.kerzenflamme { transform-box: fill-box; transform-origin: 50% 100%; animation: flamme 2.2s ease-in-out infinite alternate; }
+.kerzenschein { animation: schein 3.4s ease-in-out infinite alternate; }
+.note { transform-box: fill-box; animation: note 7s ease-in-out infinite; }
+.note.n2 { animation-delay: -2.4s; }
+.note.n3 { animation-delay: -4.6s; }
+@keyframes schein { from { opacity: 0.75; } to { opacity: 1; } }
+@keyframes note {
+  0%   { transform: translate(0, 8px); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translate(14px, -30px); opacity: 0; }
+}
+
+/* Vergleich */
+.vergleich { padding-bottom: clamp(3.5rem, 7vw, 6rem); }
+.tabelle table { width: 100%; border-collapse: collapse; font-size: var(--fs-klein); }
+.tabelle th, .tabelle td { padding: 1rem 1rem 1rem 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--linie); }
+.tabelle thead th { font-size: 1rem; font-weight: 600; color: var(--basalt-2); }
+.tabelle tbody th { font-weight: 600; }
+.vergleich__notiz { margin-top: 1.5rem; font-size: 1rem; color: var(--basalt-2); }
+.vergleich__aktion { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+/* Handy: jede Zeile als eigene Karte, die Spaltennamen stehen davor */
+@media (max-width: 47.99em) {
+  .tabelle thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .tabelle tr { display: block; padding-block: 1rem; border-bottom: 1px solid var(--linie); }
+  .tabelle th, .tabelle td { display: block; padding: 0.15rem 0; border: 0; }
+  .tabelle tbody th { margin-bottom: 0.35rem; font-family: var(--font-serif); font-size: 1.5rem; font-weight: 400; }
+  .tabelle td::before { content: attr(data-label) ": "; font-weight: 600; }
 }
 
 /* ---------- Fuß ---------- */

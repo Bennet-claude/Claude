@@ -3,7 +3,7 @@
 > **Unverbindlicher Konzeptentwurf von Studio Leine – nicht im Auftrag von Böker Bestattungen und Tischlerei erstellt. Alle Texte und Bilder sind Platzhalter.**
 > Die Seite ist mit `noindex, nofollow` gekennzeichnet. Es wurden keine Logos, Fotos oder Texte der bestehenden Website übernommen; die Wortmarke ist reiner Text.
 
-Ruhige Scroll-Landingpage für einen Bestatter mit Tischlerei in Hannover-Ricklingen.
+Ruhige Website für einen Bestatter mit Tischlerei in Hannover-Ricklingen: eine Startseite zum Scrollen und eine eigene Seite „Bestattungsarten“, auf die jeder Grabstein der Startseite führt.
 Statisch: HTML, CSS, Vanilla-JS. Kein Framework, kein Build-Schritt, keine externen Ressourcen.
 
 ## Starten
@@ -18,7 +18,8 @@ python3 -m http.server 8000
 
 ```
 boeker-konzept/
-├── index.html              Landingpage (alle Abschnitte)
+├── index.html              Startseite (Einstieg, Trauerfall, Grabsteine, Vorsorge, Tischlerei, Über uns, Kontakt)
+├── bestattungsarten.html   Fünf Bestattungsarten in fünf Farbabschnitten, mit Animationen und Vergleich
 ├── impressum.html          Platzhalterseite
 ├── datenschutz.html        Platzhalterseite
 ├── favicon.svg             Bogen-Symbol
@@ -26,7 +27,8 @@ boeker-konzept/
 │   ├── css/style.css       Tokens, Layout, Komponenten (mobile-first)
 │   ├── img/abendgang/      Zehn Szenen „Abendgang“ (01–10, je AVIF, WebP, JPEG, 1520 × 364)
 │   ├── js/main.js          Menü, Absicherung ohne GSAP, Abendgang starten und anhalten, Grablichter an den Steinen, Pfadlänge im Trauerfall-Weg
-│   ├── js/motion.js        Alle Scroll-Animationen (GSAP + ScrollTrigger)
+│   ├── js/motion.js        Scroll-Animationen der Startseite (GSAP + ScrollTrigger)
+│   ├── js/bestattungsarten.js  Leiste und Animationen der Seite „Bestattungsarten“
 │   ├── vendor/             gsap.min.js, ScrollTrigger.min.js (3.15.0, lokal)
 │   ├── img/granit.png      Granitkorn der Grundfläche (256 px Kachel, 16 KB)
 │   └── fonts/              Libre Caslon Display, Golos Text (woff2, lokal, OFL)
@@ -41,7 +43,7 @@ boeker-konzept/
 |---|---|
 | `start` | Überschrift, Einstiegstext, Anrufen-Button; darunter (mobil oben) das Bildband „Abendgang“ → Highlight 1 |
 | `trauerfall` | Was ist im Trauerfall zu tun? 4 Schritte → Highlight 2 |
-| `bestattungsarten` | Fünf Bestattungsarten als Reihe von Grabsteinen, die Inschrift ist in den Stein gemeißelt |
+| `bestattungsarten` | Fünf Bestattungsarten als Reihe von Grabsteinen, die Inschrift ist in den Stein gemeißelt. Jeder Stein ist ein Link zum passenden Abschnitt der Seite „Bestattungsarten“. |
 | `vorsorge`, `tischlerei` | Zwei gleich gebaute Tafeln nebeneinander: Efeu und Eiche |
 | `ueber-uns` | Foto im Bogen, Text, vier Fakten |
 | `kontakt` | Große Telefonnummer, zwei Buttons, Standbild „Ein letzter Blick“, drei Spalten: Adresse, Erreichbarkeit, Anfahrt |
@@ -56,7 +58,7 @@ Mobil (unter 1024 px) gibt es eine feste untere Leiste mit **Anrufen** (`tel:`) 
 |---|---|---|
 | **Highlight 1** | Abendgang | Zehn Szenen eines Spaziergangs über den Friedhof im Abendlicht, vom Eingangstor bis zum letzten Blick über die Hügel. Jede Szene steht 6 Sekunden, die Überblendung dauert 2 Sekunden, dabei rückt das Bild langsam 7 % näher und ein Stück zur Seite. Darunter wechselt die Bildunterschrift. Ein Durchgang dauert eine Minute, dann beginnt er von vorn. |
 | **Highlight 2** | Lichter am Weg | Ein Funke läuft die goldene Linie entlang (groß: waagerecht, Handy: senkrecht) und entzündet jeden Schritt mit einem kurzen Lichtring. Startet, sobald der Weg ins Bild kommt. Ist der Abschnitt ganz zu sehen, brennen alle vier Lichter. |
-| ruhig 1 | Steine | Eine Erdlinie zieht sich von links nach rechts, die Steine steigen nacheinander aus ihr auf, dann wird die Inschrift von links nach rechts eingemeißelt. An den Scroll gekoppelt: fertig, wenn die Reihe ganz zu sehen ist, danach bleibt sie stehen. Handy: sanftes Einblenden. |
+| ruhig 1 | Steine | Eine Erdlinie zieht sich von links nach rechts, die Steine steigen nacheinander aus ihr auf, dann wird die Inschrift von links nach rechts eingemeißelt. An den Scroll gekoppelt, in beide Richtungen: Beim Zurückscrollen sinken die Steine wieder, beim nächsten Herunterscrollen steigen sie erneut auf, so oft man möchte. Handy: sanftes Einblenden, ebenfalls wiederholbar. |
 | ruhig 2 | Bildfenster | Bild-Platzhalter öffnen sich langsam von unten. |
 | ruhig 3 | Einblenden | Textgruppen erscheinen sanft nacheinander. |
 
@@ -69,7 +71,7 @@ Auf der Seite gibt es keine 3D-Animationen mehr. Alles bewegt sich flach, nur ü
 | Wo | Was |
 |---|---|
 | Knopf „Anhalten“ unter dem Bildband | Hält den Abendgang an und lässt ihn weiterlaufen („Abspielen“). Bei „Bewegung reduzieren“ heißt er „Nächstes Bild“ und blättert von Hand. |
-| Grabsteine (ab 960 px) | Mit der Maus über einem Stein steht ein Grablicht davor und der Fuß des Steins wird warm. Ein Klick lässt es brennen. |
+| Grabsteine | Ein Klick führt zum passenden Abschnitt der Seite „Bestattungsarten“. Ab 960 px steht beim Zeigen mit der Maus (oder beim Ansteuern mit der Tastatur) ein Grablicht vor dem Stein. |
 
 **Technik:** Der Abendgang ist reines CSS: drei `@keyframes` (Überblendung, Bildzug, Bildunterschrift), alle Szenen mit derselben Laufzeit von 60 Sekunden, versetzt um je 6 Sekunden. Jede Szene blendet über der vorigen ein (`z-index`), sinkt danach nach hinten und verschwindet erst, wenn die nächste ganz deckt. So scheint nie Schwarz durch, auch nicht beim Sprung von Szene 10 zurück zu Szene 1. Die Animation läuft auf der Grafikkarte und bleibt flüssig, auch wenn das Skript beschäftigt ist.
 `main.js` startet sie erst, wenn alle zehn Bilder dekodiert sind; bis dahin steht die erste Szene genau in dem Zustand still, an dem der Ablauf einsetzt. Außerhalb des Bildes und bei verdecktem Tab pausiert sie.
@@ -81,6 +83,24 @@ Auf der Seite gibt es keine 3D-Animationen mehr. Alles bewegt sich flach, nur ü
 - Eingeblendete Texte sind nur durchsichtig, nicht versteckt: Screenreader finden alle Überschriften jederzeit.
 
 **Anpassen:** Tempo über `--motion-duration` in `style.css`. Abendgang: Standzeit und Überblendung stehen in den Keyframes `film-blende`, `film-zug`, `film-titel` und in den `animation-delay`-Werten (Kommentar in `style.css`). Bildausschnitt je Szene: `--fx` im HTML, Richtung des Bildzugs: `--dx`.
+
+## Seite „Bestattungsarten“
+
+Fünf Abschnitte, jeder in seiner eigenen Farbe; hell und dunkel wechseln sich ab, damit klar zu sehen ist, wo der nächste beginnt. Eine mitlaufende Leiste oben zeigt, in welchem Abschnitt man gerade ist (Farbpunkt = Farbe des Abschnitts).
+
+| Abschnitt | Farbe | Animation |
+|---|---|---|
+| Erdbestattung | Graberde `#3A322B` | Sarg: „Teile zeigen“ hebt Deckel, Kissen, Decke, Matratze ab und löst die Griffe. |
+| Feuerbestattung | Asche `#E3E1DC` | Urne: drehen durch Ziehen, mit den Pfeiltasten oder den Knöpfen; dreht sich sonst ganz langsam von selbst. „Teile zeigen“ zerlegt sie in Schmuckurne, Deckel, Aschekapsel, Kapseldeckel und Kennstein. |
+| Baumbestattung | Efeu `#3D4A36` | Zeitregler: Die Wurzeln wachsen, die Urne bekommt Risse und wird Teil des Waldbodens. Läuft beim ersten Erscheinen einmal vor. |
+| Seebestattung | Gischt `#DCE3E5` | An das Scrollen gekoppelt: Blüten auf dem Wasser, die Urne sinkt und löst sich auf, die Stelle erscheint in der Seekarte. |
+| Ihr eigener Abschied | Eiche `#5E4630` | Zusammenstellen: Kerzenlicht, Foto, Blumen, Worte, Musik erscheinen auf dem Tisch; darunter steht die Auswahl. |
+
+Jeder Abschnitt: kurz erklärt, „Gut zu wissen“, „Passt zu Ihnen, wenn …“, Anrufen-Button, Weiter zum nächsten. Am Ende ein Vergleich (auf dem Handy als Karten).
+Die Animationen sind flach (2D, SVG): Die Urne „dreht“ sich, weil Riffelung, Plakette und Etikett mit Sinus und Kosinus um die Achse laufen, während das Licht stehen bleibt. Teile werden in der Legende hervorgehoben, wenn man auf einen Eintrag zeigt oder tippt.
+Zwischen den Seiten blendet der Browser weich über (View Transitions, wo unterstützt).
+
+`bestattungsarten.html` übernimmt Kopf, Navigation und Fuß von `index.html`. Bei Änderungen dort bitte beide Seiten gleich halten.
 
 ## Gestaltung
 
@@ -112,7 +132,7 @@ Auf der Seite gibt es keine 3D-Animationen mehr. Alles bewegt sich flach, nur ü
 ## Qualitätscheck (lokal gemessen)
 
 - Lighthouse Mobil:
-  - mit gzip-Kompression (wie bei üblichem Hosting), zwei Läufe: Performance 98, Barrierefreiheit 100, Best Practices 100; Blockierzeit (TBT) 31–43 ms
+  - mit gzip-Kompression (wie bei üblichem Hosting): Startseite Performance 98, Barrierefreiheit 100, Best Practices 100; Seite „Bestattungsarten“ 100, 100, 100
   - SEO 60 nur wegen des gewollten `noindex`
 - Abendgang: zehn Bilder zusammen 415 KB (AVIF), die ganze Seite 562 KB.
 - Screenshots für Desktop (1440 px) und Mobil (390 px) geprüft, mit und ohne Bewegung, Tastaturbedienung getestet, keine Konsolenfehler, kein seitliches Scrollen.
@@ -121,6 +141,11 @@ Auf der Seite gibt es keine 3D-Animationen mehr. Alles bewegt sich flach, nur ü
 ## [PRÜFEN]-Liste
 
 Alles hier ist im Entwurf sichtbar markiert und muss vom Betrieb bestätigt oder geliefert werden.
+
+**Seite „Bestattungsarten“ – vom Betrieb gegenlesen lassen**
+- Welche Bestattungsarten werden angeboten?
+- Die allgemeinen Angaben je Bestattungsart, die Teile von Sarg und Urne, der Vergleich
+- Ruhezeiten der Friedhöfe in Hannover
 
 **Aus der Recherche – vom Betrieb zu bestätigen**
 1. Gründungsjahr 1961 (Start und Über uns)
@@ -159,7 +184,7 @@ Sichtbar waren nur Zusammenfassungen aus Suchergebnissen. Die Seiten selbst ware
 
 ## Artefakt-Vorschau
 
-Für die Vorschau als claude.ai-Artefakt wird eine Einzeldatei erzeugt: Schriften als data-URIs, CSS und JS eingebettet, GSAP 3.12.5 von cdnjs.
+Für die Vorschau als claude.ai-Artefakt werden zwei Dateien erzeugt (Startseite und „Bestattungsarten“): Schriften und Bilder als data-URIs, CSS und JS eingebettet, GSAP 3.12.5 von cdnjs.
 Name, Adresse, Telefonnummer, E-Mail und Rechercheangaben sind dort durch Platzhalter („Mustermann“) ersetzt. Ein verlinkbares Artefakt mit den echten Daten würde wie die echte Website des Betriebs wirken.
 Die echten Daten stehen nur in diesem Projektordner.
 

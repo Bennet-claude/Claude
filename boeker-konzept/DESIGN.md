@@ -18,6 +18,16 @@ Drei Dinge aus der Welt des Betriebs, aus denen die Farben abgeleitet sind: Grab
 | `--grablicht` | #9E2F25 | rote Hülle der Grablichter | Akzent, nur im Grablicht an den Steinen |
 | `--flamme` | #F1C26A | Kerzenflamme | nur in gezeichnetem Licht (Lichter am Weg, Grablichter) |
 
+Seite „Bestattungsarten“: Jede Bestattungsart hat ihre Bereichsfarbe, hell und dunkel im Wechsel, damit klar zu sehen ist, wo der nächste Abschnitt beginnt.
+
+| Token | Wert | Herkunft | Abschnitt |
+|---|---|---|---|
+| `--graberde` | #3A322B | frisch aufgeworfene Graberde | Erdbestattung |
+| `--asche` | #E3E1DC | helle Asche, Kalkgrau | Feuerbestattung |
+| `--efeu` | #3D4A36 | Efeu und Buchsbaum | Baumbestattung |
+| `--gischt` | #DCE3E5 | Gischt über der Nordsee | Seebestattung |
+| `--eiche` | #5E4630 | geräucherte Eiche | Ihr eigener Abschied |
+
 Bewusst nicht: Creme mit Terrakotta, fast-schwarz mit Neon-Akzent, dekorative Verläufe, Glow-Schatten, Schraffuren.
 Die einzigen Verläufe sind Licht (Kerzen) und die Übergänge zwischen Nacht und Tag.
 
@@ -39,5 +49,6 @@ Am Morgen (nach dem Trauerfall) verlöschen dort kleine Lichter, am Abend (vor d
 ## Bewegung
 - Highlight 1 „Abendgang“: zehn Fotos eines Spaziergangs über den Friedhof im Abendlicht gehen ruhig ineinander über, jedes mit einem langsamen, flachen Bildzug (7 % näher, ein Stück zur Seite). Bildunterschrift darunter, Knopf zum Anhalten. Reines CSS, keine 3D-Szene.
 - Highlight 2 „Lichter am Weg“: Funke auf der goldenen Linie, Lichtring beim Entzünden.
-- Ruhig: Erdlinie und aufsteigende Steine mit gemeißelter Inschrift, Bildfenster öffnen sich, Texte blenden ein.
+- Ruhig: Erdlinie und aufsteigende Steine mit gemeißelter Inschrift (wiederholt sich bei jedem Hoch- und Runterscrollen), Bildfenster öffnen sich, Texte blenden ein.
+- Seite „Bestattungsarten“: je Abschnitt eine einfache, flache Animation (Sarg und Urne zerlegen, Urne drehen, Zeitregler am Baum, sinkende Seeurne, Abschied zusammenstellen).
 - Easing nach Emil Kowalski (`cubic-bezier(0.23, 1, 0.32, 1)`), Grundtempo 1,6 s, Scrub-Nachlauf 1–1,5 s.
