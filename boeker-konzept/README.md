@@ -25,7 +25,7 @@ boeker-konzept/
 ├── favicon.svg             Bogen-Symbol
 ├── assets/
 │   ├── css/style.css       Tokens, Layout, Komponenten (mobile-first)
-│   ├── img/abendgang/      Zehn Szenen „Abendgang“ (01–10, je AVIF, WebP, JPEG, 1520 × 364)
+│   ├── img/abendgang/      Zehn Szenen „Abendgang“ (01–10, je 1600, 2400 und 3040 px breit, AVIF, WebP, JPEG)
 │   ├── js/main.js          Menü, Absicherung ohne GSAP, Abendgang starten und anhalten, Grablichter an den Steinen, Pfadlänge im Trauerfall-Weg
 │   ├── js/motion.js        Scroll-Animationen der Startseite (GSAP + ScrollTrigger)
 │   ├── js/bestattungsarten.js  Leiste und Animationen der Seite „Bestattungsarten“
@@ -56,7 +56,7 @@ Mobil (unter 1024 px) gibt es eine feste untere Leiste mit **Anrufen** (`tel:`) 
 
 | | Name | Was passiert |
 |---|---|---|
-| **Highlight 1** | Abendgang | Zehn Szenen eines Spaziergangs über den Friedhof im Abendlicht, vom Eingangstor bis zum letzten Blick über die Hügel. Jede Szene steht 6 Sekunden, die Überblendung dauert 2 Sekunden, dabei rückt das Bild langsam 7 % näher und ein Stück zur Seite. Darunter wechselt die Bildunterschrift. Ein Durchgang dauert eine Minute, dann beginnt er von vorn. |
+| **Highlight 1** | Abendgang | Zehn Szenen eines Spaziergangs über den Friedhof im Abendlicht, vom Eingangstor bis zum letzten Blick über die Hügel. Jede Szene steht 6 Sekunden, die Überblendung dauert 2 Sekunden; dabei gleitet der Blick langsam seitwärts über das breite Panorama (kein Zoom, die Bilder bleiben im Maßstab 1 : 1 scharf). Darunter wechselt die Bildunterschrift. Ein Durchgang dauert eine Minute, dann beginnt er von vorn. |
 | **Highlight 2** | Lichter am Weg | Ein Funke läuft die goldene Linie entlang (groß: waagerecht, Handy: senkrecht) und entzündet jeden Schritt mit einem kurzen Lichtring. Startet, sobald der Weg ins Bild kommt. Ist der Abschnitt ganz zu sehen, brennen alle vier Lichter. |
 | ruhig 1 | Steine | Eine Erdlinie zieht sich von links nach rechts, die Steine steigen nacheinander aus ihr auf, dann wird die Inschrift von links nach rechts eingemeißelt. An den Scroll gekoppelt, in beide Richtungen: Beim Zurückscrollen sinken die Steine wieder, beim nächsten Herunterscrollen steigen sie erneut auf, so oft man möchte. Handy: sanftes Einblenden, ebenfalls wiederholbar. |
 | ruhig 2 | Bildfenster | Bild-Platzhalter öffnen sich langsam von unten. |
@@ -82,7 +82,7 @@ Auf der Seite gibt es keine 3D-Animationen mehr. Alles bewegt sich flach, nur ü
 - Bei „Bewegung reduzieren“: keine Scroll-Animationen, der Abendgang steht still und lässt sich mit „Nächstes Bild“ durchblättern, die Lichter am Weg brennen ohne Flackern.
 - Eingeblendete Texte sind nur durchsichtig, nicht versteckt: Screenreader finden alle Überschriften jederzeit.
 
-**Anpassen:** Tempo über `--motion-duration` in `style.css`. Abendgang: Standzeit und Überblendung stehen in den Keyframes `film-blende`, `film-zug`, `film-titel` und in den `animation-delay`-Werten (Kommentar in `style.css`). Bildausschnitt je Szene: `--fx` im HTML, Richtung des Bildzugs: `--dx`.
+**Anpassen:** Tempo über `--motion-duration` in `style.css`. Abendgang: Standzeit und Überblendung stehen in den Keyframes `film-blende`, `film-zug`, `film-titel` und in den `animation-delay`-Werten (Kommentar in `style.css`). Bildmitte je Szene: `--fx` im HTML (0 bis 1), Richtung des Gleitens: `--dir` (1 oder -1), Weg: `--weg` in `style.css`.
 
 ## Seite „Bestattungsarten“
 
@@ -96,7 +96,12 @@ Fünf Abschnitte, jeder in seiner eigenen Farbe; hell und dunkel wechseln sich a
 | Seebestattung | Gischt `#DCE3E5` | An das Scrollen gekoppelt: Blüten auf dem Wasser, die Urne sinkt und löst sich auf, die Stelle erscheint in der Seekarte. |
 | Ihr eigener Abschied | Eiche `#5E4630` | Zusammenstellen: Kerzenlicht, Foto, Blumen, Worte, Musik erscheinen auf dem Tisch; darunter steht die Auswahl. |
 
-Jeder Abschnitt: kurz erklärt, „Gut zu wissen“, „Passt zu Ihnen, wenn …“, Anrufen-Button, Weiter zum nächsten. Am Ende ein Vergleich (auf dem Handy als Karten).
+Jeder Abschnitt ist gleich aufgebaut, erst der Text, dann die Animation:
+1. Überschrift und Kurzerklärung, daneben „Gut zu wissen“ und „Passt zu Ihnen, wenn …“
+2. unter einer Linie der Block „Zum Anschauen: …“ mit Bühne, Erklärung, Bedienung und Legende
+3. „Dazu beraten lassen“ und „Weiter“ zum nächsten Abschnitt
+
+Nichts läuft neben dem Text mit. Am Ende ein Vergleich (auf dem Handy als Karten).
 Die Animationen sind flach (2D, SVG): Die Urne „dreht“ sich, weil Riffelung, Plakette und Etikett mit Sinus und Kosinus um die Achse laufen, während das Licht stehen bleibt. Teile werden in der Legende hervorgehoben, wenn man auf einen Eintrag zeigt oder tippt.
 Zwischen den Seiten blendet der Browser weich über (View Transitions, wo unterstützt).
 
@@ -132,9 +137,12 @@ Zwischen den Seiten blendet der Browser weich über (View Transitions, wo unters
 ## Qualitätscheck (lokal gemessen)
 
 - Lighthouse Mobil:
-  - mit gzip-Kompression (wie bei üblichem Hosting): Startseite Performance 98, Barrierefreiheit 100, Best Practices 100; Seite „Bestattungsarten“ 100, 100, 100
+  - mit gzip-Kompression (wie bei üblichem Hosting): Startseite Performance 92, Barrierefreiheit 100, Best Practices 100; Seite „Bestattungsarten“ 99, 100, 100
+  - Startseite Desktop: 100, 100, 100
+  - Layout-Verschiebung (CLS) 0: Die Ersatzschriften sind auf die Maße von Caslon und Golos angeglichen (`size-adjust`), die Breite der Hauptüberschrift steht in `em` statt `ch`
+  - Die Startseite verliert mobil Punkte durch die schärferen Bilder (Ladezeit des ersten Bildes 3,4 s bei simuliertem langsamem 4G). Ein Handy lädt für den Abendgang etwa 1 MB Bilder.
   - SEO 60 nur wegen des gewollten `noindex`
-- Abendgang: zehn Bilder zusammen 415 KB (AVIF), die ganze Seite 562 KB.
+- Abendgang: Die gelieferten Bilder sind nur 760 × 182 px groß. Sie wurden mit Real-ESRGAN (x4plus) auf das Vierfache gerechnet (3040 px) und zusätzlich als 1600 und 2400 px abgelegt; der Browser wählt per `srcset` die passende Größe. Das Werkzeug dafür liegt in `werkzeug/bilder-schaerfen.py`. Wichtig: Die KI erfindet feine Details (Blätter, Steinkanten) dazu, die im Original nicht zu sehen sind. Für den echten Auftritt deshalb Fotos in voller Auflösung (mindestens 3000 px breit) besorgen.
 - Screenshots für Desktop (1440 px) und Mobil (390 px) geprüft, mit und ohne Bewegung, Tastaturbedienung getestet, keine Konsolenfehler, kein seitliches Scrollen.
 - Design-Detektor (impeccable): Übrig bleiben nur Abstands-Heuristiken, die visuell geprüft sind, und ein Fehlalarm: Die helle Inschrift auf dem schwarzen Granitstein steht auf dem SVG-Stein; der Detektor misst gegen die Seitenfarbe dahinter.
 

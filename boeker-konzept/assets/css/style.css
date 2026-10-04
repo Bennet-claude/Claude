@@ -43,6 +43,35 @@
   font-display: swap;
 }
 
+/* Ersatzschriften mit angeglichenen Maßen: bis die Webschrift geladen ist, läuft der Text
+   schon fast genauso breit und hoch, damit nichts springt (gemessen am Seitentext) */
+@font-face {
+  font-family: "Caslon Ersatz";
+  src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Liberation Serif");
+  size-adjust: 91.6%;
+  ascent-override: 106%;
+  descent-override: 29.5%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Golos Ersatz";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans");
+  font-weight: 400;
+  size-adjust: 106.4%;
+  ascent-override: 92%;
+  descent-override: 20.7%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Golos Ersatz";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold");
+  font-weight: 500 600;
+  size-adjust: 100%;
+  ascent-override: 98%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+
 /* ---------- Tokens ---------- */
 :root {
   --granit-hell: #DADBD8;
@@ -66,8 +95,8 @@
   --pruefen-bg: #F2E5C4;
   --pruefen-rand: #A07A32;
 
-  --font-serif: "Libre Caslon Display", "Libre Caslon Text", "Baskerville", "Times New Roman", serif;
-  --font-sans: "Golos Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --font-serif: "Libre Caslon Display", "Caslon Ersatz", "Libre Caslon Text", "Baskerville", "Times New Roman", serif;
+  --font-sans: "Golos Text", "Golos Ersatz", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
 
   --fs-body: clamp(1.1875rem, 1.13rem + 0.2vw, 1.3125rem);   /* 19-21 px */
   --fs-klein: 1.125rem;                                        /* 18 px */
@@ -427,9 +456,10 @@ figure { margin: 0; }
 
 /* ==========================================================================
    Start / Highlight: „Abendgang“
-   Zehn Szenen eines Spaziergangs im Abendlicht gehen ruhig ineinander über.
-   Reine CSS-Animation auf der Grafikkarte (nur opacity und transform), flach,
-   ohne 3D. main.js startet sie, sobald alle Bilder da sind, und pausiert sie.
+   Zehn Szenen eines Spaziergangs im Abendlicht gehen ruhig ineinander über;
+   dabei gleitet der Blick langsam seitwärts über das breite Panorama. Kein Zoom:
+   Die Bilder bleiben im Maßstab 1:1 und damit scharf. Reine CSS-Animation auf
+   der Grafikkarte (opacity, transform), main.js startet und pausiert sie.
    ========================================================================== */
 .hero {
   display: flex;
@@ -437,7 +467,7 @@ figure { margin: 0; }
   padding-block: clamp(1.5rem, 4vw, 3rem) clamp(2.5rem, 5vw, 4.5rem);
 }
 .hero__grid { display: grid; gap: 1.25rem; }
-.hero__grid h1 { max-width: 11ch; }
+.hero__grid h1 { max-width: 6.85em; }   /* = 11ch in Caslon; em statt ch, damit die Ersatzschrift gleich umbricht */
 .hero__lead {
   margin: 0;
   font-size: var(--fs-lead);
@@ -451,6 +481,9 @@ figure { margin: 0; }
 /* Handy: das Bildband steht oben, damit die Stimmung sofort da ist */
 .film { order: -1; margin: 0 auto 1.75rem; }
 .film__fenster {
+  /* Fensterbreite geteilt durch Bildbreite (Bilder 4,17 : 1) und Weg des Seitwärtsgleitens */
+  --r: 0.383;
+  --weg: 3%;
   position: relative;
   overflow: hidden;
   aspect-ratio: 16 / 10;
@@ -461,16 +494,24 @@ figure { margin: 0; }
 .film__bild { position: absolute; inset: 0; display: block; opacity: 0; }
 .film__bild:first-child { opacity: 1; }
 .film__bild img {
+  /* volle Höhe, natürliche Breite: das Bild ist breiter als das Fenster und wird verschoben */
+  /* Bildmitte der Szene (--fx) in die Fenstermitte, aber nur so weit, dass der ganze Weg
+     noch ins Bild passt: jede Szene gleitet gleich weit, nie über den Bildrand hinaus */
+  --mitte: clamp(calc((var(--r) - 1) * 100% + var(--weg)), calc((var(--r) / 2 - var(--fx)) * 100%), calc(var(--weg) * -1));
+  --von: calc(var(--mitte) - var(--weg) * var(--dir));
+  --bis: calc(var(--mitte) + var(--weg) * var(--dir));
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: none;
   height: 100%;
-  object-fit: cover;
-  object-position: var(--fx) 50%;     /* Bildmitte je Szene, wichtig für den Handy-Ausschnitt */
-  transform-origin: var(--fx) 55%;
+  transform: translateX(var(--von));
   backface-visibility: hidden;
 }
 /* Standbild (ohne JavaScript und bis zum Start): genau der Zustand, an dem die Animation einsetzt */
-.film__bild:first-child img { transform: scale(1.0174) translateX(calc(var(--dx) * 0.2487)); }
+.film__bild:first-child img { transform: translateX(calc(var(--von) + (var(--bis) - var(--von)) * 0.2487)); }
 
 .film__leiste {
   display: flex;
@@ -511,11 +552,11 @@ html:not(.js) .film__knopf { display: none; }
   13.401% { opacity: 0; z-index: 1; visibility: hidden; }
   100%    { opacity: 0; z-index: 1; visibility: hidden; }
 }
-/* langsamer Zug: 7 % näher und ein Stück zur Seite, gleichmäßig über die ganze Szene */
+/* langsames Gleiten zur Seite, gleichmäßig über die ganze Szene, ohne Zoom */
 @keyframes film-zug {
-  0%      { transform: scale(1) translateX(0); }
-  13.4%   { transform: scale(1.07) translateX(var(--dx)); }
-  13.401%, 100% { transform: scale(1) translateX(0); }
+  0%      { transform: translateX(var(--von)); }
+  13.4%   { transform: translateX(var(--bis)); }
+  13.401%, 100% { transform: translateX(var(--von)); }
 }
 /* Bildunterschrift: kommt während der Überblendung, geht vor der nächsten */
 @keyframes film-titel {
@@ -528,12 +569,12 @@ html:not(.js) .film__knopf { display: none; }
 /* Bewegung reduziert: kein Ablauf; „Nächstes Bild“ zeigt die Szenen nacheinander */
 .film--manuell .film__bild,
 .film--manuell .film__titel span { opacity: 0; }
-.film--manuell .film__bild img { transform: none; }
+.film--manuell .film__bild img { transform: translateX(calc((var(--von) + var(--bis)) / 2)); }
 .film--manuell .film__bild.ist-aktiv,
 .film--manuell .film__titel span.ist-aktiv { opacity: 1; }
 
 @media (min-width: 40em) {
-  .film__fenster { aspect-ratio: 3.4 / 1; }
+  .film__fenster { aspect-ratio: 3.4 / 1; --r: 0.815; --weg: 4%; }
 }
 @media (min-width: 56em) {
   .hero__grid {

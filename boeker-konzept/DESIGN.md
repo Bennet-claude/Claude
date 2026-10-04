@@ -47,8 +47,8 @@ Zwischen Schwarz und Granit liegt eine 12–22 rem hohe Zone. Schwarz läuft dor
 Am Morgen (nach dem Trauerfall) verlöschen dort kleine Lichter, am Abend (vor dem Kontakt) gehen sie an.
 
 ## Bewegung
-- Highlight 1 „Abendgang“: zehn Fotos eines Spaziergangs über den Friedhof im Abendlicht gehen ruhig ineinander über, jedes mit einem langsamen, flachen Bildzug (7 % näher, ein Stück zur Seite). Bildunterschrift darunter, Knopf zum Anhalten. Reines CSS, keine 3D-Szene.
+- Highlight 1 „Abendgang“: zehn Fotos eines Spaziergangs über den Friedhof im Abendlicht gehen ruhig ineinander über; der Blick gleitet dabei langsam seitwärts über das Panorama, ohne Zoom, damit die Bilder scharf bleiben. Bildunterschrift darunter, Knopf zum Anhalten. Reines CSS, keine 3D-Szene.
 - Highlight 2 „Lichter am Weg“: Funke auf der goldenen Linie, Lichtring beim Entzünden.
 - Ruhig: Erdlinie und aufsteigende Steine mit gemeißelter Inschrift (wiederholt sich bei jedem Hoch- und Runterscrollen), Bildfenster öffnen sich, Texte blenden ein.
-- Seite „Bestattungsarten“: je Abschnitt eine einfache, flache Animation (Sarg und Urne zerlegen, Urne drehen, Zeitregler am Baum, sinkende Seeurne, Abschied zusammenstellen).
+- Seite „Bestattungsarten“: je Abschnitt erst der Text, dann eine einfache, flache Animation in einem eigenen Block „Zum Anschauen“ (Sarg und Urne zerlegen, Urne drehen, Zeitregler am Baum, sinkende Seeurne, Abschied zusammenstellen).
 - Easing nach Emil Kowalski (`cubic-bezier(0.23, 1, 0.32, 1)`), Grundtempo 1,6 s, Scrub-Nachlauf 1–1,5 s.
