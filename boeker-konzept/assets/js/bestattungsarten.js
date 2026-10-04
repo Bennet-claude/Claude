@@ -335,13 +335,9 @@
       schritte.forEach(function (li) { li.classList.add('ist-aktiv'); });
       return;
     }
-    var mm = gsap.matchMedia();
-    mm.add({ breit: '(min-width: 64em)', schmal: '(max-width: 63.99em)' }, function (ctx) {
-      // Auf großen Bildschirmen steht die Szene still (sticky), der Abschnitt zieht vorbei;
-      // auf dem Handy läuft sie, während die Szene selbst durchs Bild scrollt.
-      var st = ctx.conditions.breit
-        ? { trigger: figur.closest('[data-art]'), start: 'top 55%', end: 'bottom 75%', scrub: 1.2 }
-        : { trigger: figur, start: 'top 80%', end: 'bottom 25%', scrub: 1.2 };
+    (function () {
+      // Die Szene steht unter dem Text; sie läuft, während sie selbst durchs Bild scrollt.
+      var st = { trigger: figur.querySelector('.buehne__flaeche'), start: 'top 80%', end: 'bottom 30%', scrub: 1.2 };
       st.onUpdate = function (self) { schritt(self.progress); };
       var tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: st });
       tl.fromTo(q('[data-blueten]'), { opacity: 0 }, { opacity: 1, duration: 0.1 }, 0)
@@ -356,7 +352,7 @@
         .to(q('[data-teilchen]'), { opacity: 0, duration: 0.12 }, 0.86)
         .fromTo(q('[data-karte]'), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.12 }, 0.84);
       schritt(0);
-    });
+    })();
   });
 
   /* ------------------------------------------------------------------------

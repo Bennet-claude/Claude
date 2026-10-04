@@ -185,11 +185,13 @@
 
     <!-- 1 · Erdbestattung · Graberde -->
     <section class="art art--erde" id="erdbestattung" aria-labelledby="erd-titel" data-art>
-      <div class="wrap art__raster">
+      <div class="wrap">
         <div class="art__text">
-          <p class="art__nummer">1 von 5</p>
-          <h2 id="erd-titel"><svg class="art__stein" viewBox="0 0 200 270" style="fill:#C8C8C1" aria-hidden="true"><use href="#form-rund" filter="url(#stein-kalk)"/></svg>Erdbestattung</h2>
-          <p class="art__kurz">Der Sarg wird auf einem Friedhof in die Erde gelassen. Angehörige haben einen festen Ort, an dem sie trauern und das Grab pflegen können.</p>
+          <div class="art__kopf">
+            <p class="art__nummer">1 von 5</p>
+            <h2 id="erd-titel"><svg class="art__stein" viewBox="0 0 200 270" style="fill:#C8C8C1" aria-hidden="true"><use href="#form-rund" filter="url(#stein-kalk)"/></svg>Erdbestattung</h2>
+            <p class="art__kurz">Der Sarg wird auf einem Friedhof in die Erde gelassen. Angehörige haben einen festen Ort, an dem sie trauern und das Grab pflegen können.</p>
+          </div>
           <div class="art__listen">
             <div>
               <h3>Gut zu wissen</h3>
@@ -207,10 +209,6 @@
                 <li>die Familie schon eine gemeinsame Grabstätte hat.</li>
               </ul>
             </div>
-          </div>
-          <div class="art__aktion">
-            <a class="btn btn--hell" href="tel:+49511421717"><span>Dazu beraten lassen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg></span></a>
-            <a class="art__weiter" href="#feuerbestattung">Weiter: Feuerbestattung</a>
           </div>
         </div>
 
@@ -270,10 +268,12 @@
               </g>
             </svg>
           </div>
-          <div class="buehne__steuerung">
-            <button class="btn btn--hell btn--klein" type="button" data-zerlegen-knopf aria-pressed="false"><span data-knopf-text>Teile zeigen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,48V96a8,8,0,0,1-16,0V67.31l-42.34,42.35a8,8,0,0,1-11.32-11.32L188.69,56H160a8,8,0,0,1,0-16h48A8,8,0,0,1,216,48ZM98.34,146.34,56,188.69V160a8,8,0,0,0-16,0v48a8,8,0,0,0,8,8H96a8,8,0,0,0,0-16H67.31l42.35-42.34a8,8,0,0,0-11.32-11.32ZM208,152a8,8,0,0,0-8,8v28.69l-42.34-42.35a8,8,0,0,0-11.32,11.32L188.69,200H160a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V160A8,8,0,0,0,208,152ZM67.31,56H96a8,8,0,0,0,0-16H48a8,8,0,0,0-8,8V96a8,8,0,0,0,16,0V67.31l42.34,42.35a8,8,0,0,0,11.32-11.32Z"/></svg></span></button>
-          </div>
-          <figcaption>
+          <figcaption class="buehne__info">
+            <h3 class="buehne__titel">Zum Anschauen: die Teile eines Sarges</h3>
+            <p class="buehne__text">Mit „Teile zeigen“ heben sich Deckel und Innenausstattung ab. Zeigen Sie auf einen Eintrag der Liste, dann leuchtet das Teil im Bild.</p>
+            <div class="buehne__steuerung">
+              <button class="btn btn--hell btn--klein" type="button" data-zerlegen-knopf aria-pressed="false"><span data-knopf-text>Teile zeigen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,48V96a8,8,0,0,1-16,0V67.31l-42.34,42.35a8,8,0,0,1-11.32-11.32L188.69,56H160a8,8,0,0,1,0-16h48A8,8,0,0,1,216,48ZM98.34,146.34,56,188.69V160a8,8,0,0,0-16,0v48a8,8,0,0,0,8,8H96a8,8,0,0,0,0-16H67.31l42.35-42.34a8,8,0,0,0-11.32-11.32ZM208,152a8,8,0,0,0-8,8v28.69l-42.34-42.35a8,8,0,0,0-11.32,11.32L188.69,200H160a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V160A8,8,0,0,0,208,152ZM67.31,56H96a8,8,0,0,0,0-16H48a8,8,0,0,0-8,8V96a8,8,0,0,0,16,0V67.31l42.34,42.35a8,8,0,0,0,11.32-11.32Z"/></svg></span></button>
+            </div>
             <ol class="legende" data-legende>
               <li data-teil-name="deckel"><strong>Deckel</strong> Er schließt den Sarg. Bei einer offenen Aufbahrung bleibt er zunächst ab.</li>
               <li data-teil-name="ausstattung"><strong>Innenausstattung</strong> Decke, Kissen und Matratze aus Stoff, passend zum Sarg.</li>
@@ -282,16 +282,23 @@
             </ol>
           </figcaption>
         </figure>
+
+        <div class="art__aktion">
+          <a class="btn btn--hell" href="tel:+49511421717"><span>Dazu beraten lassen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg></span></a>
+          <a class="art__weiter" href="#feuerbestattung">Weiter: Feuerbestattung</a>
+        </div>
       </div>
     </section>
 
     <!-- 2 · Feuerbestattung · Asche -->
     <section class="art art--asche" id="feuerbestattung" aria-labelledby="feuer-titel" data-art>
-      <div class="wrap art__raster">
+      <div class="wrap">
         <div class="art__text">
-          <p class="art__nummer">2 von 5</p>
-          <h2 id="feuer-titel"><svg class="art__stein" viewBox="0 0 150 300" style="fill:#3E3F3F" aria-hidden="true"><use href="#form-stele" filter="url(#stein-granit)"/></svg>Feuerbestattung</h2>
-          <p class="art__kurz">Der Verstorbene wird im Sarg in einem Krematorium eingeäschert. Die Asche kommt in eine Urne, die danach beigesetzt wird: auf dem Friedhof, im Wald oder auf See.</p>
+          <div class="art__kopf">
+            <p class="art__nummer">2 von 5</p>
+            <h2 id="feuer-titel"><svg class="art__stein" viewBox="0 0 150 300" style="fill:#3E3F3F" aria-hidden="true"><use href="#form-stele" filter="url(#stein-granit)"/></svg>Feuerbestattung</h2>
+            <p class="art__kurz">Der Verstorbene wird im Sarg in einem Krematorium eingeäschert. Die Asche kommt in eine Urne, die danach beigesetzt wird: auf dem Friedhof, im Wald oder auf See.</p>
+          </div>
           <div class="art__listen">
             <div>
               <h3>Gut zu wissen</h3>
@@ -308,10 +315,6 @@
                 <li>Sie den Ort der Beisetzung frei wählen möchten.</li>
               </ul>
             </div>
-          </div>
-          <div class="art__aktion">
-            <a class="btn btn--primary" href="tel:+49511421717"><span>Dazu beraten lassen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg></span></a>
-            <a class="art__weiter" href="#baumbestattung">Weiter: Baumbestattung</a>
           </div>
         </div>
 
@@ -391,13 +394,14 @@
               </g>
             </svg>
           </div>
-          <div class="buehne__steuerung">
-            <button class="btn btn--linie btn--klein btn--symbol" type="button" data-drehen="-1" aria-label="Nach links drehen"><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/></svg></span></button>
-            <button class="btn btn--linie btn--klein btn--symbol" type="button" data-drehen="1" aria-label="Nach rechts drehen"><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg></span></button>
-            <button class="btn btn--primary btn--klein" type="button" data-zerlegen-knopf aria-pressed="false"><span data-knopf-text>Teile zeigen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,48V96a8,8,0,0,1-16,0V67.31l-42.34,42.35a8,8,0,0,1-11.32-11.32L188.69,56H160a8,8,0,0,1,0-16h48A8,8,0,0,1,216,48ZM98.34,146.34,56,188.69V160a8,8,0,0,0-16,0v48a8,8,0,0,0,8,8H96a8,8,0,0,0,0-16H67.31l42.35-42.34a8,8,0,0,0-11.32-11.32ZM208,152a8,8,0,0,0-8,8v28.69l-42.34-42.35a8,8,0,0,0-11.32,11.32L188.69,200H160a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V160A8,8,0,0,0,208,152ZM67.31,56H96a8,8,0,0,0,0-16H48a8,8,0,0,0-8,8V96a8,8,0,0,0,16,0V67.31l42.34,42.35a8,8,0,0,0,11.32-11.32Z"/></svg></span></button>
-          </div>
-          <p class="buehne__hinweis">Ziehen Sie an der Urne, um sie zu drehen.</p>
-          <figcaption>
+          <figcaption class="buehne__info">
+            <h3 class="buehne__titel">Zum Anschauen: die Teile einer Urne</h3>
+            <p class="buehne__text">Ziehen Sie an der Urne, um sie zu drehen, oder nutzen Sie die Pfeile. Mit „Teile zeigen“ sehen Sie, was in ihr steckt.</p>
+            <div class="buehne__steuerung">
+              <button class="btn btn--linie btn--klein btn--symbol" type="button" data-drehen="-1" aria-label="Nach links drehen"><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/></svg></span></button>
+              <button class="btn btn--linie btn--klein btn--symbol" type="button" data-drehen="1" aria-label="Nach rechts drehen"><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg></span></button>
+              <button class="btn btn--primary btn--klein" type="button" data-zerlegen-knopf aria-pressed="false"><span data-knopf-text>Teile zeigen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,48V96a8,8,0,0,1-16,0V67.31l-42.34,42.35a8,8,0,0,1-11.32-11.32L188.69,56H160a8,8,0,0,1,0-16h48A8,8,0,0,1,216,48ZM98.34,146.34,56,188.69V160a8,8,0,0,0-16,0v48a8,8,0,0,0,8,8H96a8,8,0,0,0,0-16H67.31l42.35-42.34a8,8,0,0,0-11.32-11.32ZM208,152a8,8,0,0,0-8,8v28.69l-42.34-42.35a8,8,0,0,0-11.32,11.32L188.69,200H160a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V160A8,8,0,0,0,208,152ZM67.31,56H96a8,8,0,0,0,0-16H48a8,8,0,0,0-8,8V96a8,8,0,0,0,16,0V67.31l42.34,42.35a8,8,0,0,0,11.32-11.32Z"/></svg></span></button>
+            </div>
             <ol class="legende" data-legende>
               <li data-teil-name="koerper"><strong>Schmuckurne</strong> Die sichtbare Urne für Trauerfeier und Beisetzung. Es gibt sie aus Keramik, Metall, Holz oder aus Stoffen, die sich im Boden auflösen.</li>
               <li data-teil-name="deckel"><strong>Deckel</strong> Er verschließt die Schmuckurne.</li>
@@ -407,16 +411,23 @@
             </ol>
           </figcaption>
         </figure>
+
+        <div class="art__aktion">
+          <a class="btn btn--primary" href="tel:+49511421717"><span>Dazu beraten lassen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg></span></a>
+          <a class="art__weiter" href="#baumbestattung">Weiter: Baumbestattung</a>
+        </div>
       </div>
     </section>
 
     <!-- 3 · Baumbestattung · Efeu -->
     <section class="art art--efeu" id="baumbestattung" aria-labelledby="baum-titel" data-art>
-      <div class="wrap art__raster">
+      <div class="wrap">
         <div class="art__text">
-          <p class="art__nummer">3 von 5</p>
-          <h2 id="baum-titel"><svg class="art__stein" viewBox="0 0 250 200" style="fill:#BDB5A5" aria-hidden="true"><use href="#form-findling" filter="url(#stein-sand)"/></svg>Baumbestattung</h2>
-          <p class="art__kurz">Die Urne wird an den Wurzeln eines Baumes beigesetzt, in einem Bestattungswald oder auf einem Friedhof mit Baumgräbern. Der Baum ist das Grabmal.</p>
+          <div class="art__kopf">
+            <p class="art__nummer">3 von 5</p>
+            <h2 id="baum-titel"><svg class="art__stein" viewBox="0 0 250 200" style="fill:#BDB5A5" aria-hidden="true"><use href="#form-findling" filter="url(#stein-sand)"/></svg>Baumbestattung</h2>
+            <p class="art__kurz">Die Urne wird an den Wurzeln eines Baumes beigesetzt, in einem Bestattungswald oder auf einem Friedhof mit Baumgräbern. Der Baum ist das Grabmal.</p>
+          </div>
           <div class="art__listen">
             <div>
               <h3>Gut zu wissen</h3>
@@ -433,10 +444,6 @@
                 <li>niemand ein Grab pflegen kann oder soll.</li>
               </ul>
             </div>
-          </div>
-          <div class="art__aktion">
-            <a class="btn btn--hell" href="tel:+49511421717"><span>Dazu beraten lassen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg></span></a>
-            <a class="art__weiter" href="#seebestattung">Weiter: Seebestattung</a>
           </div>
         </div>
 
@@ -494,23 +501,33 @@
               <g fill="#5E7A4E"><path d="M40 200 l4 -12 l3 12 z"/><path d="M170 200 l3 -10 l4 10 z"/><path d="M430 200 l4 -13 l3 13 z"/><path d="M540 200 l3 -9 l4 9 z"/></g>
             </svg>
           </div>
-          <div class="buehne__steuerung buehne__steuerung--zeit">
-            <label for="zeitregler">Zeit</label>
-            <input id="zeitregler" type="range" min="0" max="100" value="0" step="1" data-zeitregler>
-            <p class="buehne__phase" data-phase aria-live="polite">Beisetzung</p>
-          </div>
-          <figcaption class="buehne__text">Ziehen Sie den Regler: So verändert sich die Urne mit den Jahren, bis sie ein Teil des Waldbodens ist.</figcaption>
+          <figcaption class="buehne__info">
+            <h3 class="buehne__titel">Zum Anschauen: was im Boden geschieht</h3>
+            <p class="buehne__text">Ziehen Sie den Regler: So verändert sich die Urne mit den Jahren, bis sie ein Teil des Waldbodens ist.</p>
+            <div class="buehne__steuerung buehne__steuerung--zeit">
+              <label for="zeitregler">Zeit</label>
+              <input id="zeitregler" type="range" min="0" max="100" value="0" step="1" data-zeitregler>
+              <p class="buehne__phase" data-phase aria-live="polite">Beisetzung</p>
+            </div>
+          </figcaption>
         </figure>
+
+        <div class="art__aktion">
+          <a class="btn btn--hell" href="tel:+49511421717"><span>Dazu beraten lassen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg></span></a>
+          <a class="art__weiter" href="#seebestattung">Weiter: Seebestattung</a>
+        </div>
       </div>
     </section>
 
     <!-- 4 · Seebestattung · Gischt -->
     <section class="art art--gischt" id="seebestattung" aria-labelledby="see-titel" data-art>
-      <div class="wrap art__raster">
+      <div class="wrap">
         <div class="art__text">
-          <p class="art__nummer">4 von 5</p>
-          <h2 id="see-titel"><svg class="art__stein" viewBox="0 0 230 210" style="fill:#B3B4AF" aria-hidden="true"><use href="#form-segment" filter="url(#stein-grau)"/></svg>Seebestattung</h2>
-          <p class="art__kurz">Die Urne wird von einem Schiff aus dem Meer übergeben, meist in der Nord- oder Ostsee. Angehörige können an Bord dabei sein.</p>
+          <div class="art__kopf">
+            <p class="art__nummer">4 von 5</p>
+            <h2 id="see-titel"><svg class="art__stein" viewBox="0 0 230 210" style="fill:#B3B4AF" aria-hidden="true"><use href="#form-segment" filter="url(#stein-grau)"/></svg>Seebestattung</h2>
+            <p class="art__kurz">Die Urne wird von einem Schiff aus dem Meer übergeben, meist in der Nord- oder Ostsee. Angehörige können an Bord dabei sein.</p>
+          </div>
           <div class="art__listen">
             <div>
               <h3>Gut zu wissen</h3>
@@ -527,10 +544,6 @@
                 <li>keine Grabpflege anfallen soll.</li>
               </ul>
             </div>
-          </div>
-          <div class="art__aktion">
-            <a class="btn btn--primary" href="tel:+49511421717"><span>Dazu beraten lassen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg></span></a>
-            <a class="art__weiter" href="#eigener-abschied">Weiter: Ihr eigener Abschied</a>
           </div>
         </div>
 
@@ -582,26 +595,34 @@
               </g>
             </svg>
           </div>
-          <figcaption>
+          <figcaption class="buehne__info">
+            <h3 class="buehne__titel">Zum Anschauen: der Weg der Urne</h3>
+            <p class="buehne__text">Scrollen Sie langsam weiter: Die Urne sinkt zum Grund und löst sich auf. Die Stelle wird vermerkt.</p>
             <ol class="schritte" data-schritte>
               <li>Übergabe am Schiff</li>
               <li>Die Urne sinkt</li>
               <li>Sie löst sich auf</li>
               <li>Die Stelle wird vermerkt</li>
             </ol>
-            <p class="buehne__text">Die Animation folgt Ihrem Scrollen.</p>
           </figcaption>
         </figure>
+
+        <div class="art__aktion">
+          <a class="btn btn--primary" href="tel:+49511421717"><span>Dazu beraten lassen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg></span></a>
+          <a class="art__weiter" href="#eigener-abschied">Weiter: Ihr eigener Abschied</a>
+        </div>
       </div>
     </section>
 
     <!-- 5 · Ihr eigener Abschied · Eiche -->
     <section class="art art--eiche" id="eigener-abschied" aria-labelledby="abschied-titel" data-art>
-      <div class="wrap art__raster">
+      <div class="wrap">
         <div class="art__text">
-          <p class="art__nummer">5 von 5</p>
-          <h2 id="abschied-titel"><svg class="art__stein" viewBox="0 0 200 280" style="fill:#CEC7B8" aria-hidden="true"><use href="#form-schulter" filter="url(#stein-muschelkalk)"/></svg>Ihr eigener Abschied</h2>
-          <p class="art__kurz">Jeder Abschied darf anders sein. Wir besprechen mit Ihnen, was zu dem Menschen passt, um den Sie trauern: Musik, Worte, Blumen, Ort. Das lässt sich mit jeder Bestattungsart verbinden.</p>
+          <div class="art__kopf">
+            <p class="art__nummer">5 von 5</p>
+            <h2 id="abschied-titel"><svg class="art__stein" viewBox="0 0 200 280" style="fill:#CEC7B8" aria-hidden="true"><use href="#form-schulter" filter="url(#stein-muschelkalk)"/></svg>Ihr eigener Abschied</h2>
+            <p class="art__kurz">Jeder Abschied darf anders sein. Wir besprechen mit Ihnen, was zu dem Menschen passt, um den Sie trauern: Musik, Worte, Blumen, Ort. Das lässt sich mit jeder Bestattungsart verbinden.</p>
+          </div>
           <div class="art__listen">
             <div>
               <h3>Gut zu wissen</h3>
@@ -618,10 +639,6 @@
                 <li>der Verstorbene eigene Wünsche hinterlassen hat.</li>
               </ul>
             </div>
-          </div>
-          <div class="art__aktion">
-            <a class="btn btn--hell" href="tel:+49511421717"><span>Dazu beraten lassen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg></span></a>
-            <a class="art__weiter" href="#vergleich">Weiter: Vergleich</a>
           </div>
         </div>
 
@@ -681,15 +698,24 @@
               </g>
             </svg>
           </div>
-          <div class="buehne__steuerung buehne__steuerung--wahl" role="group" aria-label="Was soll dazugehören?">
-            <button class="wahlknopf" type="button" aria-pressed="true" data-wahl="kerzen">Kerzenlicht</button>
-            <button class="wahlknopf" type="button" aria-pressed="false" data-wahl="foto">Foto</button>
-            <button class="wahlknopf" type="button" aria-pressed="false" data-wahl="blumen">Blumen</button>
-            <button class="wahlknopf" type="button" aria-pressed="false" data-wahl="worte">Worte</button>
-            <button class="wahlknopf" type="button" aria-pressed="false" data-wahl="musik">Musik</button>
-          </div>
-          <figcaption class="buehne__text" data-auswahl-text aria-live="polite">Ihre Auswahl: Kerzenlicht.</figcaption>
+          <figcaption class="buehne__info">
+            <h3 class="buehne__titel">Zum Ausprobieren: was zu Ihrem Abschied gehört</h3>
+            <p class="buehne__text">Wählen Sie aus, was dazugehören soll. Es erscheint auf dem Tisch.</p>
+            <div class="buehne__steuerung buehne__steuerung--wahl" role="group" aria-label="Was soll dazugehören?">
+              <button class="wahlknopf" type="button" aria-pressed="true" data-wahl="kerzen">Kerzenlicht</button>
+              <button class="wahlknopf" type="button" aria-pressed="false" data-wahl="foto">Foto</button>
+              <button class="wahlknopf" type="button" aria-pressed="false" data-wahl="blumen">Blumen</button>
+              <button class="wahlknopf" type="button" aria-pressed="false" data-wahl="worte">Worte</button>
+              <button class="wahlknopf" type="button" aria-pressed="false" data-wahl="musik">Musik</button>
+            </div>
+            <p class="buehne__auswahl" data-auswahl-text aria-live="polite">Ihre Auswahl: Kerzenlicht.</p>
+          </figcaption>
         </figure>
+
+        <div class="art__aktion">
+          <a class="btn btn--hell" href="tel:+49511421717"><span>Dazu beraten lassen</span><span class="btn__chip"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg></span></a>
+          <a class="art__weiter" href="#vergleich">Weiter: Vergleich</a>
+        </div>
       </div>
     </section>
 

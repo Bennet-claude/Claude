@@ -1155,28 +1155,41 @@ html:not(.motion-ok) .uebergang span { display: none; }
 .art--eiche  { background: var(--eiche); }
 .art--erde :focus-visible, .art--efeu :focus-visible, .art--eiche :focus-visible { outline-color: var(--auf-dunkel); }
 
-.art__raster { display: grid; gap: clamp(2.25rem, 4vw, 3.5rem); }
+.art__text { display: grid; gap: 2.25rem clamp(3rem, 6vw, 6rem); }
 .art__nummer { margin-bottom: 0.75rem; font-size: 1rem; font-weight: 500; letter-spacing: 0.03em; color: var(--zweit); }
 .art h2 { display: flex; align-items: center; gap: 1rem; }
 .art__stein { flex: none; width: auto; height: clamp(2.75rem, 5vw, 4rem); overflow: visible; }
 .art__kurz { margin-top: 1.25rem; max-width: 40ch; font-size: var(--fs-lead); line-height: 1.45; }
-.art__listen { display: grid; gap: 1.75rem; margin-top: 2.25rem; }
+.art__listen { display: grid; gap: 1.75rem; }
 .art__listen h3 { margin-bottom: 0.75rem; font-family: var(--font-sans); font-size: 1.125rem; font-weight: 600; letter-spacing: 0; }
 .art .punkte { margin: 0; }
-.art__aktion { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; margin-top: 2.5rem; }
+.art__aktion { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; margin-top: clamp(2.25rem, 4vw, 3rem); }
 .art__weiter { font-weight: 600; }
 .art__weiter::after { content: " ↓"; }
-@media (min-width: 40em) and (max-width: 63.99em) {
-  .art__listen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 40em) {
+  .art__listen { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2rem; }
 }
 @media (min-width: 64em) {
-  .art__raster { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: start; column-gap: clamp(3rem, 5vw, 5rem); }
-  .art--asche .buehne, .art--gischt .buehne { order: -1; }   /* im Wechsel links und rechts */
-  .buehne { position: sticky; top: calc(var(--header-h) + 5.5rem); }
+  /* erst der Text: links Überschrift und Kurzerklärung, rechts die beiden Listen */
+  .art__text { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: start; }
+  .art__listen { grid-template-columns: minmax(0, 1fr); padding-top: 2.25rem; }
 }
 
-/* Bühne: das Objekt zum Ansehen, Drehen und Zerlegen */
-.buehne { margin: 0; }
+/* dann die Animation: ein eigener Block „Zum Anschauen“ unter dem Text,
+   Bühne links, Erklärung und Bedienung rechts. Nichts läuft neben dem Text mit. */
+.buehne {
+  display: grid;
+  gap: 1.75rem;
+  margin: clamp(2.75rem, 5vw, 4rem) 0 0;
+  padding-top: clamp(2.25rem, 4vw, 3rem);
+  border-top: 1px solid var(--linie);
+}
+.buehne__titel { margin-bottom: 0.75rem; font-size: var(--fs-h3); }
+.buehne__info .buehne__text { margin: 0 0 0.25rem; font-size: var(--fs-klein); color: inherit; max-width: 42ch; }
+.buehne__auswahl { margin-top: 1rem; font-size: 1rem; color: var(--zweit); }
+@media (min-width: 60em) {
+  .buehne { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; column-gap: clamp(2.5rem, 4vw, 3.5rem); }
+}
 .buehne__flaeche {
   position: relative;
   overflow: hidden;
