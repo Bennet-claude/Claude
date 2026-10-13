@@ -600,6 +600,46 @@ textarea.r-in{ min-height:108px; resize:none; }
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
 }
+
+/* ---------- Schnell eintragen ---------- */
+.qgrid{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; }
+.qbtn{ display:flex; flex-direction:column; align-items:center; gap:8px; padding:14px 6px 12px; border-radius:20px; background:linear-gradient(160deg, var(--surface-2), var(--surface)); border:1px solid var(--line); font-size:13px; font-weight:650; color:var(--text); transition:transform .3s var(--spring), border-color .2s, box-shadow .3s; }
+.qbtn:hover{ border-color:var(--line-strong); box-shadow:0 14px 30px -20px rgba(255,122,31,.6); transform:translateY(-2px); }
+.qbtn:active{ transform:scale(.94); }
+.qi{ width:38px; height:38px; border-radius:13px; display:grid; place-items:center; background:var(--wash); color:var(--accent-2); }
+.qi svg{ width:20px; height:20px; }
+@media (min-width:640px){ .qgrid{ grid-template-columns:repeat(8, minmax(0,1fr)); } }
+/* ---------- Eintrags-Bausteine ---------- */
+.money-in{ position:relative; }
+.money-in .txt{ padding-right:38px; font-variant-numeric:tabular-nums; }
+.money-in span{ position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--faint); font-weight:600; pointer-events:none; }
+.amt{ font-variant-numeric:tabular-nums; white-space:nowrap; font-weight:700; }
+.amt.in{ color:var(--ok); }
+.amt.out{ color:#FF9A80; }
+.row > .amt{ align-self:center; font-size:15px; }
+.stats.three{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+.stats.three .st b{ font-size:clamp(17px, 4.6vw, 26px); }
+.catbar{ display:grid; grid-template-columns:minmax(70px, 110px) 1fr auto; align-items:center; gap:12px; font-size:14px; }
+.catbar + .catbar{ margin-top:10px; }
+.catbar span{ color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.catbar b{ font-variant-numeric:tabular-nums; font-weight:650; font-size:14px; }
+.meter.thin{ display:block; height:5px; margin-top:9px; max-width:220px; }
+.gchips{ display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+.gchips i{ font-style:normal; font-family:var(--mono); font-size:12px; padding:1px 8px; border-radius:8px; background:var(--surface-3); color:var(--muted); }
+.rate.good{ background:rgba(122,203,134,.13); color:var(--ok); }
+.rate.bad{ background:rgba(255,90,78,.13); color:#FF8A80; }
+.ring{ --p:0; flex:none; width:48px; height:48px; border-radius:50%; display:grid; place-items:center; background:conic-gradient(var(--accent) calc(var(--p) * 1%), var(--surface-3) 0); position:relative; margin-top:-2px; }
+.ring::before{ content:""; position:absolute; inset:5px; border-radius:50%; background:var(--surface); }
+.ring b{ position:relative; font-size:12.5px; font-weight:750; font-family:var(--mono); letter-spacing:-.02em; }
+.kick .due{ color:var(--accent-2); font-weight:600; }
+.kick .late{ color:#FF8A80; font-weight:600; }
+.pdot{ flex:none; width:10px; height:10px; margin-top:8px; border-radius:50%; background:var(--faint); }
+.pdot.laeuft{ background:var(--accent); box-shadow:0 0 0 4px var(--wash); animation:pulse 2s ease-in-out infinite; }
+.pdot.fertig{ background:var(--ok); }
+.row > .btn.sm{ align-self:center; flex:none; }
+.add-line .txt{ flex:1; min-width:0; }
+.add-line .btn{ flex:none; }
+@keyframes pulse{ 50%{ box-shadow:0 0 0 7px rgba(255,122,31,.05); } }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -649,7 +689,7 @@ textarea.r-in{ min-height:108px; resize:none; }
 
     <div class="sec-h"><h3>Deine Bereiche</h3><span class="faint" id="secHint"></span></div>
     <nav class="tiles" id="tiles" aria-label="Bereiche"></nav>
-    <button class="daily" id="daily"></button>
+    <section id="daily" aria-label="Schnell eintragen"></section>
     <div class="offline" id="offline" hidden>Speichern ist gerade nicht möglich. Öffne das Dashboard angemeldet in der Claude-App oder auf claude.ai, dann werden deine Einträge gesichert.</div>
     <p class="foot">Deine Einträge liegen privat in deinem Bereich dieses Dashboards. Nur du siehst sie.</p>
   </div>
@@ -671,7 +711,11 @@ textarea.r-in{ min-height:108px; resize:none; }
    notes      {text, details, kind:'anstehend'|'irgendwann', cat, date, time, prio:'hoch', done, doneAt, createdAt}
    videos     doc-id 'yt-<videoId>': {url, videoId, title, channel, duration, topic, core, points[], details,
               apply[], quotes[], caution, status:'done'|'working'|'queued'|'error', error, star, applied[], note, createdAt}
-   entries    {area:'lernen'|'denken'|'mental'|'fussball'|'ki'|'leben', type, title, text, cat, fields{}, createdAt}
+   entries    {area:'lernen'|'mental'|'fussball'|'ki'|'leben', type, title, text, cat, fields{}, createdAt}
+              type 'grade': fields{subject, kind, scale:'note'|'punkte', value, label, date} · 'projekt': fields{status, next}
+   goals      {kind:'ziel', title, area, steps[{text,ok}], deadline, why, status:'aktiv'|'erreicht', doneAt}
+              {kind:'spar', title, target, saved, deadline}
+   money      {type:'in'|'out', amount, cat, date, note, createdAt}
    reports    doc-id = Datum 'YYYY-MM-DD': {date, mood, energy, sleepH, sleepQ, wins[3], learned, learnedTag,
               sport{type,min,rpe,good,improve}, hard, lesson, habits{id:true}, grateful, tomorrow[3], score,
               completed, coach{text,at}, createdAt, updatedAt}
@@ -716,6 +760,7 @@ const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = se
 const nowISO = () => new Date().toISOString();
 const plural = (n, one, many) => n === 1 ? one : many;
 const de = (n, d=0) => Number(n).toLocaleString('de-DE', {minimumFractionDigits:d, maximumFractionDigits:d});
+const euro2 = n => Number(n || 0).toLocaleString('de-DE', {style:'currency', currency:'EUR'});
 const euro = n => Number(n).toLocaleString('de-DE', {style:'currency', currency:'EUR', maximumFractionDigits:0});
 const store = {
   get(k, d=null){ try{ const v = localStorage.getItem('se2-'+k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
@@ -727,13 +772,13 @@ const lines = s => String(s || '').split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).j
 /* ---------------- Icons ---------------- */
 const IP = {
   notizen:'<rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 8h6M9 12h6M9 16h3"/>',
-  lernen:'<path d="M9 3h6M10 3v6.2L4.8 18a2 2 0 0 0 1.7 3h11a2 2 0 0 0 1.7-3L14 9.2V3"/><path d="M7.5 15h9"/>',
+  lernen:'<path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c0 1.5 2.5 3 5.5 3s5.5-1.5 5.5-3v-4.2M21.5 9.5v5"/>',
   videos:'<rect x="3" y="5" width="18" height="14" rx="4"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor"/>',
-  denken:'<path d="M6 20h12M7 20l1-9h8l1 9M8 11V5h2v2h1.5V5h1V7H14V5h2v6"/>',
+  denken:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/><path d="M12 12l7-7M16.5 4.5V7.5h3"/>',
   mental:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/>',
   fussball:'<circle cx="12" cy="12" r="9"/><path d="M12 7.6l3.7 2.7-1.4 4.4H9.7L8.3 10.3z"/><path d="M12 7.6V3.2M15.7 10.3l4-1.3M14.3 14.7l2.5 3.5M9.7 14.7l-2.5 3.5M8.3 10.3l-4-1.3"/>',
   ki:'<path d="M11 3.5c.6 4.3 2.6 6.3 6.9 6.9-4.3.6-6.3 2.6-6.9 6.9-.6-4.3-2.6-6.3-6.9-6.9 4.3-.6 6.3-2.6 6.9-6.9z"/><path d="M18.5 15.5c.25 1.5.9 2.15 2.4 2.4-1.5.25-2.15.9-2.4 2.4-.25-1.5-.9-2.15-2.4-2.4 1.5-.25 2.15-.9 2.4-2.4z"/>',
-  leben:'<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+  leben:'<rect x="3" y="6" width="18" height="13" rx="3.5"/><path d="M3 10h12.5a2.5 2.5 0 0 1 0 5H21M16 12.5h.01"/><path d="M6 6l9-3 1.5 3"/>',
   abend:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
   plus:'<path d="M12 5v14M5 12h14"/>', back:'<path d="M15 6l-6 6 6 6"/>', chev:'<path d="M6 9l6 6 6-6"/>', arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
   x:'<path d="M6 6l12 12M18 6L6 18"/>', check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>', search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
@@ -972,512 +1017,24 @@ const ROUTINES = {
     ['In der Arbeit',['Alle Aufgaben kurz überfliegen','Mit einer leichten Aufgabe starten','Bei Blackout: doppelt einatmen, nächste Aufgabe','Zeit für die Kontrolle am Ende lassen']]
   ]}
 };
-const EV = {3:'Stark belegt', 2:'Gut belegt', 1:'Erfahrungswert'};
-
-const LIB = {
-lernen:[
- {t:'Abfragen statt Wiederlesen', s:'Active Recall: Wissen aktiv aus dem Kopf holen.', ev:3,
-  why:'Beim Abrufen baust du die Erinnerung aktiv auf. Wiederlesen fühlt sich gut an, weil der Text vertraut wirkt. Ob du es ohne Vorlage kannst, prüft es nicht.',
-  steps:['Abschnitt lesen oder Unterrichtsstunde abschließen.','Buch zu, Blatt raus: alles aufschreiben, was du noch weißt.','Mit der Vorlage vergleichen und Lücken markieren.','Nur die Lücken nachlernen und später erneut abfragen.'],
-  trap:'Zu früh in die Lösung schauen. Erst selbst kämpfen, dann nachsehen. Genau diese Anstrengung macht den Lerneffekt.',
-  ex:'Nach Mathe drei Minuten aus dem Kopf aufschreiben, was neu war, bevor du mit den Hausaufgaben anfängst.'},
- {t:'Verteilt wiederholen', s:'Spaced Repetition: Abstände statt Marathon.', ev:3,
-  why:'Vergessen gehört zum Lernen. Wer kurz vor dem Vergessen wiederholt, speichert stabiler. Zehn Minuten an fünf Tagen bringen mehr als fünfzig Minuten am Stück.',
-  steps:['Neuen Stoff am selben Tag kurz abfragen.','Wiederholen nach 1 Tag, 3 Tagen, 1 Woche und 2 Wochen.','Was sitzt, bekommt längere Abstände. Was hakt, kommt früher wieder.','Karteikarten-Apps wie Anki planen die Abstände automatisch.'],
-  trap:'Alles am Vorabend reinpressen. Für die Arbeit reicht es vielleicht, zwei Wochen später ist das meiste weg.',
-  ex:'Vokabeln: jeden Tag 10 Minuten statt zwei Stunden am Sonntagabend.'},
- {t:'Erklären wie für ein Kind', s:'Feynman-Methode: Lücken sichtbar machen.', ev:2,
-  why:'Wer erklärt, muss Zusammenhänge selbst herstellen. Wo du stockst oder dich hinter Fachwörtern versteckst, liegt deine Lücke.',
-  steps:['Thema oben auf ein Blatt schreiben.','So erklären, dass es ein Zwölfjähriger versteht, ohne Fachwörter.','Stellen markieren, an denen du hängst.','Nachlesen, vereinfachen, nochmal erklären. Im Feynman-Check prüft Claude deine Erklärung.'],
-  trap:'Auswendig gelernte Sätze aufsagen. Was du nicht in eigenen Worten sagen kannst, hast du noch nicht verstanden.',
-  ex:'Quadratische Funktionen erklären, ohne das Wort „Scheitelpunktform“ zu benutzen.'},
- {t:'Aufgaben mischen', s:'Interleaving: so üben, wie geprüft wird.', ev:2,
-  why:'In der Arbeit steht nicht dran, welcher Aufgabentyp kommt. Gemischtes Üben trainiert genau das: den passenden Lösungsweg erkennen.',
-  steps:['Aufgaben aus mehreren Kapiteln sammeln.','Durcheinander lösen statt Block für Block.','Bei jeder Aufgabe zuerst sagen: Welcher Typ ist das, welche Methode passt?','Fehler nach Aufgabentyp sortieren.'],
-  trap:'Aufhören, weil es sich schwerer anfühlt. Das ist ein Zeichen, dass es wirkt.',
-  ex:'Eine Altklausur gemischt rechnen statt zehnmal dieselbe Aufgabenart.'},
- {t:'Warum-Fragen stellen', s:'Elaboration: Neues an Bekanntes knüpfen.', ev:2,
-  why:'Wissen, das mit vielem verknüpft ist, findest du leichter wieder. Jede Warum-Frage baut so eine Verbindung.',
-  steps:['Bei jedem Fakt fragen: Warum ist das so?','Wo habe ich etwas Ähnliches schon gesehen?','Was wäre, wenn es anders wäre?','Die Antwort in einem Satz aufschreiben.'],
-  trap:'Fakten isoliert auswendig lernen. Ohne Zusammenhang sind sie nach der Arbeit schnell weg.',
-  ex:'Geschichte: Warum kam es genau dann zu diesem Ereignis? Was ist vorher passiert?'},
- {t:'Erst Beispiel, dann selbst', s:'Lösungsbeispiele gezielt nutzen.', ev:2,
-  why:'Bei ganz neuem Stoff überfordert dich eigenes Probieren schnell. Ein vollständig gelöstes Beispiel zeigt dir den Weg. Danach musst du selbst ran, sonst bleibt es beim Zusehen.',
-  steps:['Ein gelöstes Beispiel Schritt für Schritt nachvollziehen.','Zu jedem Schritt sagen, warum er gemacht wird.','Eine ähnliche Aufgabe ohne Vorlage lösen.','Schwierigkeit steigern, bis du ohne Beispiel klarkommst.'],
-  trap:'Nur Lösungen anschauen und nicken. Verstehen beim Zusehen ist nicht dasselbe wie Können.',
-  ex:'Physik: erst die Musteraufgabe zur beschleunigten Bewegung durcharbeiten, dann drei Aufgaben allein.'},
- {t:'Wort und Bild kombinieren', s:'Dual Coding: zwei Wege ins Gedächtnis.', ev:2,
-  why:'Was du als Text und als Skizze, Zeitstrahl oder Diagramm im Kopf hast, kannst du über zwei Wege abrufen.',
-  steps:['Zum Text eine einfache Skizze machen.','Abläufe als Pfeildiagramm, Zeiträume als Zeitstrahl.','Später nur die Skizze ansehen und den Inhalt laut erklären.'],
-  trap:'Schöne Bilder malen statt zu verstehen. Die Skizze soll Zusammenhänge zeigen, nicht dekorieren.',
-  ex:'Biologie: Fotosynthese als Fließdiagramm mit Ausgangsstoffen und Produkten.'},
- {t:'Fokusblöcke', s:'Deep Work: kurz, aber ohne Ablenkung.', ev:1,
-  why:'Konzentration lässt sich trainieren. Kurze, klare Blöcke ohne Ablenkung bringen mehr als drei Stunden mit dem Handy daneben. Im Tab Fokus-Timer kannst du direkt starten.',
-  steps:['Ein konkretes Ziel für den Block festlegen.','Handy in einen anderen Raum, Benachrichtigungen aus.','25 bis 50 Minuten nur diese eine Sache.','5 bis 10 Minuten echte Pause: bewegen, trinken, nicht scrollen.'],
-  trap:'Die Pause am Handy verbringen. Dann startet der nächste Block mit vollem Kopf.',
-  ex:'Zwei Blöcke à 40 Minuten reichen für einen normalen Lerntag.'},
- {t:'Schlaf festigt Wissen', s:'Ein Teil des Lernens passiert nachts.', ev:3,
-  why:'Im Schlaf festigt das Gehirn, was tagsüber reinkam. Schlafmediziner empfehlen Jugendlichen 8 bis 10 Stunden pro Nacht.',
-  steps:['Vor dem Schlafen kurz den Stoff abfragen.','Feste Schlafenszeit, auch vor Arbeiten.','Die letzte halbe Stunde möglichst ohne Bildschirm.'],
-  trap:'Die Nacht vor der Arbeit durchlernen. Du gewinnst Stunden und verlierst Abrufbarkeit.',
-  ex:'Abends 15 Minuten abfragen, dann schlafen. Morgens nochmal fünf Minuten durchgehen.'},
- {t:'Bewegung als Lernhilfe', s:'Ein aktiver Körper hilft dem Kopf.', ev:2,
-  why:'Regelmäßige Bewegung hängt mit besserer Konzentration und Stimmung zusammen. Schon kurze Bewegungspausen helfen, frisch in den nächsten Block zu starten.',
-  steps:['Zwischen zwei Fokusblöcken 5 Minuten raus oder Treppe laufen.','Schwere Lerneinheiten nicht direkt nach einem harten Training legen, wenn du platt bist.','Training als Ausgleich sehen, nicht als Konkurrenz zum Lernen.'],
-  trap:'In Stressphasen zuerst die Bewegung streichen.',
-  ex:'Vor der Vokabelrunde einmal um den Block gehen.'},
- {t:'Rückwärts planen', s:'Vom Termin aus denken.', ev:1,
-  why:'Vom Termin aus zu planen zeigt dir früh, ob es knapp wird. Der Prüfungsplaner im Lernlabor rechnet die Wiederholungstermine für dich aus.',
-  steps:['Datum der Arbeit eintragen.','Themen auflisten und schätzen, wie lange jedes braucht.','Letzten Probedurchlauf zwei Tage vorher einplanen.','Rückwärts auf die Tage verteilen.'],
-  trap:'Mit dem Lieblingsthema anfangen. Das Schwerste gehört nach vorn, solange noch Zeit ist.',
-  ex:'Arbeit in zwei Wochen: erste Woche verstehen, zweite Woche abfragen und Probeaufgaben.'},
- {t:'Lernfallen erkennen', s:'Was sich produktiv anfühlt, aber wenig bringt.', ev:3,
-  why:'Markieren, Wiederlesen und Abschreiben fühlen sich nach Arbeit an. In Studien schneiden sie schwach ab. Das nennt man Illusion von Kompetenz.',
-  steps:['Markieren nur, um danach Fragen daraus zu machen.','Statt Wiederlesen: abfragen.','Statt Mitschrift abschreiben: aus dem Kopf neu aufschreiben.'],
-  trap:'Vertrautheit mit Können verwechseln. „Kenn ich“ heißt nicht „kann ich“.',
-  ex:'Kannst du die Seite ohne Hinsehen erklären? Wenn nicht, hast du sie nur wiedererkannt.'}
-],
-
-modelle:[
- {t:'Inversion', s:'Frag umgekehrt.', cat:'Probleme lösen',
-  idea:'Statt „Wie werde ich besser?“ fragst du: „Was würde mich garantiert schlechter machen?“ Dann lässt du genau das weg. Fehler zu vermeiden ist oft leichter, als Genialität zu erzwingen.',
-  when:'Wenn du festhängst oder ein Ziel zu groß wirkt.',
-  steps:['Ziel aufschreiben.','Fragen: Wie würde ich es sicher verfehlen?','Liste der Fehler machen.','Jeden Punkt in eine Regel umdrehen.'],
-  ex:'Was macht einen 8er unbrauchbar? Nie anspielbar sein, im Zentrum den Ball verlieren, nach Ballverlust stehen bleiben. Umgedreht ist das dein Trainingsplan.'},
- {t:'Zweite Ordnung', s:'Und was passiert danach?', cat:'Entscheiden',
-  idea:'Die meisten denken nur an die erste Folge einer Entscheidung. Gute Entscheider fragen weiter: Was folgt aus der Folge? Viele schlechte Entscheidungen fühlen sich sofort gut an und rächen sich zwei Schritte später.',
-  when:'Bei allem, was sich kurzfristig gut anfühlt.',
-  steps:['Erste Folge aufschreiben.','Fragen: Und dann? Mindestens zweimal.','Prüfen, ob die späteren Folgen die erste aufwiegen.'],
-  ex:'Bis zwei Uhr zocken: jetzt Spaß, morgen müde, schwaches Training, weniger Spielzeit.'},
- {t:'80/20-Prinzip', s:'Wenig Ursache, viel Wirkung.', cat:'Strategie',
-  idea:'Oft bringt ein kleiner Teil deiner Arbeit den Großteil des Ergebnisses. Die Zahlen sind eine Faustregel, das Prinzip gilt erstaunlich oft.',
-  when:'Wenn du zu viel auf einmal willst oder keine Zeit hast.',
-  steps:['Alle Aufgaben oder Aktivitäten auflisten.','Markieren, welche wenigen das meiste bringen.','Denen deine beste Zeit geben, den Rest kürzen oder streichen.'],
-  ex:'Vor einer Arbeit bringen die drei Hauptthemen der letzten Stunden meist mehr Punkte als Randthemen aus dem Buch.'},
- {t:'Opportunitätskosten', s:'Jedes Ja ist ein Nein.', cat:'Entscheiden',
-  idea:'Die echten Kosten einer Sache sind das, was du stattdessen hättest tun können. Eine Stunde Scrollen kostet nicht nichts, sondern die beste Alternative für diese Stunde.',
-  when:'Vor Zusagen, Käufen und Zeitfressern.',
-  steps:['Fragen: Was ist die beste Alternative?','Beides ehrlich vergleichen.','Bewusst entscheiden statt nebenbei.'],
-  ex:'300 € für Sneaker sind auch 300 € weniger für Equipment, einen Kurs oder Startkapital.'},
- {t:'Pre-Mortem', s:'Das Scheitern vorher durchspielen.', cat:'Strategie',
-  idea:'Bevor du etwas startest, tust du so, als wäre es ein halbes Jahr später gescheitert, und schreibst auf, warum. Was dir sofort einfällt, sind deine größten Risiken. Jetzt sind sie noch vermeidbar.',
-  when:'Vor Projekten, Saisonzielen und wichtigen Prüfungen.',
-  steps:['Vorstellen: Es ist schiefgegangen.','Fünf Gründe aufschreiben.','Für die zwei wahrscheinlichsten Gründe eine Gegenmaßnahme festlegen.'],
-  ex:'Website-Business gescheitert? Vielleicht, weil nie jemand aktiv angesprochen wurde. Gegenmaßnahme: jede Woche fünf Betriebe anschreiben.'},
- {t:'Kompetenzkreis', s:'Wisse, was du nicht weißt.', cat:'Entscheiden',
-  idea:'Jeder hat Bereiche, in denen er wirklich Ahnung hat, und viele, in denen er nur glaubt, Ahnung zu haben. Innerhalb des Kreises darfst du schnell entscheiden. Außerhalb langsamer, und du fragst Leute, die es wirklich wissen.',
-  when:'Bei Geld, Gesundheit, Recht und allem, was neu ist.',
-  steps:['Ehrlich fragen: Habe ich das schon einmal selbst gemacht?','Wenn nein: Wer weiß es wirklich?','Klein anfangen, bis der Kreis gewachsen ist.'],
-  ex:'Geldanlage nach Tipps aus Social Media heißt, außerhalb des Kreises zu entscheiden.'},
- {t:'Asymmetrische Wetten', s:'Kleiner Einsatz, großer möglicher Gewinn.', cat:'Strategie',
-  idea:'Such Gelegenheiten, bei denen du wenig verlieren, aber viel gewinnen kannst: eine Bewerbung, eine Nachricht an jemanden, von dem du lernen willst, ein Nebenprojekt mit kaum Kosten.',
-  when:'Wenn Angst vor Ablehnung dich bremst.',
-  steps:['Schlimmsten Fall ehrlich benennen.','Besten Fall benennen.','Wenn der schlimmste Fall klein ist: machen.'],
-  ex:'Ein Probetraining bei einem höheren Verein: schlimmstenfalls ein Abend, bestenfalls ein Karriereschritt.'},
- {t:'Zinseszins-Effekt', s:'Kleine Schritte, die sich stapeln.', cat:'Strategie',
-  idea:'Was sich jeden Tag ein bisschen verbessert, wächst nicht gleichmäßig, sondern beschleunigt. Das gilt für Geld, aber genauso für Wissen, Fähigkeiten und Beziehungen. Wer früh anfängt, hat den größten Hebel.',
-  when:'Wenn sich Fortschritt zu langsam anfühlt.',
-  steps:['Eine kleine tägliche Handlung wählen.','So klein machen, dass du sie nie ausfallen lässt.','Erst nach Monaten bewerten.'],
-  ex:'Jeden Tag zehn Minuten Ballarbeit mit dem schwachen Fuß sind über ein Jahr rund 60 Stunden.'},
- {t:'Umkehrbar oder nicht?', s:'Zwei Arten von Entscheidungen.', cat:'Entscheiden',
-  idea:'Entscheidungen, die du leicht rückgängig machen kannst, triffst du schnell. Bei Entscheidungen, die schwer umkehrbar sind, nimmst du dir Zeit. Viele verschwenden Energie, weil sie beides gleich behandeln.',
-  when:'Immer, wenn du lange grübelst.',
-  steps:['Fragen: Kann ich das in einer Woche rückgängig machen?','Wenn ja: entscheiden und testen.','Wenn nein: drüber schlafen, Infos sammeln, jemanden fragen.'],
-  ex:'Ein neues Lernsystem testen: schnell entscheiden. Einen Vertrag über zwei Jahre: drüber schlafen.'},
- {t:'Erste Prinzipien', s:'Zurück zu dem, was sicher stimmt.', cat:'Probleme lösen',
-  idea:'Statt zu kopieren, wie es alle machen, zerlegst du ein Problem in seine Grundbausteine und baust die Lösung neu auf.',
-  when:'Wenn „so macht man das eben“ die einzige Begründung ist.',
-  steps:['Problem aufschreiben.','Annahmen sammeln und fragen: Ist das wirklich wahr?','Nur mit dem weiterarbeiten, was sicher stimmt.','Daraus eine eigene Lösung bauen.'],
-  ex:'„Für ein Business braucht man viel Geld.“ Was braucht ein Website-Service wirklich? Laptop, Können, Kunden. Zwei davon hast du schon.'},
- {t:'Eisenhower-Matrix', s:'Wichtig ist nicht dasselbe wie dringend.', cat:'Strategie',
-  idea:'Dringende Dinge schreien, wichtige Dinge flüstern. Wer nur auf Dringendes reagiert, kommt nie zu dem, was ihn wirklich weiterbringt.',
-  when:'Wenn der Kopf voll ist und alles gleichzeitig ansteht.',
-  steps:['Wichtig und dringend: sofort erledigen.','Wichtig, nicht dringend: fest einplanen. Hier passiert Entwicklung.','Dringend, nicht wichtig: kurz halten oder abgeben.','Weder noch: streichen.'],
-  ex:'Für die Arbeit in drei Wochen lernen ist wichtig, aber nicht dringend. Genau deshalb gehört es heute in den Kalender.'},
- {t:'Anreize verstehen', s:'Zeig mir den Anreiz, ich zeig dir das Verhalten.', cat:'Menschen',
-  idea:'Menschen reagieren auf Anreize, oft ohne es zu merken. Wer verstehen will, warum jemand etwas tut oder empfiehlt, fragt zuerst: Was hat er davon?',
-  when:'Bei Werbung, Tipps, Verhandlungen und Empfehlungen.',
-  steps:['Fragen: Wer verdient daran?','Fragen: Was würde die Person sagen, wenn sie nichts davon hätte?','Die Empfehlung entsprechend gewichten.'],
-  ex:'Ein Finfluencer, der Provision für Trading-Apps bekommt, findet Trading natürlich super.'},
- {t:'Hanlons Rasiermesser', s:'Nicht gleich böse Absicht unterstellen.', cat:'Menschen',
-  idea:'Vieles, was nach Absicht aussieht, ist eher Stress, Unwissen oder Zufall. Wer nicht sofort Böses unterstellt, bleibt ruhiger und klärt Konflikte schneller.',
-  when:'Wenn du dich über jemanden ärgerst.',
-  steps:['Mindestens zwei harmlose Erklärungen suchen.','Nachfragen statt vorwerfen.','Erst bei Wiederholung von Absicht ausgehen.'],
-  ex:'Der Mitspieler passt nicht zu dir. Vielleicht hat er dich nicht gesehen, weil du im Deckungsschatten standest.'},
- {t:'10/10/10-Regel', s:'Drei Zeitebenen für eine Entscheidung.', cat:'Entscheiden',
-  idea:'Wie wirst du dich mit dieser Entscheidung in 10 Minuten fühlen, in 10 Monaten und in 10 Jahren? Das holt dich aus dem Moment heraus.',
-  when:'Bei emotionalen Entscheidungen.',
-  steps:['Entscheidung formulieren.','Für jede Zeitebene einen Satz schreiben.','Der langfristigen Ebene mehr Gewicht geben.'],
-  ex:'Training schwänzen, weil es regnet: in 10 Minuten angenehm, in 10 Monaten bereut, in 10 Jahren Teil einer Gewohnheit.'},
- {t:'Sicherheitsmarge', s:'Plane Puffer ein.', cat:'Strategie',
-  idea:'Dinge dauern länger und kosten mehr als gedacht. Wer Puffer einplant, bleibt handlungsfähig, wenn etwas schiefgeht.',
-  when:'Bei Zeitplänen, Geld und Projekten.',
-  steps:['Ehrlich schätzen.','Zeit mal 1,5 nehmen, Geld plus 20 Prozent.','Mit dem Puffer planen, nicht mit der Wunschzahl.'],
-  ex:'Referat am Freitag: Plane, am Mittwoch fertig zu sein.'},
- {t:'Die Karte ist nicht das Gebiet', s:'Modelle vereinfachen die Wirklichkeit.', cat:'Probleme lösen',
-  idea:'Jede Statistik, jeder Plan und jede Taktiktafel ist eine Vereinfachung. Nützlich, aber nie die ganze Wahrheit. Gute Denker prüfen, wo ihre Karte nicht mehr passt.',
-  when:'Wenn Plan und Realität auseinanderlaufen.',
-  steps:['Fragen: Was lässt dieses Modell weg?','Mit echten Beobachtungen abgleichen.','Plan anpassen statt die Realität zu ignorieren.'],
-  ex:'Der Matchplan sieht Pressing über außen vor. Spielt der Gegner immer durch die Mitte, muss sich das Team anpassen.'}
-],
-
-denkfehler:[
- {t:'Bestätigungsfehler', s:'Wir suchen, was wir eh glauben.', what:'Wir achten auf Infos, die unsere Meinung bestätigen, und übersehen den Rest.',
-  spot:'Du suchst nur nach Gründen, warum deine Idee gut ist.', fix:'Aktiv nach der stärksten Gegenmeinung suchen. Frag: Was müsste passieren, damit ich falsch liege?',
-  ex:'Du hältst einen Trainer für unfair und merkst dir nur Situationen, die das bestätigen.'},
- {t:'Versunkene Kosten', s:'Weitermachen, nur weil man schon investiert hat.', what:'Je mehr Zeit oder Geld wir schon hineingesteckt haben, desto schwerer fällt das Aufhören, auch wenn es sinnlos geworden ist.',
-  spot:'Der Satz „Jetzt habe ich schon so viel …“.', fix:'Nur nach vorn schauen: Würde ich heute neu einsteigen, mit dem Wissen von jetzt?',
-  ex:'Ein schlechtes Spiel zu Ende zocken, weil man schon zwei Stunden drin ist.'},
- {t:'Ankereffekt', s:'Die erste Zahl färbt alles danach.', what:'Die erste Zahl, die wir hören, beeinflusst unsere Schätzung, auch wenn sie willkürlich ist.',
-  spot:'Ein „Statt 199 € nur 99 €“-Preisschild.', fix:'Vor Verhandlungen und Käufen eigene Vergleichswerte recherchieren.',
-  ex:'Beim Verhandeln kannst du den Anker selbst setzen: Nenn deinen Preis zuerst, wenn du gut vorbereitet bist.'},
- {t:'Verfügbarkeitsfehler', s:'Was leicht einfällt, wirkt häufiger.', what:'Was spektakulär oder frisch im Kopf ist, halten wir für wahrscheinlicher, als es ist.',
-  spot:'Du schätzt Risiken nach Schlagzeilen oder Videos ein.', fix:'Nach echten Zahlen fragen: Wie oft passiert das wirklich?',
-  ex:'Nach drei Videos über Krypto-Millionäre wirkt schneller Reichtum normal. Die Verlierer drehen keine Videos.'},
- {t:'Überlebensirrtum', s:'Wir sehen nur die Gewinner.', what:'Wir schauen auf die, die es geschafft haben, und übersehen die vielen, die dasselbe gemacht haben und gescheitert sind.',
-  spot:'„Er hat die Schule abgebrochen und ist Millionär geworden.“', fix:'Fragen: Wie viele haben das Gleiche versucht, und was wurde aus ihnen?',
-  ex:'Einzelne Profis ohne Schulabschluss beweisen nicht, dass Schule egal ist. Die meisten Talente werden keine Profis.'},
- {t:'Selbstüberschätzung', s:'Wir halten uns für besser, als wir sind.', what:'Die meisten schätzen ihr Können und ihre Prognosen zu optimistisch ein, besonders am Anfang.',
-  spot:'Große Sicherheit bei wenig Erfahrung.', fix:'Vorhersagen aufschreiben und später prüfen. Feedback von Leuten holen, die ehrlich sind.',
-  ex:'Nach drei guten Trades fühlt man sich wie ein Profi. Oft war es Glück, nicht Können.'},
- {t:'Planungsfehlschluss', s:'Alles dauert länger als geplant.', what:'Wir planen den besten Fall und vergessen Störungen, Pausen und Unvorhergesehenes.',
-  spot:'„Das schaffe ich locker an einem Abend.“', fix:'Fragen: Wie lange hat es letztes Mal wirklich gedauert? Dann Puffer draufrechnen.',
-  ex:'Referat „schnell am Sonntag“. Am Sonntag fehlt dann die Hälfte der Infos.'},
- {t:'Rückschaufehler', s:'Hinterher wusste man es immer schon.', what:'Nach einem Ereignis glauben wir, es sei vorhersehbar gewesen. Das macht uns zu streng mit uns selbst und zu sicher bei der nächsten Prognose.',
-  spot:'„Das war doch klar!“', fix:'Vorher aufschreiben, was du erwartest. Das Entscheidungs-Journal macht genau das.',
-  ex:'Nach einer Niederlage wirkt die Aufstellung offensichtlich falsch. Vorher fand sie jeder gut.'},
- {t:'Herdentrieb', s:'Machen, was alle machen.', what:'Wenn viele etwas tun, halten wir es automatisch für richtig.',
-  spot:'Hype, Zeitdruck, „alle haben das schon“.', fix:'Fragen: Würde ich das auch tun, wenn es niemand sonst täte?',
-  ex:'Ein Coin steigt, alle in der Gruppe kaufen. Wer zuletzt kauft, kauft oft am teuersten.'},
- {t:'Spielerfehlschluss', s:'Der Zufall hat kein Gedächtnis.', what:'Nach fünfmal Rot glauben wir, jetzt müsse Schwarz kommen. Unabhängige Zufallsereignisse gleichen sich aber nicht aus.',
-  spot:'„Jetzt ist es aber mal dran.“', fix:'Fragen: Hängt das nächste Ereignis wirklich vom letzten ab?',
-  ex:'Nach mehreren Verlusten beim Trading die Einsätze erhöhen, weil „jetzt ein Gewinn kommen muss“.'},
- {t:'Attributionsfehler', s:'Bei anderen der Charakter, bei uns die Umstände.', what:'Machen andere einen Fehler, liegt es an ihnen. Machen wir einen, lag es an der Situation.',
-  spot:'Schnelle Urteile über Mitspieler oder Lehrer.', fix:'Die gleiche Nachsicht, die du für dich hast, auch anderen geben.',
-  ex:'Der Mitspieler wirkt faul. Vielleicht ist er angeschlagen oder hat gerade Stress zu Hause.'},
- {t:'Ergebnis-Denken', s:'Gute Entscheidung ist nicht gleich gutes Ergebnis.', what:'Wir bewerten Entscheidungen nach dem Ausgang. Dabei kann eine gute Entscheidung Pech haben und eine schlechte Glück.',
-  spot:'„Hat funktioniert, also war es richtig.“', fix:'Fragen: War die Entscheidung mit dem Wissen von damals gut begründet?',
-  ex:'Ein riskanter Hackenpass kommt einmal an. Trotzdem ist er im eigenen Strafraum eine schlechte Entscheidung.'}
-],
-
-mental:[
- {t:'Kontrolle sortieren', s:'Energie nur auf das, was du steuerst.', cat:'Fokus',
-  why:'Gedanken an Dinge, die du nicht beeinflussen kannst, fühlen sich wichtig an, bringen aber nichts außer Druck.',
-  steps:['Zwei Spalten: kontrollierbar und nicht kontrollierbar.','Aufstellung, Schiri, Wetter, Gegner: rechte Spalte.','Vorbereitung, Einsatz, Reaktion, Körpersprache: linke Spalte.','Nur die linke Spalte bekommt deine Aufmerksamkeit.'],
-  ex:'Ob du startest, entscheidet der Trainer. Wie du dich im Training zeigst, entscheidest du.'},
- {t:'Fehler-Reset', s:'Ein Ritual, dann die nächste Aktion.', cat:'Rückschläge',
-  why:'Der zweite Fehler entsteht meistens, weil man im Kopf noch beim ersten ist. Ein festes Ritual holt dich zurück ins Jetzt.',
-  steps:['Kurz ausatmen.','Ein festes Wort sagen oder denken, zum Beispiel „Weiter“.','Blick auf den nächsten Ball oder die nächste Aufgabe.'],
-  ex:'Fehlpass im Zentrum: sofort Gegenpressing statt Kopfschütteln.'},
- {t:'Nervosität umdeuten', s:'Aufregung ist Energie.', cat:'Druck',
-  why:'Herzklopfen vor einem Spiel fühlt sich körperlich ähnlich an wie Vorfreude. Studien zur Umdeutung von Stress zeigen: Wer Aufregung als Energie sieht, schneidet oft besser ab als jemand, der sich zur Ruhe zwingt.',
-  steps:['Aufregung bemerken, nicht bekämpfen.','Innerlich sagen: „Mein Körper macht sich bereit.“','Die Energie auf die erste Aktion lenken.'],
-  ex:'Vor dem Anpfiff: „Ich bin aufgeregt, weil es mir wichtig ist. Gut so.“'},
- {t:'Prozessziele', s:'Ziele, die du selbst erfüllen kannst.', cat:'Fokus',
-  why:'„Ich muss gut spielen“ erzeugt Druck und sagt dir nicht, was du tun sollst. Zwei, drei konkrete Aufgaben kannst du erfüllen, egal wie das Spiel ausgeht.',
-  steps:['Vor dem Spiel zwei oder drei Handlungen festlegen.','Konkret und beobachtbar formulieren.','Nach dem Spiel ehrlich abhaken, im Spieltagebuch.'],
-  ex:'Vor jedem Anspiel ein Schulterblick. Nach Ballverlust fünf Sekunden Gegenpressing.'},
- {t:'Doppelt einatmen', s:'Der schnellste Weg, runterzukommen.', cat:'Druck',
-  why:'Zweimal kurz durch die Nase einatmen, dann lang durch den Mund ausatmen. Das lange Ausatmen beruhigt spürbar und geht unauffällig, auch auf dem Platz.',
-  steps:['Tief durch die Nase einatmen.','Kurz nachatmen, ebenfalls durch die Nase.','Lang und langsam durch den Mund ausatmen.','Ein- bis dreimal wiederholen.'],
-  ex:'In der Trinkpause, vor einem Elfmeter oder vor der ersten Aufgabe einer Klassenarbeit.'},
- {t:'Mit dir reden wie mit einem Mitspieler', s:'Selbstgespräch mit Abstand.', cat:'Druck',
-  why:'Unter Druck hilft es, dich mit „du“ oder deinem Namen anzusprechen. Der Abstand macht es leichter, klar zu denken, statt im Gefühl festzuhängen.',
-  steps:['Negativen Gedanken bemerken.','In die zweite Person übersetzen.','Wie ein guter Kapitän sprechen: kurz, konkret, nach vorn.'],
-  ex:'„Komm, nächster Ball“ statt „Ich bin so schlecht heute“.'},
- {t:'Von der Bank kommen', s:'Bereit sein, wenn es zählt.', cat:'Druck',
-  why:'Als Einwechselspieler entscheiden die ersten Minuten viel. Wer das Spiel von der Bank aus aktiv liest, ist sofort drin.',
-  steps:['Von der Bank analysieren: Wo sind Räume? Wer presst wie?','Warm bleiben und dich in Bewegung halten.','Die ersten zwei Aktionen bewusst einfach halten.','Dann das Risiko dosiert steigern.'],
-  ex:'Ersten Ball sicher spielen, dann erst den vertikalen Pass suchen.'},
- {t:'Vergleich mit gestern', s:'Der einzige faire Vergleich.', cat:'Selbstvertrauen',
-  why:'Andere haben andere Voraussetzungen, Trainer und Körper. Der Vergleich, der dir wirklich etwas sagt: Bist du besser als vor drei Monaten?',
-  steps:['Einmal im Monat aufschreiben, was jetzt besser klappt.','Abendberichte und Spieltagebuch durchsehen.','Fortschritt benennen, auch wenn er klein ist.'],
-  ex:'Im Oktober musstest du an den Schulterblick denken, im Januar passiert er automatisch.'},
- {t:'Wenn-Dann-Pläne', s:'Vorsätze, die wirklich halten.', cat:'Fokus',
-  why:'Ein Vorsatz mit konkretem Auslöser wird deutlich öfter umgesetzt als ein allgemeiner Wunsch. Das gehört zu den am besten belegten Techniken der Motivationsforschung.',
-  steps:['Kritische Situation benennen: Wenn …','Die Handlung festlegen: dann …','So konkret wie möglich: Ort, Zeit, Auslöser.'],
-  ex:'Wenn ich von der Schule nach Hause komme, dann lege ich das Handy in die Küche und starte einen Fokusblock.'},
- {t:'Mentales Training', s:'Im Kopf trainieren, bevor es zählt.', cat:'Selbstvertrauen',
-  why:'Wer Bewegungen und Situationen lebhaft im Kopf durchspielt, bereitet Gehirn und Körper darauf vor. Am besten wirkt es, wenn es sich so echt wie möglich anfühlt.',
-  steps:['Ruhig hinsetzen, Augen zu.','Eine konkrete Spielsituation aus deiner Perspektive durchspielen: sehen, hören, fühlen.','Die gelungene Ausführung im echten Tempo vorstellen.','Drei bis fünf Wiederholungen, wenige Minuten.'],
-  ex:'Schulterblick, offene Annahme, Pass zwischen die Linien. Mehrmals, am Abend vor dem Spiel.'},
- {t:'Beweis-Bank', s:'Selbstvertrauen aus Belegen statt aus Hoffnung.', cat:'Selbstvertrauen',
-  why:'Selbstvertrauen wächst am stabilsten aus echten Erfahrungen. Wer seine starken Momente sammelt, kann sie vor wichtigen Situationen nachlesen.',
-  steps:['Nach jedem starken Moment einen Satz notieren.','Konkret bleiben: was genau, gegen wen, wie.','Vor wichtigen Spielen oder Prüfungen drei Einträge lesen.'],
-  ex:'„Gegen den Tabellenführer 90 Minuten jeden Ball gefordert und zwei Torvorlagen.“ Im Tab Beweis-Bank sammelst du solche Momente.'},
- {t:'Mit Kritik umgehen', s:'Die Information herausziehen, die Bewertung liegen lassen.', cat:'Rückschläge',
-  why:'Kritik vom Trainer oder Lehrer enthält meistens eine nützliche Information, verpackt in ein unangenehmes Gefühl. Wer die Information herausholt, wird schneller besser.',
-  steps:['Zuhören, nicht sofort verteidigen.','Nachfragen: Was genau soll ich anders machen?','Die Information aufschreiben, das Gefühl gehen lassen.','Im nächsten Training sichtbar umsetzen.'],
-  ex:'„Du bist zu langsam im Umschalten.“ Nachfrage: „Meinst du nach Ballverlust oder nach Ballgewinn?“'},
- {t:'Nach Niederlagen', s:'Fühlen erlaubt, dann analysieren.', cat:'Rückschläge',
-  why:'Ärger nach einer Niederlage ist normal. Wer ihn sofort wegdrückt oder tagelang darin hängen bleibt, lernt wenig. Eine feste Reihenfolge hilft.',
-  steps:['Am Abend: Gefühl zulassen, nichts entscheiden.','Am nächsten Tag drei Fragen: Was lief gut? Was lief schlecht? Was mache ich anders?','Eine Sache fürs nächste Training mitnehmen.'],
-  ex:'Nach dem 0:3 erst am nächsten Morgen ins Spieltagebuch schreiben, nicht direkt in der Kabine.'},
- {t:'Fokuswort', s:'Ein Wort, das dich zurückholt.', cat:'Fokus',
-  why:'Ein kurzes, festes Wort lenkt die Aufmerksamkeit sofort auf das, was gerade zählt. Es funktioniert, weil du es vorher trainiert hast.',
-  steps:['Ein Wort wählen, das für deine Hauptaufgabe steht.','Im Training immer wieder nutzen.','Im Spiel in kritischen Momenten innerlich sagen.'],
-  ex:'„Scan“ vor jeder Ballannahme oder „Jagen“ direkt nach Ballverlust.'}
-],
-
-fussball:[
- {t:'Schulterblick vor der Annahme', s:'Wer vorher schaut, hat mehr Zeit.', cat:'Mit Ball',
-  why:'Forschung zu Profis zeigt: Mittelfeldspieler, die vor der Ballannahme häufiger scannen, spielen öfter erfolgreich nach vorn. Du weißt dann schon, wo Gegner, Mitspieler und Räume sind, bevor der Ball kommt.',
-  cues:['Zwei bis drei kurze Blicke, während der Pass zu dir unterwegs ist.','Über beide Schultern, besonders in den Rücken.','Ein letzter Blick kurz bevor der Ball ankommt.'],
-  drill:'Rondo mit Zusatzregel: Ein Partner zeigt hinter dir Finger hoch. Du sagst die Zahl an, bevor du den Ball weiterspielst.',
-  ex:'Xavi und andere Weltklasse-Achter wurden genau dafür bekannt: ständig den Kopf drehen.'},
- {t:'Offene Körperstellung', s:'Halb offen anbieten, nach vorn annehmen.', cat:'Mit Ball',
-  why:'Wer frontal zum Passgeber steht, sieht nur die Hälfte des Feldes. Leicht seitlich und halb geöffnet siehst du beide Richtungen und kannst mit dem ersten Kontakt aufdrehen.',
-  cues:['Hüfte leicht zum gegnerischen Tor gedreht.','Ball mit dem hinteren Fuß annehmen.','Der erste Kontakt bringt den Ball in die Richtung, in die du spielen willst.'],
-  drill:'Passdreieck: Ball kommt von links, Annahme mit dem rechten, hinteren Fuß, Weiterspiel nach rechts vorn. Dann Seiten tauschen.',
-  ex:'Ballannahme im Halbraum: offen stehen und mit dem ersten Kontakt am Gegenspieler vorbei aufdrehen.'},
- {t:'Erster Kontakt mit Absicht', s:'Der erste Kontakt entscheidet die nächsten zwei Sekunden.', cat:'Mit Ball',
-  why:'Ein Kontakt, der den Ball nur stoppt, gibt dem Gegner Zeit. Ein Kontakt in den freien Raum verschafft dir Zeit.',
-  cues:['Vor der Annahme wissen, wohin der erste Kontakt geht.','Weg vom Druck, möglichst nach vorn.','Ball nah am Fuß, aber nicht unter dem Körper.'],
-  drill:'Partnerpässe: Jeder Kontakt muss in ein vorher angesagtes Hütchentor gehen.',
-  ex:'Gegner kommt von rechts: erster Kontakt nach links vorn mit der Außenseite.'},
- {t:'Dritter Mann', s:'Über den Umweg in den Rücken der Abwehr.', cat:'Mit Ball',
-  why:'Ist der direkte Pass zugestellt, findet der Ball über einen dritten Spieler den Weg. Der Klatschpass zieht den Gegner an, der dritte Mann startet in den frei werdenden Raum.',
-  cues:['Erkennen, wann dein Gegenspieler auf den Ball geht.','Ablegen und sofort starten.','Laufweg in den Rücken des herausrückenden Gegners.'],
-  drill:'Drei Spieler im Dreieck: A spielt auf B, B legt auf C ab, C spielt den tiefen Ball auf den startenden A.',
-  ex:'Du spielst in den Fuß des Stürmers, er legt auf den Sechser ab, du startest und bekommst den Ball in den Lauf.'},
- {t:'Spielverlagerung', s:'Den Ball dahin, wo der Gegner nicht ist.', cat:'Mit Ball',
-  why:'Verschiebt der Gegner auf eine Seite, entsteht auf der anderen Raum. Ein schneller Seitenwechsel bestraft das, bevor er wieder geordnet ist.',
-  cues:['Beim Scannen auch die ballferne Seite prüfen.','Seitenwechsel flach und scharf oder diagonal hoch.','Nach dem Pass nachrücken.'],
-  drill:'Spielform mit zwei Toren pro Seite: Ein Treffer zählt doppelt nach einem Seitenwechsel innerhalb von drei Pässen.',
-  ex:'Der Gegner presst rechts mit vier Mann: Diagonalball auf den linken Außenverteidiger.'},
- {t:'Tempo und Rhythmus', s:'Schnell, wenn es eng wird. Ruhig, wenn du Zeit hast.', cat:'Mit Ball',
-  why:'Gute Achter wechseln das Tempo bewusst. Unter Druck spielen sie direkt, mit Zeit halten sie den Ball kurz, um Gegner anzulocken und Räume zu öffnen.',
-  cues:['Druck von hinten: direkt klatschen lassen.','Zeit und Raum: aufdrehen und andribbeln.','Gegner anlocken, dann den freien Mitspieler finden.'],
-  drill:'Rondo mit wechselnder Kontaktregel: Der Trainer ruft „eins“ oder „frei“.',
-  ex:'Mit Ball in den Raum dribbeln, bis der gegnerische Sechser rausrückt, dann in seinen Rücken passen.'},
- {t:'Zwischen den Linien anbieten', s:'Im Raum zwischen Mittelfeld und Abwehr des Gegners.', cat:'Ohne Ball',
-  why:'Zwischen der Mittelfeld- und der Abwehrreihe des Gegners ist es schwer zu verteidigen. Wer dort anspielbar ist, kann das Spiel mit einer Drehung beschleunigen.',
-  cues:['Aus dem Deckungsschatten des Gegners herausgehen.','Im Halbraum stehen, nicht direkt hinter einem Gegenspieler.','Offene Körperstellung, um aufdrehen zu können.'],
-  drill:'Spielform mit Zonen: Ein Tor zählt nur, wenn der Ball vorher in der Zone zwischen den Linien war.',
-  ex:'Ein paar Meter seitlich verschieben, damit die Passlinie vom Innenverteidiger frei wird.'},
- {t:'Räume für andere schaffen', s:'Laufen, um den Gegner zu bewegen.', cat:'Ohne Ball',
-  why:'Nicht jeder Lauf soll den Ball bekommen. Manche Läufe ziehen einen Gegenspieler weg und öffnen so den Raum für einen Mitspieler.',
-  cues:['Erkennen, wohin der Ball gehen soll.','Mit einem Lauf den Gegenspieler aus genau diesem Raum ziehen.','Auch ohne Ball zufrieden sein, wenn es funktioniert.'],
-  drill:'Profi-Spiele anschauen und darauf achten, wie oft der Achter tief geht, damit der Zehner frei wird.',
-  ex:'Du startest in die Spitze, dein Gegenspieler läuft mit, und der Zehner hat Platz für den Abschluss.'},
- {t:'Box-to-Box mit Timing', s:'Spät in den Strafraum kommen.', cat:'Ohne Ball',
-  why:'Wer früh im Strafraum steht, ist leicht zu decken. Ein später Lauf aus dem Rückraum ist schwer zu verfolgen.',
-  cues:['Erst starten, wenn der Ball auf dem Flügel ist.','Den Raum am Elfmeterpunkt oder den Rückraum anpeilen.','Nach Ballverlust sofort umschalten.'],
-  drill:'Flankenübung mit Startsignal: Der Achter startet erst, wenn der Flügelspieler den Ball annimmt.',
-  ex:'Flanke von rechts, du kommst spät von hinten und schließt aus dem Rückraum ab.'},
- {t:'Gegenpressing', s:'Die ersten Sekunden nach Ballverlust.', cat:'Gegen den Ball',
-  why:'Direkt nach einem Ballverlust ist der Gegner noch ungeordnet. Wer sofort Druck macht, gewinnt den Ball oft hoch und nah am Tor zurück.',
-  cues:['Der nächste Spieler attackiert sofort den Ball.','Die anderen schließen die kurzen Passwege.','Etwa fünf bis sechs Sekunden voller Einsatz, dann geordnet zurückfallen.'],
-  drill:'Spielform: Eine Rückeroberung innerhalb von fünf Sekunden nach Ballverlust zählt wie ein Tor.',
-  ex:'Fehlpass im Zentrum: nicht ärgern, sofort auf den Ballführer.'},
- {t:'Pressing-Auslöser', s:'Wann es sich lohnt, draufzugehen.', cat:'Gegen den Ball',
-  why:'Pressing ohne Auslöser kostet Kraft und reißt Lücken. Mit klaren Signalen läuft das ganze Team gleichzeitig an.',
-  cues:['Rückpass zum Torwart oder Innenverteidiger.','Schlechte Ballannahme oder ein hoher, langsamer Ball.','Gegner mit dem Rücken zum Tor.','Ball am Flügel nahe der Seitenlinie.'],
-  drill:'Der Trainer gibt Auslöser vor. Beim Signal läuft das Team gemeinsam an.',
-  ex:'Der gegnerische Sechser nimmt mit dem Rücken zu dir an: Druck von hinten, ohne Foul.'},
- {t:'Deckungsschatten', s:'Zwei Gegner auf einmal verteidigen.', cat:'Gegen den Ball',
-  why:'Läufst du den Ballführer so an, dass dein Körper die Passlinie hinter dir blockiert, verteidigst du zwei Gegner gleichzeitig.',
-  cues:['Im Bogen anlaufen statt gerade.','Den Passweg zum gefährlichsten Gegenspieler im Rücken schließen.','Den Ballführer auf die Seite lenken, wo dein Team in Überzahl ist.'],
-  drill:'2-gegen-1-Spielform: Der Verteidiger punktet nur, wenn er den Pass auf den zweiten Spieler verhindert.',
-  ex:'Du läufst den Innenverteidiger so an, dass der gegnerische Sechser in deinem Rücken nicht angespielt werden kann.'},
- {t:'Restverteidigung', s:'Absichern, während das Team angreift.', cat:'Gegen den Ball',
-  why:'Konter entstehen, wenn beim eigenen Angriff niemand absichert. Ein mitdenkender Achter steht so, dass ein Ballverlust nicht sofort gefährlich wird.',
-  cues:['Rückt der Sechser auf, bleibst du eher hinten.','Den gefährlichsten Konterspieler im Blick behalten.','Zentral stehen, nicht nur ballorientiert mitlaufen.'],
-  drill:'Angriffsübung mit sofortigem Gegenangriff nach Ballverlust: Wer sichert ab?',
-  ex:'Euer Außenverteidiger geht mit nach vorn. Du schiebst rüber und sicherst seine Seite ab.'},
- {t:'Zweikampf: stehen bleiben', s:'Verzögern statt reinspringen.', cat:'Gegen den Ball',
-  why:'Wer zu früh in den Zweikampf geht, wird leicht ausgespielt. Verzögern gibt deinen Mitspielern Zeit, dir zu helfen.',
-  cues:['Seitlich stehen, Gewicht auf den Fußballen.','Auf den Ball schauen, nicht auf Körpertäuschungen.','Gegner nach außen lenken, bei schlechtem Kontakt zugreifen.'],
-  drill:'1-gegen-1 auf kleinem Feld: Der Verteidiger punktet, wenn er den Angreifer fünf Sekunden aufhält.',
-  ex:'Konter des Gegners: Du gehst nicht drauf, du verzögerst, bis zwei Mitspieler da sind.'},
- {t:'Coaching und Kommunikation', s:'Ein Achter redet.', cat:'Kopf',
-  why:'Mitspieler sehen nicht alles. Kurze, klare Kommandos verschaffen ihnen Zeit und verhindern Fehler.',
-  cues:['Kurz und eindeutig: „Zeit“, „Mann“, „Dreh“, „Klatsch“.','Positiv nach Fehlern von Mitspielern.','Laut genug, auch wenn es sich ungewohnt anfühlt.'],
-  drill:'Im Training eine Einheit lang bei jedem Pass ein Kommando geben.',
-  ex:'„Zeit!“ für den Mitspieler, der nicht unter Druck steht. Er dreht auf, statt zurückzuspielen.'},
- {t:'Spiel lesen', s:'Zwei Pässe voraus denken.', cat:'Kopf',
-  why:'Gute Spieler sind nicht nur schneller, sie sind früher da. Sie erkennen Muster und ahnen, wohin der Ball als Nächstes geht.',
-  cues:['Fragen: Wo wird der Ball in zwei Pässen sein?','Muster des Gegners erkennen: Wohin spielt er unter Druck?','Position vorher anpassen, nicht hinterherlaufen.'],
-  drill:'Ein Profi-Spiel schauen und vor jedem Pass ansagen, wohin er gehen müsste.',
-  ex:'Der Gegner spielt unter Druck immer auf seinen Linksverteidiger. Du stehst schon da, bevor der Ball kommt.'},
- {t:'Belastung steuern', s:'Mehr Training ist nicht automatisch besser.', cat:'Körper',
-  why:'Leistung entsteht aus Belastung plus Erholung. Plötzliche starke Sprünge der Wochenbelastung hängen in Studien mit mehr Verletzungen zusammen. Im Abendbericht wird deine Trainingslast aus Dauer mal Anstrengung berechnet.',
-  cues:['Belastung langsam steigern, nicht sprunghaft.','Nach harten Tagen einen lockeren Tag einplanen.','Warnsignale ernst nehmen: Müdigkeit, Schmerzen, schlechter Schlaf.'],
-  drill:'Nach jedem Training im Abendbericht Dauer und Anstrengung eintragen und den Verlauf in den Trends beobachten.',
-  ex:'Liga, Zusatztraining und Schulsport in einer Woche: Dann lieber das Zusatztraining kürzen.'},
- {t:'Schlaf und Regeneration', s:'Im Schlaf wirst du besser.', cat:'Körper',
-  why:'Im Schlaf erholen sich Muskeln und Nervensystem, und neue Bewegungen werden gefestigt. Für Jugendliche werden 8 bis 10 Stunden empfohlen.',
-  cues:['Feste Schlafenszeiten, auch am Wochenende.','Vor wichtigen Spielen nicht spät aufbleiben.','Dunkles, kühles Zimmer und das Handy außer Reichweite.'],
-  drill:'Zwei Wochen lang die Schlafdauer im Abendbericht eintragen und mit deiner Energie vergleichen.',
-  ex:'Freitag vor dem Spiel: Handy um 22 Uhr weg, Licht um 22:30 Uhr aus.'},
- {t:'Essen am Spieltag', s:'Volle Speicher ohne vollen Bauch.', cat:'Körper',
-  why:'Kohlenhydrate sind der Hauptbrennstoff im Fußball. Wer rechtzeitig isst und genug trinkt, hat in der zweiten Halbzeit mehr Energie.',
-  cues:['Letzte größere Mahlzeit etwa drei bis vier Stunden vor Anpfiff.','Kohlenhydratreich und gut verträglich, zum Beispiel Nudeln, Reis oder Brot.','Über den Tag verteilt trinken.','Nach dem Spiel bald essen: Kohlenhydrate und Eiweiß.'],
-  drill:'Bei den nächsten Spielen notieren, was du gegessen hast und wie deine Energie war.',
-  ex:'Anpfiff 15 Uhr: Mittagessen um 11:30 Uhr, um 13:30 Uhr eine Banane.'},
- {t:'Kraft und Athletik', s:'Stärker werden, sicher und mit Technik.', cat:'Körper',
-  why:'Krafttraining im Jugendalter gilt unter fachkundiger Anleitung als sicher und sinnvoll. Es macht dich explosiver, stabiler im Zweikampf und weniger verletzungsanfällig.',
-  cues:['Technik vor Gewicht.','Erst mit dem eigenen Körpergewicht: Kniebeugen, Ausfallschritte, Liegestütze, Rumpf.','Zusatzgewichte nur mit Anleitung von Trainer oder Athletiktrainer.'],
-  drill:'Zweimal pro Woche 20 Minuten Körpergewichtsübungen nach dem Training.',
-  ex:'Starke Beine und ein stabiler Rumpf helfen dir, im Zweikampf stehen zu bleiben und schneller anzutreten.'},
- {t:'Verletzungen vorbeugen', s:'Ein gutes Aufwärmprogramm wirkt.', cat:'Körper',
-  why:'Strukturierte Aufwärmprogramme wie FIFA 11+ haben in Studien Verletzungen im Fußball deutlich reduziert, wenn sie regelmäßig gemacht werden.',
-  cues:['Aufwärmen ernst nehmen, nicht nur locker kicken.','Übungen für Sprunggelenk, Knie und hintere Oberschenkel.','Auch Landen und Abbremsen üben.'],
-  drill:'FIFA 11+ einmal komplett lernen und zweimal pro Woche vor dem Training machen.',
-  ex:'Nordic Hamstrings und einbeinige Kniebeugen sind Teil vieler Präventionsprogramme.'}
-],
-
-ki:[
- {t:'Kontext ist alles', s:'Die KI weiß nur, was du ihr sagst.', cat:'Prompting',
-  idea:'Ein Modell kennt deine Situation nicht. Je klarer du Ziel, Hintergrund, Zielgruppe und Grenzen beschreibst, desto besser passt die Antwort.',
-  steps:['Wer bist du, und worum geht es?','Was ist das Ziel?','Für wen ist das Ergebnis?','Was soll es nicht sein?'],
-  ex:'Schwach: „Erklär Fotosynthese.“ Stark: „Ich bin in der 10. Klasse und schreibe Freitag eine Bio-Arbeit. Erklär mir die Fotosynthese in fünf Schritten und stell mir danach drei Prüfungsfragen.“'},
- {t:'Aufgabe präzise formulieren', s:'Klare Verben, klarer Umfang.', cat:'Prompting',
-  idea:'„Mach mal was zu …“ führt zu durchschnittlichen Antworten. Klare Aufgaben mit Umfang und Kriterien führen zu brauchbaren.',
-  steps:['Ein klares Verb: analysiere, vergleiche, erkläre, kürze, bewerte.','Den Umfang festlegen: Anzahl, Länge, Tiefe.','Qualitätskriterien nennen: Was macht die Antwort gut?'],
-  ex:'„Vergleiche diese zwei Trainingspläne nach Belastung, Erholung und Schulalltag. Höchstens 150 Wörter, am Ende eine Empfehlung.“'},
- {t:'Beispiele zeigen', s:'Ein Beispiel sagt mehr als drei Regeln.', cat:'Prompting',
-  idea:'Willst du ein bestimmtes Format oder einen Stil, zeig ein Beispiel. Die KI orientiert sich stark daran. Der Fachbegriff ist Few-Shot-Prompting.',
-  steps:['Ein oder zwei gute Beispiele einfügen.','Kennzeichnen, was übernommen werden soll: Stil, Länge, Aufbau.','Darauf achten, dass die Beispiele nicht zu ähnlich sind, sonst kopiert die KI sie.'],
-  ex:'„Schreib Karteikarten genau in diesem Format: Frage: … | Antwort: … Hier zwei Beispiele: …“'},
- {t:'Format vorgeben', s:'Sag, wie das Ergebnis aussehen soll.', cat:'Prompting',
-  idea:'Tabelle, Stichpunkte, Schritt-für-Schritt-Plan oder JSON: Gibst du das Format vor, kannst du das Ergebnis direkt nutzen.',
-  steps:['Format nennen.','Struktur vorgeben, zum Beispiel Spalten oder Überschriften.','Länge begrenzen.'],
-  ex:'„Antworte als Tabelle mit den Spalten Tag, Lernthema, Dauer, Methode.“'},
- {t:'Rückfragen erlauben', s:'Lass die KI fragen, bevor sie rät.', cat:'Prompting',
-  idea:'Fehlen wichtige Infos, rät die KI und klingt dabei trotzdem sicher. Erlaube ihr ausdrücklich, zuerst nachzufragen.',
-  steps:['Am Ende des Prompts: „Stell mir zuerst bis zu drei Fragen, wenn etwas unklar ist.“','Die Fragen beantworten.','Erst dann das Ergebnis erstellen lassen.'],
-  ex:'Bei einem Trainingsplan fragt Claude dann nach Trainingstagen, Spieltag und Schulzeiten, statt sie zu erfinden.'},
- {t:'Kritik einfordern', s:'Keine Bestätigung, sondern ehrliches Feedback.', cat:'Prompting',
-  idea:'KI-Modelle neigen dazu, freundlich zu sein. Willst du echte Kritik, musst du sie ausdrücklich verlangen.',
-  steps:['Eine Rolle vergeben: „Sei ein strenger, ehrlicher Kritiker.“','Konkret fragen: Was ist die größte Schwäche?','Nach Gegenargumenten fragen.'],
-  ex:'„Hier ist meine Business-Idee. Nenn mir die drei wahrscheinlichsten Gründe, warum sie scheitert.“'},
- {t:'Iterieren statt neu anfangen', s:'Gute Ergebnisse entstehen in Runden.', cat:'Workflows',
-  idea:'Die erste Antwort ist ein Entwurf. Profis verbessern in mehreren Runden, statt bei einer schwachen Antwort aufzugeben.',
-  steps:['Die erste Antwort lesen und genau sagen, was fehlt.','Einzelne Teile gezielt verbessern lassen.','Am Ende eine saubere Endfassung anfordern.'],
-  ex:'„Teil 2 ist zu allgemein. Mach ihn konkret für einen Achter in der U17 mit drei Trainingseinheiten pro Woche.“'},
- {t:'Prompt-Ketten', s:'Große Aufgaben in Schritte zerlegen.', cat:'Workflows',
-  idea:'Komplexe Aufgaben gelingen besser in mehreren Schritten. Jeder Schritt baut auf dem vorherigen auf und lässt sich einzeln prüfen.',
-  steps:['Recherche: Was ist bekannt?','Gliederung: Wie baue ich es auf?','Entwurf: Teil für Teil.','Kritik: Was ist schwach?','Überarbeitung.'],
-  ex:'Referat: erst die Gliederung prüfen lassen, dann jeden Abschnitt einzeln, dann eine Gesamtkritik.'},
- {t:'Ergebnisse prüfen', s:'KI klingt sicher, auch wenn sie falsch liegt.', cat:'Prüfen',
-  idea:'Sprachmodelle können Fakten, Zahlen und Quellen erfinden. Das nennt man Halluzination. Je wichtiger die Info, desto genauer musst du prüfen.',
-  steps:['Zahlen, Daten und Zitate immer gegenprüfen.','Nach Quellen fragen und sie wirklich öffnen.','Bei aktuellen Themen offizielle Seiten nutzen.','Bei Mathe den Rechenweg nachrechnen.'],
-  ex:'Ein Gesetz, ein Preis oder eine Spielerstatistik von der KI ist ein Hinweis, kein Beweis.'},
- {t:'Wann KI nicht hilft', s:'Ein starkes Werkzeug für viele Dinge, nicht für alle.', cat:'Prüfen',
-  idea:'KI ist stark beim Erklären, Strukturieren, Entwerfen und Feedbackgeben. Schwach ist sie bei Dingen, die du selbst können musst, bei privaten Daten und bei Entscheidungen, die Menschen betreffen.',
-  steps:['Hausaufgaben nicht schreiben lassen, sonst fehlt das Können in der Arbeit.','Keine Passwörter oder privaten Daten anderer eingeben.','Bei Gesundheit, Recht und Geld echte Experten fragen.','Wichtige persönliche Entscheidungen mit Menschen besprechen.'],
-  ex:'Die KI kann dir einen Aufsatz erklären und Feedback geben. Schreiben musst du ihn selbst, sonst lernst du nichts.'},
- {t:'Mit KI lernen', s:'Tutor statt Lösungsautomat.', cat:'Lernen mit KI',
-  idea:'Richtig eingesetzt ist KI ein geduldiger Privatlehrer: Sie erklärt, fragt dich ab und gibt Feedback. Falsch eingesetzt nimmt sie dir genau die Arbeit ab, die das Lernen ausmacht.',
-  steps:['Erklären lassen, dann selbst in eigenen Worten wiederholen.','Abfragen lassen statt Lösungen holen.','Um Hinweise bitten statt um die fertige Lösung.','Eigene Lösungen prüfen lassen.'],
-  ex:'„Gib mir keine Lösung. Gib mir einen Hinweis für den nächsten Schritt.“'},
- {t:'Agenten und Tools', s:'Wenn KI nicht nur schreibt, sondern handelt.', cat:'Workflows',
-  idea:'Moderne KI kann Werkzeuge nutzen: im Web suchen, Code ausführen, Dateien bearbeiten oder über Konnektoren andere Dienste ansprechen. Ein Agent plant Schritte, nutzt Werkzeuge und prüft Zwischenergebnisse.',
-  steps:['Ziel und Grenzen klar vorgeben.','Zwischenschritte prüfen, statt blind zu vertrauen.','Nur die Zugriffe geben, die wirklich nötig sind.'],
-  ex:'Dieses Dashboard ist ein Beispiel: Es holt über den vidIQ-Konnektor das Transkript eines Videos und lässt Claude daraus eine Zusammenfassung schreiben.'},
- {t:'Datenschutz und Sicherheit', s:'Was nicht in einen Prompt gehört.', cat:'Prüfen',
-  idea:'Was du eingibst, verlässt dein Gerät. Private Daten anderer, Passwörter und vertrauliche Infos gehören nicht in einen Chat.',
-  steps:['Keine Passwörter, Kontodaten oder Ausweisnummern.','Daten anderer Menschen anonymisieren.','Bei Kundenprojekten vorher klären, was du teilen darfst.'],
-  ex:'Statt „Max Müller aus der 10b hat …“ lieber „ein Mitschüler hat …“.'},
- {t:'Den eigenen Stil behalten', s:'KI als Verstärker, nicht als Ersatz.', cat:'Lernen mit KI',
-  idea:'Wer jeden Text von der KI schreiben lässt, klingt bald wie alle anderen und verlernt, selbst zu formulieren. Nutze sie für Feedback und Ideen, nicht als Ghostwriter.',
-  steps:['Zuerst selbst einen Entwurf schreiben.','Feedback einholen: Was ist unklar, was ist stark?','Selbst überarbeiten.'],
-  ex:'„Hier ist mein Text. Markiere die drei unklarsten Sätze und sag mir warum, aber schreib sie nicht um.“'}
-],
-
-vorlagen:[
- {t:'Lerncoach-Quiz', cat:'lernen', why:'Abfragen statt Wiederlesen, mit steigender Schwierigkeit und einer Lückenanalyse am Ende.',
-  text:'Du bist mein Lerncoach für [Fach], [Klassenstufe]. Thema: [Thema].\nStell mir 10 Fragen, immer nur eine. Warte auf meine Antwort, bewerte sie kurz und erkläre Fehler. Steigere die Schwierigkeit langsam.\nAm Ende: Nenne meine 3 größten Lücken und wie ich sie schließe.'},
- {t:'Feynman-Partner', cat:'lernen', why:'Du erklärst, Claude findet die Lücken. Hinweise statt Lösungen halten das Lernen bei dir.',
-  text:'Ich erkläre dir gleich [Thema] in eigenen Worten. Prüf meine Erklärung wie ein strenger Lehrer: Was ist falsch, was fehlt, was ist ungenau?\nStell mir danach 3 Fragen, die meine Lücken aufdecken. Gib mir Hinweise, keine fertige Lösung.'},
- {t:'Idee kritisch prüfen', cat:'business', why:'Feste Struktur und die Bitte um Ehrlichkeit verhindern reine Bestätigung.',
-  text:'Hier ist meine Business-Idee: [Idee].\nAnalysiere sie nach: Kern, Potenzial, Probleme, Realismus für einen Schüler ohne Startkapital, Verbesserung, nächster konkreter Schritt.\nSei ehrlich und kritisch. Keine Motivationssprüche.'},
- {t:'Spielanalyse', cat:'fussball', why:'Ursache statt Symptom, und am Ende genau eine konkrete Übung.',
-  text:'Ich spiele zentrales Mittelfeld (8er). Im letzten Spiel ist Folgendes passiert: [Situation].\nAnalysiere wie ein erfahrener Trainer: Warum ist das wahrscheinlich passiert? Was ist die eine Sache, die ich im nächsten Training gezielt üben sollte?\nGib mir eine konkrete Übung mit Ablauf.'},
- {t:'Entscheidung durchdenken', cat:'sonst', why:'Mentale Modelle als Checkliste: Folgen, Risiken, Umkehrbarkeit und fehlende Infos.',
-  text:'Ich muss entscheiden: [Entscheidung]. Optionen: [A], [B].\nHilf mir mit: Folgen zweiter Ordnung, Pre-Mortem für jede Option, was davon umkehrbar ist und welche Infos mir noch fehlen.\nAm Ende deine Empfehlung mit Begründung. Stell mir zuerst bis zu 3 Fragen, wenn etwas unklar ist.'},
- {t:'Text verbessern', cat:'schule', why:'Du behältst deinen Ton und lernst aus den erklärten Änderungen.',
-  text:'Verbessere diesen Text für [Zweck/Zielgruppe]. Behalte meinen Ton und meine Ideen.\nZeig mir danach die 3 wichtigsten Änderungen und erkläre, warum sie besser sind.\n\nText:\n[Text]'},
- {t:'Video oder Artikel auswerten', cat:'lernen', why:'Kernaussage, wichtigste Punkte und vor allem das, was du direkt anwenden kannst.',
-  text:'Fasse diesen Inhalt zusammen: [Text oder Transkript]\n1. Kernaussage in einem Satz\n2. Die 5 wichtigsten Punkte\n3. 3 Dinge, die ich als Schüler und Fußballer direkt anwenden kann\n4. Was davon ist fragwürdig oder ohne Beleg?'},
- {t:'Realistischer Wochenplan', cat:'schule', why:'Die Gesamtbelastung im Blick: Schule, Training und Erholung zusammen geplant.',
-  text:'Hier sind meine festen Termine diese Woche: [Schule, Training, Spiele, Sonstiges].\nErstelle einen realistischen Plan mit Lernblöcken, Training und Erholung. Höchstens 2 Fokusblöcke pro Schultag. Berücksichtige die Gesamtbelastung und plane mindestens einen lockeren Tag ein.\nAntworte als Tabelle: Tag | Termine | Lernblock | Erholung.'}
-],
-
-leben:[
- {t:'Zeit schlägt Betrag', s:'Warum früh anfangen beim Geld so viel bringt.', cat:'Geld',
-  body:'Wer ab 18 monatlich 100 € anlegt, hat mit 67 bei angenommenen 7 % Rendite pro Jahr rund 507.000 €. Wer erst mit 28 startet, landet bei rund 244.000 €, obwohl er nur 12.000 € weniger eingezahlt hat. Die Rendite ist nicht garantiert, Kosten und Steuern sind nicht eingerechnet. Das Prinzip gilt trotzdem: Zeit ist der größte Hebel.',
-  ex:'Probier es im Tab Zinseszins mit eigenen Zahlen aus.'},
- {t:'Erst dich selbst bezahlen', s:'Sparen, bevor das Geld weg ist.', cat:'Geld',
-  body:'Wer spart, was am Monatsende übrig bleibt, spart meistens nichts. Besser: Sobald Geld reinkommt, geht ein fester Teil sofort auf ein anderes Konto.',
-  steps:['Einen festen Prozentsatz festlegen, zum Beispiel 20 %.','Direkt bei Geldeingang überweisen oder einen Dauerauftrag einrichten.','Vom Rest leben.'],
-  ex:'Von 100 € aus einem Nebenjob gehen 20 € sofort aufs Sparkonto.'},
- {t:'Notgroschen', s:'Ein Puffer für Unerwartetes.', cat:'Geld',
-  body:'Bevor Geld langfristig angelegt wird, sollte ein Puffer für Unerwartetes bereitliegen, zum Beispiel für ein kaputtes Handy. Für Erwachsene empfehlen Verbraucherschützer oft drei bis sechs Monatsausgaben auf einem Tagesgeldkonto.',
-  ex:'Wer einen Puffer hat, muss bei einer Reparatur keinen Ratenkauf machen.'},
- {t:'ETF-Grundlagen', s:'Breit streuen, wenig Kosten, lange halten.', cat:'Geld',
-  body:'Ein ETF bildet einen ganzen Index ab, zum Beispiel den Weltaktienmarkt. Du kaufst damit Anteile an tausenden Firmen auf einmal. Wichtig sind breite Streuung, niedrige laufende Kosten, ein Sparplan und viele Jahre Geduld. Kurzfristig kann der Wert auch deutlich fallen.',
-  note:'Das ist keine Anlageberatung. Unter 18 läuft ein Depot über die Eltern. Neutrale Infos gibt es bei der Verbraucherzentrale.'},
- {t:'Inflation und die 72er-Regel', s:'Geld verliert langsam an Wert.', cat:'Geld',
-  body:'Steigen die Preise, kannst du dir mit demselben Geld weniger kaufen. Die 72er-Regel hilft beim Überschlagen: 72 geteilt durch den Prozentsatz ergibt ungefähr die Jahre bis zur Verdopplung oder Halbierung.',
-  steps:['Bei 2 % Inflation halbiert sich die Kaufkraft in etwa 36 Jahren.','Bei 7 % Rendite verdoppelt sich Geld in etwa 10 Jahren.','Geld ohne Zinsen verliert also jedes Jahr ein wenig an Wert.'],
-  ex:'72 ÷ 6 = 12: Mit 6 % pro Jahr dauert eine Verdopplung rund 12 Jahre.'},
- {t:'Ratenkauf ist ein Kredit', s:'Später zahlen heißt Schulden machen.', cat:'Geld',
-  body:'„Jetzt kaufen, später zahlen“ und Ratenzahlung sind Kredite. Verpasste Raten können Mahngebühren kosten und deinen Schufa-Eintrag verschlechtern, der später bei Wohnung oder Handyvertrag zählt.',
-  ex:'Faustregel: Was du nicht direkt bezahlen kannst, kannst du dir meistens noch nicht leisten.'},
- {t:'Trading ist kein Sparplan', s:'Warum die meisten Privatanleger verlieren.', cat:'Geld',
-  body:'Kurzfristiges Trading, besonders mit Hebel, ist für die meisten Privatanleger ein Verlustgeschäft. Bei CFDs müssen Anbieter offenlegen, wie viele Privatkunden Geld verlieren. Die Werte liegen meist deutlich über 70 %. Wer Trading lernen will, übt mit einem Demokonto und festen Regeln, nicht mit echtem Geld.',
-  steps:['Mit einem Demokonto üben und jeden Trade dokumentieren.','Nie Geld einsetzen, das du brauchst.','Misstrauisch sein bei Leuten, die mit Kursen oder Signalen Geld verdienen.'],
-  note:'Unter 18 kannst du ohnehin keine Hebelprodukte auf eigenen Namen handeln.'},
- {t:'Betrug erkennen', s:'Die typischen Warnsignale.', cat:'Geld',
-  body:'Betrüger arbeiten mit Gier, Angst und Zeitdruck. Die Maschen ändern sich, die Muster bleiben gleich.',
-  steps:['Garantierte hohe Rendite: Gibt es nicht.','Zeitdruck: „Nur heute“, „sofort handeln“.','Bezahlung per Gutscheinkarte oder Krypto.','Nachrichten von „Freunden“ mit neuer Nummer, die dringend Geld brauchen.','Gewinnspiele, bei denen du zuerst zahlen sollst.'],
-  ex:'Im Zweifel abbrechen, jemanden fragen, dem du vertraust, und über die bekannte Nummer zurückrufen.'},
- {t:'Verträge prüfen', s:'Laufzeit, Kündigung, Verlängerung.', cat:'Verträge & Recht',
-  body:'Vor jeder Unterschrift drei Dinge checken: Wie lange läuft der Vertrag? Wie und bis wann kann ich kündigen? Verlängert er sich automatisch? Seit 2022 sind in Deutschland viele Verbraucherverträge nach der Mindestlaufzeit monatlich kündbar, aber eben erst danach.',
-  ex:'Ein Fitnessstudio mit 24 Monaten Laufzeit ist riskant, wenn du nicht weißt, wo du in zwei Jahren wohnst.'},
- {t:'Taschengeldparagraf', s:'Was du unter 18 allein kaufen darfst.', cat:'Verträge & Recht',
-  body:'Nach § 110 BGB ist ein Kauf von Minderjährigen ohne Zustimmung der Eltern wirksam, wenn er vollständig mit Geld bezahlt wird, das dir zur freien Verfügung überlassen wurde. Raten, Abos und Verträge mit laufenden Zahlungen fallen in der Regel nicht darunter.',
-  ex:'Ein Videospiel vom Taschengeld: in Ordnung. Ein Handyvertrag über zwei Jahre: braucht die Eltern.'},
- {t:'Nebenjob als Schüler', s:'Was erlaubt ist und was bleibt.', cat:'Verträge & Recht',
-  body:'Das Jugendarbeitsschutzgesetz regelt, was Schüler arbeiten dürfen. Ab 13 Jahren sind leichte Tätigkeiten bis zu zwei Stunden täglich erlaubt, mit Einverständnis der Eltern und nicht vor oder während des Unterrichts. Schüler ab 15 dürfen in den Ferien bis zu vier Wochen im Jahr arbeiten. Ein Minijob ist 2026 bis 603 € im Monat möglich.',
-  ex:'Nachhilfe, Zeitungen austragen oder Websites für Vereine: erst prüfen, was für dein Alter erlaubt ist.'},
- {t:'Steuern verstehen', s:'Was vom Lohn übrig bleibt.', cat:'Verträge & Recht',
-  body:'Vom Bruttolohn gehen Steuern und Sozialabgaben ab, übrig bleibt der Nettolohn. Über deine Steuer-ID wird alles zugeordnet. Bei Nebenjob, Ausbildung oder Studium lohnt sich eine Steuererklärung oft, weil zu viel gezahlte Steuer zurückkommt.',
-  ex:'Die Steuererklärung geht kostenlos über das offizielle Portal ELSTER.'},
- {t:'Eigenes Business anmelden', s:'Was vor der ersten Rechnung klar sein muss.', cat:'Business',
-  body:'Wer regelmäßig mit Gewinnabsicht Geld verdient, zum Beispiel mit Websites für Kunden, muss das in Deutschland in der Regel anmelden: meist als Gewerbe, manche Tätigkeiten auch freiberuflich beim Finanzamt. Unter 18 brauchst du dafür die Zustimmung deiner Eltern und die Genehmigung des Familiengerichts (§ 112 BGB). Die Kleinunternehmerregelung kann dir am Anfang die Umsatzsteuer ersparen. Seit 2025 gilt sie bis 25.000 € Umsatz im Vorjahr.',
-  ex:'Vor dem ersten Auftrag mit den Eltern sprechen und sich bei IHK oder Finanzamt informieren.'},
- {t:'Der erste Kunde', s:'Erst verkaufen, dann groß bauen.', cat:'Business',
-  body:'Viele bauen monatelang an einem Produkt, das dann niemand will. Besser: früh mit echten Kunden sprechen und herausfinden, wofür sie wirklich zahlen.',
-  steps:['Zehn mögliche Kunden ansprechen und nach ihrem Problem fragen.','Ein einfaches Angebot formulieren.','Den ersten Auftrag sehr gut machen und um eine Empfehlung bitten.'],
-  ex:'Statt ein perfektes Portfolio zu bauen: drei Vereinen in der Umgebung eine neue Website anbieten.'},
- {t:'Preise festlegen', s:'Nach Wert, nicht nach Stunden.', cat:'Business',
-  body:'Anfänger setzen ihre Preise oft zu niedrig, weil sie sich unsicher fühlen. Kunden zahlen für das Ergebnis, nicht für deine Stunden. Zu billige Preise wirken außerdem unseriös.',
-  steps:['Herausfinden, was andere für Ähnliches nehmen.','Den Nutzen für den Kunden beziffern.','Den Preis selbst nennen und begründen können.'],
-  ex:'Eine Website, die einem Friseur jeden Monat zwei Neukunden bringt, ist mehr wert als 100 €.'},
- {t:'Verhandeln', s:'Anker, Alternativen, Fragen.', cat:'Kommunikation',
-  body:'Wer zuerst eine Zahl nennt, setzt den Anker. Das ist ein Vorteil, wenn du gut vorbereitet bist. Kenne deine beste Alternative, falls die Verhandlung scheitert, denn sie gibt dir Ruhe. Und stell mehr Fragen, als du Argumente bringst.',
-  ex:'Erster Website-Kunde: Preis selbst nennen, statt „Was wollen Sie zahlen?“ zu fragen.'},
- {t:'Gut kommunizieren', s:'Zuhören, nachfragen, klar sagen.', cat:'Kommunikation',
-  body:'Die meisten hören zu, um zu antworten, nicht um zu verstehen. Fass kurz in eigenen Worten zusammen, was der andere gesagt hat, bevor du antwortest. Und bei Kritik: das Verhalten beschreiben, nicht die Person bewerten.',
-  ex:'„Du hast mich dreimal nicht angespielt, obwohl ich frei war“ statt „Du siehst nie was“.'},
- {t:'Professionelle Nachrichten', s:'Mails, die ernst genommen werden.', cat:'Kommunikation',
-  body:'Ob an Lehrer, Trainer oder Kunden: Eine klare, höfliche Nachricht wird schneller und besser beantwortet.',
-  steps:['Ein Betreff, der den Inhalt sagt.','Kurze Anrede und ein Satz Kontext.','Das Anliegen in einem Satz.','Was du dir wünschst und bis wann.','Freundlicher Abschluss mit Namen.'],
-  ex:'„Betreff: Frage zur Abgabe der Facharbeit. Guten Tag Frau Schulz, ich bin in Ihrem Kurs Q1 …“'},
- {t:'Netzwerk aufbauen', s:'Beziehungen sind langfristiges Kapital.', cat:'Kommunikation',
-  body:'Viele Chancen entstehen über Menschen, die dich kennen. Ein Netzwerk baust du nicht mit Visitenkarten auf, sondern indem du hilfst, dich bedankst und dranbleibst.',
-  steps:['Zuerst geben: helfen, teilen, empfehlen.','Nach Treffen kurz Danke sagen.','Alle paar Monate von dir hören lassen.'],
-  ex:'Dem Trainer der höheren Mannschaft nach dem Probetraining eine kurze Danke-Nachricht schreiben.'}
-]
+const AREA_NOTE_TYPES = {
+  lernen:[['regel','Regel'],['erkenntnis','Erkenntnis'],['fehler','Fehler']],
+  fussball:[['training','Training'],['trainer','Trainer-Feedback'],['beobachtung','Beobachtung'],['idee','Idee']],
+  mental:[['erkenntnis','Erkenntnis'],['vorher','Vor dem Spiel'],['rueckschlag','Nach Rückschlag']],
+  ki:[['idee','Idee'],['tool','Tool'],['erkenntnis','Erkenntnis']],
+  leben:[['idee','Idee'],['erkenntnis','Erkenntnis']]
 };
+const GRADE_KINDS = [['ka','Klassenarbeit'],['test','Test'],['muendlich','Mündlich'],['referat','Referat']];
+const GOAL_AREAS = [['fussball','Fußball'],['schule','Schule'],['koerper','Körper'],['ki','KI & Tech'],['business','Business'],['persoenlich','Persönlich']];
+const PROJECT_STATUS = [['idee','Idee'],['laeuft','Läuft'],['fertig','Fertig']];
+const PROJECT_AREAS = [['ki','KI'],['business','Business'],['technik','Technik'],['kreativ','Kreativ'],['sonst','Sonstiges']];
+const MONEY_IN = [['taschengeld','Taschengeld'],['job','Job'],['geschenk','Geschenk'],['verkauf','Verkauf'],['sonst','Sonstiges']];
+const MONEY_OUT = [['essen','Essen'],['kleidung','Kleidung'],['fussball','Fußball'],['technik','Technik'],['freizeit','Freizeit'],['abos','Abos'],['sonst','Sonstiges']];
 
 /* =====================================================================
    ZUSTAND & DATENBANK
    ===================================================================== */
-const COLS = ['notes','videos','entries','reports','exams','focus','matches','decisions','settings','reviews'];
+const COLS = ['notes','videos','entries','reports','exams','focus','matches','decisions','settings','reviews','goals','money'];
 const S = { cols:null, ready:false, offline:false, loaded:new Set(), view:'home', tab:{}, open:new Set(), q:{}, f:{}, more:{}, fresh:null, nav:false, pendingRender:false, showDone:false };
 COLS.forEach(c => { S[c] = []; });
 const CAP = { sample:null, mcp:null, sampleP:Promise.resolve(null), mcpP:Promise.resolve(null) };
@@ -1572,31 +1129,31 @@ function preserve(root, fn){
    BEREICHE & NAVIGATION
    ===================================================================== */
 const SECTIONS = [
-  {id:'notizen', title:'Notizbuch', eyebrow:'Planen & Merken', desc:'Termine, Aufgaben, Irgendwann',
-   lead:'Was demnächst ansteht und was du dir für später vornimmst. Tipp einfach drauflos: Wörter wie „morgen“, „Freitag“ oder „18 Uhr“ werden automatisch erkannt.',
+  {id:'notizen', title:'Notizbuch', eyebrow:'Planen', desc:'Termine, Aufgaben, Irgendwann',
+   lead:'„Morgen 18 Uhr“ wird automatisch erkannt.',
    tabs:[['anstehend','Anstehend'],['irgendwann','Irgendwann'],['erledigt','Erledigt']]},
-  {id:'lernen', title:'Lernlabor', eyebrow:'Schule & Lernen', desc:'Methoden, Prüfungen, Fokus',
-   lead:'Wie du lernst, entscheidet, wie viel hängen bleibt. Hier findest du die Methoden mit der besten Studienlage, planst Klassenarbeiten und trainierst deinen Fokus.',
-   tabs:[['methoden','Methoden'],['pruefungen','Prüfungen'],['fokus','Fokus-Timer'],['feynman','Feynman-Check'],['regeln','Meine Regeln']]},
-  {id:'videos', title:'Video-Bibliothek', eyebrow:'Wissen aus Videos', desc:'Zusammenfassungen nach Thema',
-   lead:'Link einfügen, Claude fasst das Video zusammen: Kernaussage, wichtigste Punkte, Details und was du direkt anwenden kannst.', tabs:null},
-  {id:'denken', title:'Denkwerkzeuge', eyebrow:'Klarer denken', desc:'Modelle, Denkfehler, Entscheidungen',
-   lead:'Werkzeuge, mit denen kluge Leute entscheiden, und die Denkfehler, die allen passieren. Nicht auswendig lernen, sondern im Alltag anwenden.',
-   tabs:[['modelle','Modelle'],['denkfehler','Denkfehler'],['entscheidungen','Entscheidungen'],['notizen','Notizen']]},
-  {id:'mental', title:'Mental Game', eyebrow:'Druck & Fokus', desc:'Druck, Fokus, Selbstvertrauen',
-   lead:'Wie du mit Druck, Fehlern und wichtigen Momenten umgehst, auf dem Platz und in der Schule. Mit Routinen zum Abhaken und einer Beweis-Bank für dein Selbstvertrauen.',
-   tabs:[['techniken','Techniken'],['routinen','Routinen'],['beweise','Beweis-Bank'],['notizen','Notizen']]},
-  {id:'fussball', title:'Spielintelligenz', eyebrow:'Der 8er', desc:'Prinzipien und Spieltagebuch',
-   lead:'Was einen starken zentralen Mittelfeldspieler ausmacht: mit Ball, ohne Ball, gegen den Ball, im Kopf und im Körper. Dazu dein Spieltagebuch.',
-   tabs:[['prinzipien','Prinzipien'],['spiele','Spieltagebuch'],['notizen','Notizen']]},
-  {id:'ki', title:'KI-Werkstatt', eyebrow:'KI beherrschen', desc:'Prompts, Workflows, Prompt-Coach',
-   lead:'KI nicht nur benutzen, sondern beherrschen: wie Profis prompten, Ergebnisse prüfen und Workflows bauen. Mit deiner Prompt-Bibliothek und einem Coach, der deine Prompts verbessert.',
-   tabs:[['grundlagen','Grundlagen'],['vorlagen','Vorlagen'],['bibliothek','Meine Prompts'],['coach','Prompt-Coach']]},
-  {id:'leben', title:'Geld & Leben', eyebrow:'Lebens-Skills', desc:'Finanzen, Verträge, Business',
-   lead:'Was dir die Schule nicht beibringt, du aber spätestens mit dem ersten eigenen Geld brauchst.',
-   tabs:[['grundlagen','Grundlagen'],['rechner','Zinseszins'],['notizen','Notizen']]},
+  {id:'lernen', title:'Schule', eyebrow:'Gymnasium', desc:'Prüfungen, Noten, Fokus',
+   lead:'Arbeiten planen, Noten festhalten, konzentriert lernen.',
+   tabs:[['pruefungen','Prüfungen'],['noten','Noten'],['fokus','Fokus'],['notizen','Notizen']]},
+  {id:'fussball', title:'Fußball', eyebrow:'Der 8er', desc:'Spiele, Training, Feedback',
+   lead:'Spiele bewerten, Training und Trainer-Feedback festhalten.',
+   tabs:[['spiele','Spiele'],['notizen','Notizen']]},
+  {id:'denken', title:'Ziele', eyebrow:'Richtung', desc:'Ziele, Etappen, Entscheidungen',
+   lead:'Was du erreichen willst und wie weit du bist.',
+   tabs:[['aktiv','Aktiv'],['erreicht','Erreicht'],['entscheidungen','Entscheidungen']]},
+  {id:'mental', title:'Mental', eyebrow:'Kopf', desc:'Beweise, Routinen, Notizen',
+   lead:'Starke Momente sammeln, Routinen abhaken.',
+   tabs:[['beweise','Beweis-Bank'],['routinen','Routinen'],['notizen','Notizen']]},
+  {id:'videos', title:'Videos', eyebrow:'YouTube', desc:'Zusammenfassungen nach Thema',
+   lead:'Link rein, Zusammenfassung raus.', tabs:null},
+  {id:'ki', title:'KI & Projekte', eyebrow:'Bauen', desc:'Projekte, Prompts, Ideen',
+   lead:'Woran du baust und was funktioniert.',
+   tabs:[['projekte','Projekte'],['prompts','Prompts'],['notizen','Notizen']]},
+  {id:'leben', title:'Geld', eyebrow:'Finanzen', desc:'Einnahmen, Ausgaben, Sparziele',
+   lead:'Wohin dein Geld geht und wofür du sparst.',
+   tabs:[['uebersicht','Übersicht'],['sparziele','Sparziele'],['rechner','Zinsrechner']]},
   {id:'abend', title:'Abendbericht', eyebrow:'Reflexion', desc:'Verlauf und Trends', tile:false,
-   lead:'Jeden Abend zehn kurze Fragen. Hier siehst du, wie sich Stimmung, Energie, Schlaf, Training und Gewohnheiten über die Zeit entwickeln.',
+   lead:'Stimmung, Energie, Schlaf, Training und Gewohnheiten im Verlauf.',
    tabs:[['heute','Heute'],['verlauf','Verlauf'],['trends','Trends']]}
 ];
 const sec = id => SECTIONS.find(s => s.id === id);
@@ -1604,25 +1161,31 @@ const curTab = id => { const s = sec(id); return S.tab[id] || (s && s.tabs ? s.t
 
 function tabCount(id, k){
   if(!S.ready) return 0;
-  const E = a => S.entries.filter(e => e.area === a);
+  const E = a => S.entries.filter(e => e.area === a), N = a => E(a).filter(isNote).length;
   switch(id + '/' + k){
     case 'notizen/anstehend': return S.notes.filter(n => !n.done && n.kind === 'anstehend').length;
     case 'notizen/irgendwann': return S.notes.filter(n => !n.done && n.kind !== 'anstehend').length;
     case 'lernen/pruefungen': return S.exams.filter(e => e.date >= todayISO()).length;
-    case 'lernen/regeln': return E('lernen').filter(e => e.type !== 'feynman').length;
-    case 'lernen/feynman': return E('lernen').filter(e => e.type === 'feynman').length;
+    case 'lernen/noten': return grades().length;
+    case 'lernen/notizen': return N('lernen');
+    case 'denken/aktiv': return lifeGoals().filter(g => g.status !== 'erreicht').length;
+    case 'denken/erreicht': return lifeGoals().filter(g => g.status === 'erreicht').length;
     case 'denken/entscheidungen': return S.decisions.length;
-    case 'denken/notizen': return E('denken').length;
     case 'mental/beweise': return E('mental').filter(e => e.type === 'erfolg').length;
-    case 'mental/notizen': return E('mental').filter(e => e.type !== 'erfolg').length;
+    case 'mental/notizen': return N('mental');
     case 'fussball/spiele': return S.matches.length;
-    case 'fussball/notizen': return E('fussball').length;
-    case 'ki/bibliothek': return E('ki').length;
-    case 'leben/notizen': return E('leben').length;
+    case 'fussball/notizen': return N('fussball');
+    case 'ki/projekte': return E('ki').filter(e => e.type === 'projekt' && (e.fields || {}).status !== 'fertig').length;
+    case 'ki/prompts': return E('ki').filter(e => e.type === 'prompt').length;
+    case 'ki/notizen': return N('ki');
+    case 'leben/sparziele': return S.goals.filter(g => g.kind === 'spar').length;
     case 'abend/verlauf': return S.reports.filter(r => r.completed).length;
   }
   return 0;
 }
+const isNote = e => !['erfolg','grade','prompt','projekt','feynman'].includes(e.type);
+const grades = () => S.entries.filter(e => e.area === 'lernen' && e.type === 'grade');
+const lifeGoals = () => S.goals.filter(g => g.kind !== 'spar');
 function tabsHTML(s){
   const t = curTab(s.id);
   return s.tabs.map(([k, l]) => { const n = tabCount(s.id, k); return `<button class="tab" role="tab" data-action="tab" data-tab="${k}" aria-selected="${k === t}">${esc(l)}${n ? `<b>${n}</b>` : ''}</button>`; }).join('') + '<span class="tab-pill" aria-hidden="true"></span>';
@@ -1826,12 +1389,12 @@ function fabFor(){
   const t = curTab(S.view);
   const M = {
     notizen:{anstehend:['Neuer Eintrag','note'], irgendwann:['Neuer Eintrag','note']},
-    lernen:{pruefungen:['Prüfung eintragen','exam'], regeln:['Regel notieren','rule']},
-    denken:{entscheidungen:['Entscheidung durchdenken','decision'], notizen:['Notiz','areaNote']},
+    lernen:{pruefungen:['Prüfung','exam'], noten:['Note','grade'], notizen:['Notiz','areaNote']},
+    denken:{aktiv:['Neues Ziel','goal'], entscheidungen:['Entscheidung','decision']},
     mental:{beweise:['Moment festhalten','win'], notizen:['Notiz','areaNote']},
     fussball:{spiele:['Spiel eintragen','match'], notizen:['Notiz','areaNote']},
-    ki:{bibliothek:['Prompt speichern','prompt']},
-    leben:{notizen:['Notiz','areaNote']}
+    ki:{projekte:['Projekt','project'], prompts:['Prompt','prompt'], notizen:['Notiz','areaNote']},
+    leben:{uebersicht:['Buchung','txn'], sparziele:['Sparziel','saving']}
   };
   return (M[S.view] || {})[t] || null;
 }
@@ -1844,8 +1407,12 @@ function updateFab(){
 /* =====================================================================
    FORMULARE (Bottom Sheet)
    ===================================================================== */
+const addOrUpd = async (col, it, d) => { if(it){ await dbUpd(col, it.id, d); return it.id; } return dbAdd(col, Object.assign(d, {createdAt:nowISO()})); };
+const money = v => { const n = parseFloat(String(v ?? '').replace(/\s|€/g, '').replace(/\.(?=\d{3}(\D|$))/g, '').replace(',', '.')); return isFinite(n) ? Math.round(n * 100) / 100 : NaN; };
+const lastScale = () => { const g = [...grades()].sort(byNew)[0]; return g && g.fields ? g.fields.scale : 'note'; };
+const GRADE_NUMS = ['1','2','3','4','5','6'].map(x => [x, x]);
 const FORMS = {
-  note:{ col:'notes', title:it => it ? 'Eintrag bearbeiten' : 'Neuer Eintrag', sub:'Mit Datum landet es unter Anstehend, ohne Datum unter Irgendwann.',
+  note:{ col:'notes', area:'notizen', title:it => it ? 'Eintrag bearbeiten' : 'Neuer Eintrag',
     fields:[
       {id:'text', type:'text', label:'Was?', ph:'z. B. Mathe-Arbeit am Freitag', req:true, smart:true},
       {id:'kind', type:'seg', label:'Liste', opts:[['anstehend','Anstehend'],['irgendwann','Irgendwann']], def:() => curTab('notizen') === 'irgendwann' ? 'irgendwann' : 'anstehend'},
@@ -1853,20 +1420,16 @@ const FORMS = {
       {id:'time', type:'time', label:'Uhrzeit', opt:true, show:v => v.kind === 'anstehend', half:'b'},
       {id:'catA', type:'chips', label:'Bereich', opts:NOTE_CATS, show:v => v.kind === 'anstehend', key:'cat'},
       {id:'catI', type:'chips', label:'Kategorie', opts:SOMEDAY_CATS, show:v => v.kind === 'irgendwann', key:'cat'},
-      {id:'prio', type:'toggle', label:'Wichtig', hint:'Wird mit einem orangen Balken markiert.', init:it => it && it.prio === 'hoch'},
-      {id:'details', type:'area', label:'Details', opt:true, ph:'Notizen, Material, Links …', rows:3}
+      {id:'prio', type:'toggle', label:'Wichtig', init:it => it && it.prio === 'hoch'},
+      {id:'details', type:'area', label:'Details', opt:true, rows:2}
     ],
     tabOf:v => v.kind === 'anstehend' ? 'anstehend' : 'irgendwann',
-    save: async (v, it) => {
-      const d = {text:v.text.trim(), details:(v.details || '').trim(), kind:v.kind, cat:v.cat || '', date:v.kind === 'anstehend' ? (v.date || null) : null, time:v.kind === 'anstehend' ? (v.time || '') : '', prio:v.prio ? 'hoch' : ''};
-      if(it){ await dbUpd('notes', it.id, d); return it.id; }
-      return dbAdd('notes', Object.assign(d, {done:false, createdAt:nowISO()}));
-    }, del:true},
-  exam:{ col:'exams', title:it => it ? 'Prüfung bearbeiten' : 'Prüfung eintragen', sub:'Das Dashboard plant dir Wiederholungstermine rückwärts vom Datum der Arbeit.',
+    save: (v, it) => addOrUpd('notes', it, Object.assign({text:v.text.trim(), details:(v.details || '').trim(), kind:v.kind, cat:v.cat || '', date:v.kind === 'anstehend' ? (v.date || null) : null, time:v.kind === 'anstehend' ? (v.time || '') : '', prio:v.prio ? 'hoch' : ''}, it ? {} : {done:false})), del:true},
+  exam:{ col:'exams', area:'lernen', title:it => it ? 'Prüfung bearbeiten' : 'Prüfung eintragen', sub:'Wiederholungen werden automatisch bis zum Termin verteilt.',
     fields:[
-      {id:'subject', type:'text', label:'Fach', ph:'z. B. Mathe', req:true, list:SUBJECTS},
-      {id:'title', type:'text', label:'Thema', ph:'z. B. Quadratische Funktionen', opt:true},
-      {id:'date', type:'date', label:'Datum der Arbeit', req:true, def:() => addDays(todayISO(), 10)}
+      {id:'subject', type:'text', label:'Fach', ph:'z. B. Mathe', req:true, list:SUBJECTS, half:'a'},
+      {id:'date', type:'date', label:'Datum', req:true, def:() => addDays(todayISO(), 10), half:'b'},
+      {id:'title', type:'text', label:'Thema', ph:'z. B. Quadratische Funktionen', opt:true}
     ],
     tabOf:() => 'pruefungen',
     validate:(v, it) => !it && v.date && v.date < todayISO() ? 'Das Datum liegt in der Vergangenheit.' : '',
@@ -1875,85 +1438,129 @@ const FORMS = {
       if(it){ await dbUpd('exams', it.id, Object.assign(d, {sessions: it.date === v.date ? (it.sessions || []) : planSessions(v.date, it.sessions || [])})); return it.id; }
       return dbAdd('exams', Object.assign(d, {sessions:planSessions(v.date), createdAt:nowISO()}));
     }, del:true},
-  rule:{ col:'entries', title:it => it ? 'Eintrag bearbeiten' : 'Lernregel notieren', sub:'Was funktioniert bei dir, was nicht? Regeln, Erkenntnisse und Fehler, die du nicht wiederholen willst.',
+  grade:{ col:'entries', area:'lernen', title:it => it ? 'Note bearbeiten' : 'Note eintragen',
     fields:[
-      {id:'type', type:'seg', label:'Art', opts:RULE_TYPES, def:'regel'},
-      {id:'text', type:'area', label:'Text', ph:'z. B. Vokabeln lerne ich am besten morgens im Bus', req:true, rows:4}
+      {id:'subject', type:'text', label:'Fach', ph:'z. B. Mathe', req:true, list:SUBJECTS, init:it => it && it.fields.subject},
+      {id:'kind', type:'chips', label:'Art', opts:GRADE_KINDS, def:'ka', init:it => it && it.fields.kind},
+      {id:'scale', type:'seg', label:'Skala', opts:[['note','Note 1–6'],['punkte','Punkte 0–15']], def:lastScale, init:it => it && it.fields.scale},
+      {id:'g', type:'chips', label:'Note', opts:GRADE_NUMS, req:true, show:v => v.scale !== 'punkte', init:it => it && it.fields.scale === 'note' ? String(Math.round(it.fields.value)) : undefined},
+      {id:'tend', type:'seg', label:'Tendenz', opts:[['+','+'],['0','glatt'],['-','–']], def:'0', show:v => v.scale !== 'punkte', init:it => it && it.fields.label ? (it.fields.label.slice(1).replace('–', '-') || '0') : undefined},
+      {id:'pts', type:'range', label:'Punkte', min:0, max:15, step:1, def:10, suffix:' P', show:v => v.scale === 'punkte', init:it => it && it.fields.scale === 'punkte' ? it.fields.value : undefined},
+      {id:'date', type:'date', label:'Datum', def:() => todayISO(), half:'a', init:it => it && it.fields.date},
+      {id:'title', type:'text', label:'Thema', opt:true, half:'b'}
     ],
-    tabOf:() => 'regeln',
-    save: async (v, it) => { const d = {area:'lernen', type:v.type, text:v.text.trim()}; if(it){ await dbUpd('entries', it.id, d); return it.id; } return dbAdd('entries', Object.assign(d, {createdAt:nowISO()})); }, del:true},
-  areaNote:{ col:'entries', title:it => it ? 'Notiz bearbeiten' : 'Neue Notiz', sub:'Eigene Gedanken, Erkenntnisse und Strategien.',
+    tabOf:() => 'noten',
+    save: (v, it) => {
+      const pts = v.scale === 'punkte', t = v.tend === '0' ? '' : v.tend;
+      const value = pts ? Number(v.pts) : Number(v.g) + (t === '+' ? -0.3 : t === '-' ? 0.3 : 0);
+      const label = pts ? v.pts + ' P' : v.g + (t === '-' ? '–' : t);
+      return addOrUpd('entries', it, {area:'lernen', type:'grade', title:(v.title || '').trim(), text:'', fields:{subject:v.subject.trim(), kind:v.kind || 'ka', scale:pts ? 'punkte' : 'note', value, label, date:v.date || todayISO()}});
+    }, del:true},
+  areaNote:{ col:'entries', title:it => it ? 'Notiz bearbeiten' : 'Neue Notiz',
     fields:[
-      {id:'title', type:'text', label:'Titel', opt:true, ph:'Kurz und knapp'},
-      {id:'text', type:'area', label:'Notiz', req:true, rows:5, ph:'Was hast du erkannt oder dir vorgenommen?'}
+      {id:'type', type:'chips', label:'Art', opts:[], show:() => (AREA_NOTE_TYPES[FS && FS.item ? FS.item.area : S.view] || []).length > 0, dyn:it => AREA_NOTE_TYPES[it ? it.area : S.view] || [], def:() => ((AREA_NOTE_TYPES[S.view] || [])[0] || [''])[0]},
+      {id:'title', type:'text', label:'Titel', opt:true},
+      {id:'text', type:'area', label:'Notiz', req:true, rows:4}
     ],
     tabOf:() => 'notizen',
-    save: async (v, it) => { const d = {area: it ? it.area : S.view, type:'notiz', title:(v.title || '').trim(), text:v.text.trim()}; if(it){ await dbUpd('entries', it.id, d); return it.id; } return dbAdd('entries', Object.assign(d, {createdAt:nowISO()})); }, del:true},
-  win:{ col:'entries', title:it => it ? 'Moment bearbeiten' : 'Starken Moment festhalten', sub:'Konkret bleiben: was genau, wann, gegen wen. Vor wichtigen Spielen liest du diese Momente.',
+    save: (v, it) => addOrUpd('entries', it, {area: it ? it.area : S.view, type:v.type || 'notiz', title:(v.title || '').trim(), text:v.text.trim()}), del:true},
+  win:{ col:'entries', area:'mental', title:it => it ? 'Moment bearbeiten' : 'Starker Moment',
     fields:[
-      {id:'text', type:'area', label:'Was ist dir gelungen?', req:true, rows:4, ph:'z. B. Gegen den Tabellenführer jeden Ball gefordert und zwei Vorlagen gegeben'},
+      {id:'text', type:'area', label:'Was ist dir gelungen?', req:true, rows:3, ph:'z. B. Gegen den Tabellenführer jeden Ball gefordert, zwei Vorlagen'},
       {id:'cat', type:'chips', label:'Bereich', opts:WIN_CATS, def:'spiel'},
       {id:'date', type:'date', label:'Datum', def:() => todayISO(), init:it => it && it.fields && it.fields.date}
     ],
     tabOf:() => 'beweise',
-    save: async (v, it) => { const d = {area:'mental', type:'erfolg', text:v.text.trim(), cat:v.cat || '', fields:{date:v.date || todayISO()}}; if(it){ await dbUpd('entries', it.id, d); return it.id; } return dbAdd('entries', Object.assign(d, {createdAt:nowISO()})); }, del:true},
-  decision:{ col:'decisions', title:it => it ? 'Entscheidung bearbeiten' : 'Entscheidung durchdenken', sub:'Fünf Fragen, die gute Entscheider sich stellen. Später wertest du aus, wie es gelaufen ist.',
+    save: (v, it) => addOrUpd('entries', it, {area:'mental', type:'erfolg', text:v.text.trim(), cat:v.cat || '', fields:{date:v.date || todayISO()}}), del:true},
+  goal:{ col:'goals', area:'denken', title:it => it ? 'Ziel bearbeiten' : 'Neues Ziel',
+    fields:[
+      {id:'title', type:'text', label:'Ziel', req:true, ph:'z. B. Stammspieler in der U17'},
+      {id:'area', type:'chips', label:'Bereich', opts:GOAL_AREAS, def:'fussball'},
+      {id:'steps', type:'goals', label:'Etappen', n:5, ph:'z. B. 3× pro Woche Schwachfuß', hint2:'Haken = Etappe geschafft. Du kannst sie auch später abhaken.'},
+      {id:'deadline', type:'date', label:'Bis wann?', opt:true, half:'a'},
+      {id:'why', type:'text', label:'Warum?', opt:true, half:'b'}
+    ],
+    tabOf:() => 'aktiv',
+    save: (v, it) => addOrUpd('goals', it, Object.assign({kind:'ziel', title:v.title.trim(), area:v.area || '', steps:v.steps || [], deadline:v.deadline || '', why:(v.why || '').trim()}, it ? {} : {status:'aktiv'})), del:true},
+  decision:{ col:'decisions', area:'denken', title:it => it ? 'Entscheidung bearbeiten' : 'Entscheidung',
     fields:[
       {id:'question', type:'text', label:'Was entscheidest du?', req:true, ph:'z. B. Wechsel zum höheren Verein?'},
-      {id:'options', type:'area', label:'Welche Optionen hast du?', rows:2, ph:'A: …  B: …'},
-      {id:'reversible', type:'seg', label:'Umkehrbar?', opts:[['ja','Leicht umkehrbar'],['nein','Schwer umkehrbar']], def:'ja'},
-      {id:'second', type:'area', label:'Und was passiert danach?', hint:'Folgen zweiter Ordnung', rows:2, opt:true},
-      {id:'premortem', type:'area', label:'Pre-Mortem: Warum könnte es schiefgehen?', rows:2, opt:true},
+      {id:'options', type:'area', label:'Optionen', rows:2, ph:'A: …  B: …'},
+      {id:'reversible', type:'seg', label:'Umkehrbar?', opts:[['ja','Leicht'],['nein','Schwer']], def:'ja'},
       {id:'choice', type:'area', label:'Deine Wahl und warum', rows:2, opt:true},
-      {id:'expect', type:'text', label:'Was erwartest du, was passiert?', opt:true},
+      {id:'premortem', type:'area', label:'Was könnte schiefgehen?', rows:2, opt:true},
       {id:'reviewOn', type:'date', label:'Auswerten am', def:() => addDays(todayISO(), 30)}
     ],
     tabOf:() => 'entscheidungen',
-    save: async (v, it) => {
-      const d = {question:v.question.trim(), options:(v.options || '').trim(), reversible:v.reversible, second:(v.second || '').trim(), premortem:(v.premortem || '').trim(), choice:(v.choice || '').trim(), expect:(v.expect || '').trim(), reviewOn:v.reviewOn || ''};
-      if(it){ await dbUpd('decisions', it.id, d); return it.id; }
-      return dbAdd('decisions', Object.assign(d, {createdAt:nowISO()}));
-    }, del:true},
-  review:{ col:'decisions', title:() => 'Entscheidung auswerten', sub:'Bewerte die Entscheidung mit dem Wissen von damals, nicht nur nach dem Ergebnis.',
+    save: (v, it) => addOrUpd('decisions', it, {question:v.question.trim(), options:(v.options || '').trim(), reversible:v.reversible, choice:(v.choice || '').trim(), premortem:(v.premortem || '').trim(), reviewOn:v.reviewOn || ''}), del:true},
+  review:{ col:'decisions', title:() => 'Entscheidung auswerten',
     fields:[
-      {id:'outcome', type:'area', label:'Was ist tatsächlich passiert?', req:true, rows:3},
-      {id:'lesson', type:'area', label:'Was lernst du daraus?', rows:3, opt:true}
+      {id:'outcome', type:'area', label:'Was ist passiert?', req:true, rows:3},
+      {id:'lesson', type:'area', label:'Was lernst du daraus?', rows:2, opt:true}
     ],
     tabOf:() => 'entscheidungen',
     save: async (v, it) => { await dbUpd('decisions', it.id, {outcome:v.outcome.trim(), lesson:(v.lesson || '').trim(), reviewedAt:nowISO()}); return it.id; }},
-  match:{ col:'matches', title:it => it ? 'Spiel bearbeiten' : 'Spiel eintragen', sub:'Ehrlich und konkret, am besten am Tag danach.',
+  match:{ col:'matches', area:'fussball', title:it => it ? 'Spiel bearbeiten' : 'Spiel eintragen',
     fields:[
       {id:'date', type:'date', label:'Datum', def:() => todayISO(), half:'a'},
       {id:'opponent', type:'text', label:'Gegner', req:true, ph:'z. B. JFV Nord', half:'b'},
       {id:'comp', type:'chips', label:'Wettbewerb', opts:COMPS, def:'liga'},
-      {id:'minutes', type:'number', label:'Spielminuten', def:80, min:0, max:130, half:'a'},
-      {id:'result', type:'text', label:'Ergebnis', opt:true, ph:'z. B. 2:1', half:'b'},
+      {id:'minutes', type:'number', label:'Minuten', def:80, min:0, max:130, half:'a'},
+      {id:'result', type:'text', label:'Ergebnis', opt:true, ph:'2:1', half:'b'},
       {id:'position', type:'chips', label:'Position', opts:POSITIONS, def:'8'},
       {id:'rating', type:'range', label:'Eigene Note', min:1, max:10, step:1, def:6, suffix:'/10'},
-      {id:'goals', type:'goals', label:'Prozessziele', n:3, ph:'z. B. Vor jeder Annahme ein Schulterblick'},
-      {id:'good', type:'area', label:'Was lief gut?', rows:2, opt:true},
-      {id:'improve', type:'area', label:'Was verbesserst du?', rows:2, opt:true},
-      {id:'coach', type:'area', label:'Feedback vom Trainer', rows:2, opt:true}
+      {id:'goals', type:'goals', label:'Prozessziele', n:3, ph:'z. B. Vor jeder Annahme Schulterblick', hint2:'Haken = im Spiel umgesetzt.'},
+      {id:'good', type:'area', label:'Lief gut', rows:2, opt:true},
+      {id:'improve', type:'area', label:'Verbessern', rows:2, opt:true},
+      {id:'coach', type:'area', label:'Trainer sagt', rows:2, opt:true}
     ],
     tabOf:() => 'spiele',
-    save: async (v, it) => {
-      const d = {date:v.date || todayISO(), opponent:v.opponent.trim(), comp:v.comp || '', minutes:Number(v.minutes) || 0, result:(v.result || '').trim(), position:v.position || '', rating:Number(v.rating) || 0, goals:v.goals || [], good:(v.good || '').trim(), improve:(v.improve || '').trim(), coach:(v.coach || '').trim()};
-      if(it){ await dbUpd('matches', it.id, d); return it.id; }
-      return dbAdd('matches', Object.assign(d, {createdAt:nowISO()}));
-    }, del:true},
-  prompt:{ col:'entries', title:it => it ? 'Prompt bearbeiten' : 'Prompt speichern', sub:'Gute Prompts sind Werkzeuge. Speichere die, die funktionieren.',
+    save: (v, it) => addOrUpd('matches', it, {date:v.date || todayISO(), opponent:v.opponent.trim(), comp:v.comp || '', minutes:Number(v.minutes) || 0, result:(v.result || '').trim(), position:v.position || '', rating:Number(v.rating) || 0, goals:v.goals || [], good:(v.good || '').trim(), improve:(v.improve || '').trim(), coach:(v.coach || '').trim()}), del:true},
+  project:{ col:'entries', area:'ki', title:it => it ? 'Projekt bearbeiten' : 'Neues Projekt',
+    fields:[
+      {id:'title', type:'text', label:'Projekt', req:true, ph:'z. B. KI-Bot für Trainingspläne'},
+      {id:'status', type:'seg', label:'Status', opts:PROJECT_STATUS, def:'idee', init:it => it && it.fields && it.fields.status},
+      {id:'cat', type:'chips', label:'Bereich', opts:PROJECT_AREAS, def:'ki'},
+      {id:'next', type:'text', label:'Nächster Schritt', opt:true, init:it => it && it.fields && it.fields.next},
+      {id:'text', type:'area', label:'Notizen', opt:true, rows:3}
+    ],
+    tabOf:() => 'projekte',
+    save: (v, it) => addOrUpd('entries', it, {area:'ki', type:'projekt', title:v.title.trim(), cat:v.cat || '', text:(v.text || '').trim(), fields:{status:v.status || 'idee', next:(v.next || '').trim()}}), del:true},
+  prompt:{ col:'entries', area:'ki', title:it => it ? 'Prompt bearbeiten' : 'Prompt speichern',
     fields:[
       {id:'title', type:'text', label:'Titel', req:true, ph:'z. B. Vokabel-Quiz Spanisch'},
       {id:'cat', type:'chips', label:'Kategorie', opts:PROMPT_CATS, def:'lernen'},
-      {id:'text', type:'area', label:'Prompt', req:true, rows:7, code:true},
-      {id:'why', type:'area', label:'Warum funktioniert er?', opt:true, rows:2, init:it => it && it.fields && it.fields.why}
+      {id:'text', type:'area', label:'Prompt', req:true, rows:6, code:true}
     ],
-    tabOf:() => 'bibliothek',
-    save: async (v, it) => { const d = {area:'ki', type:'prompt', title:v.title.trim(), cat:v.cat || '', text:v.text.trim(), fields:{why:(v.why || '').trim()}}; if(it){ await dbUpd('entries', it.id, d); return it.id; } return dbAdd('entries', Object.assign(d, {createdAt:nowISO()})); }, del:true}
+    tabOf:() => 'prompts',
+    save: (v, it) => addOrUpd('entries', it, {area:'ki', type:'prompt', title:v.title.trim(), cat:v.cat || '', text:v.text.trim()}), del:true},
+  txn:{ col:'money', area:'leben', title:it => it ? 'Buchung bearbeiten' : 'Neue Buchung',
+    fields:[
+      {id:'type', type:'seg', label:'Art', opts:[['out','Ausgabe'],['in','Einnahme']], def:'out'},
+      {id:'amount', type:'money', label:'Betrag', req:true, half:'a'},
+      {id:'date', type:'date', label:'Datum', def:() => todayISO(), half:'b'},
+      {id:'catO', type:'chips', label:'Wofür?', opts:MONEY_OUT, def:'essen', show:v => v.type !== 'in', key:'cat'},
+      {id:'catI', type:'chips', label:'Woher?', opts:MONEY_IN, def:'taschengeld', show:v => v.type === 'in', key:'cat'},
+      {id:'note', type:'text', label:'Notiz', opt:true, ph:'z. B. Neue Stollenschuhe'}
+    ],
+    tabOf:() => 'uebersicht',
+    validate:v => !(money(v.amount) > 0) ? 'Gib einen Betrag größer als 0 ein.' : '',
+    save: (v, it) => addOrUpd('money', it, {type:v.type === 'in' ? 'in' : 'out', amount:money(v.amount), cat:v.cat || 'sonst', date:v.date || todayISO(), note:(v.note || '').trim()}), del:true},
+  saving:{ col:'goals', area:'leben', title:it => it ? 'Sparziel bearbeiten' : 'Neues Sparziel',
+    fields:[
+      {id:'title', type:'text', label:'Wofür?', req:true, ph:'z. B. Neue Fußballschuhe'},
+      {id:'target', type:'money', label:'Zielbetrag', req:true, half:'a'},
+      {id:'saved', type:'money', label:'Schon gespart', opt:true, half:'b'},
+      {id:'deadline', type:'date', label:'Bis wann?', opt:true}
+    ],
+    tabOf:() => 'sparziele',
+    validate:v => !(money(v.target) > 0) ? 'Gib einen Zielbetrag ein.' : '',
+    save: (v, it) => addOrUpd('goals', it, {kind:'spar', title:v.title.trim(), target:money(v.target), saved:money(v.saved) || 0, deadline:v.deadline || ''}), del:true}
 };
 function formFor(col, item){
-  if(col === 'notes') return 'note'; if(col === 'exams') return 'exam'; if(col === 'decisions') return 'decision'; if(col === 'matches') return 'match';
-  if(col === 'entries'){ const t = item && item.type; if(t === 'prompt') return 'prompt'; if(t === 'erfolg') return 'win'; if(t === 'regel' || t === 'erkenntnis' || t === 'fehler') return 'rule'; return 'areaNote'; }
+  if(col === 'notes') return 'note'; if(col === 'exams') return 'exam'; if(col === 'decisions') return 'decision'; if(col === 'matches') return 'match'; if(col === 'money') return 'txn';
+  if(col === 'goals') return item && item.kind === 'spar' ? 'saving' : 'goal';
+  if(col === 'entries'){ const t = item && item.type; if(t === 'prompt') return 'prompt'; if(t === 'erfolg') return 'win'; if(t === 'grade') return 'grade'; if(t === 'projekt') return 'project'; return 'areaNote'; }
   return null;
 }
 
@@ -1968,12 +1575,13 @@ function fieldHTML(f, val){
     case 'area': inner = lab + `<textarea class="txt${f.code ? ' code' : ''}" id="${id}" rows="${f.rows || 3}" placeholder="${esc(f.ph || '')}">${esc(val ?? '')}</textarea>`; break;
     case 'date': inner = lab + `<input class="txt" id="${id}" type="date" value="${esc(val || '')}" data-input="fdate">`; break;
     case 'time': inner = lab + `<input class="txt" id="${id}" type="time" value="${esc(val || '')}" data-input="fdate">`; break;
+    case 'money': inner = lab + `<div class="money-in"><input class="txt" id="${id}" type="text" inputmode="decimal" value="${val == null || val === '' ? '' : esc(String(val).replace('.', ','))}" placeholder="0,00" autocomplete="off"><span>€</span></div>`; break;
     case 'number': inner = lab + `<input class="txt" id="${id}" type="number" inputmode="numeric" min="${f.min ?? ''}" max="${f.max ?? ''}" value="${esc(val ?? '')}">`; break;
     case 'range': inner = lab + `<div class="rng"><input type="range" id="${id}" min="${f.min}" max="${f.max}" step="${f.step || 1}" value="${esc(val ?? f.min)}" data-out="o_${f.id}" data-suffix="${esc(f.suffix || '')}"><output id="o_${f.id}">${esc(val ?? f.min)}${esc(f.suffix || '')}</output></div>`; break;
     case 'seg': inner = span + `<div><div class="seg" id="${id}" role="group">${f.opts.map(([k, l]) => `<button type="button" data-action="fseg" data-v="${k}" aria-pressed="${k === val}">${esc(l)}</button>`).join('')}<span class="pill-bg"></span></div></div>`; break;
-    case 'chips': inner = span + `<div class="chips wrapy" id="${id}">${f.opts.map(([k, l]) => `<button type="button" class="chip" data-action="fchip" data-v="${k}" aria-pressed="${k === val}">${esc(l)}</button>`).join('')}</div>`; break;
+    case 'chips': inner = span + `<div class="chips wrapy" id="${id}">${(f.dyn ? f.dyn(FS && FS.item) : f.opts).map(([k, l]) => `<button type="button" class="chip" data-action="fchip" data-v="${k}" aria-pressed="${k === val}">${esc(l)}</button>`).join('')}</div>`; break;
     case 'toggle': inner = `<button type="button" class="tgl" id="${id}" data-action="ftgl" aria-pressed="${!!val}"><span><b>${esc(f.label)}</b>${f.hint ? `<br><small class="faint">${esc(f.hint)}</small>` : ''}</span><span class="sw"></span></button>`; break;
-    case 'goals': { const g = Array.isArray(val) ? val : []; inner = span + `<div class="multi" id="${id}">${Array.from({length:f.n}, (_, i) => `<div class="mi" data-goal><span>${i+1}</span><input class="txt" id="f_goal_${i}" type="text" value="${esc(g[i] ? g[i].text : '')}" placeholder="${i === 0 ? esc(f.ph || '') : ''}" autocomplete="off"><button type="button" class="icon-btn sm gok" data-action="ftgl" aria-pressed="${!!(g[i] && g[i].ok)}" aria-label="Ziel erreicht" title="Erreicht?">${ic('check', 2.4)}</button></div>`).join('')}</div><small class="faint">Haken setzen, wenn du das Ziel im Spiel erfüllt hast.</small>`; break; }
+    case 'goals': { const g = Array.isArray(val) ? val : []; inner = span + `<div class="multi" id="${id}">${Array.from({length:f.n}, (_, i) => `<div class="mi" data-goal><span>${i+1}</span><input class="txt" id="f_goal_${i}" type="text" value="${esc(g[i] ? g[i].text : '')}" placeholder="${i === 0 ? esc(f.ph || '') : ''}" autocomplete="off"><button type="button" class="icon-btn sm gok" data-action="ftgl" aria-pressed="${!!(g[i] && g[i].ok)}" aria-label="Ziel erreicht" title="Erreicht?">${ic('check', 2.4)}</button></div>`).join('')}</div>${f.hint2 ? `<small class="faint">${esc(f.hint2)}</small>` : ''}`; break; }
   }
   return `<div class="field" data-f="${f.id}">${inner}</div>`;
 }
@@ -2044,6 +1652,10 @@ async function formSave(){
     closeSheet();
     if(id && form.col) S.fresh = {col:form.col, id};
     toast(item ? 'Aktualisiert' : 'Gespeichert');
+    if(!item && S.view === 'home' && form.area){
+      const tile = $(`#tiles [data-id="${form.area}"]`);
+      if(tile){ const r = tile.getBoundingClientRect(); flyGhost({from, to:r, html:esc(cut(v.text || v.title || v.opponent || v.subject || v.note || 'Eintrag', 32))}); setTimeout(() => { const b = tile.getBoundingClientRect(); FX.burst(b.left + b.width/2, b.top + b.height/2, {n:22, speed:5, ring:40}); anim(tile, [{transform:'scale(1)'}, {transform:'scale(1.06)'}, {transform:'scale(1)'}], {duration:520, easing:EASE.spring || 'ease-out'}); }, 640); }
+    }
     if(!item && S.view !== 'home'){
       const tab = form.tabOf ? form.tabOf(v) : curTab(S.view);
       const label = cut(v.text || v.title || v.question || v.opponent || v.subject || 'Eintrag', 38);
@@ -2184,7 +1796,7 @@ function homeCounts(){
   return {
     notizen: openNotes().length, lernen: S.exams.filter(e => e.date >= todayISO()).length,
     videos: S.videos.filter(v => !v.status || v.status === 'done').length,
-    denken: S.decisions.length + E('denken'), mental: E('mental'), fussball: S.matches.length + E('fussball'), ki: E('ki'), leben: E('leben')
+    denken: lifeGoals().filter(g => g.status !== 'erreicht').length, mental: E('mental'), fussball: S.matches.length, ki: E('ki'), leben: 0
   };
 }
 function tileDesc(s){
@@ -2192,9 +1804,12 @@ function tileDesc(s){
   if(s.id === 'notizen'){ const n = openNotes().filter(x => x.kind === 'anstehend' && x.date).sort((a, b) => a.date.localeCompare(b.date))[0]; if(n) return 'Als Nächstes: ' + n.text; }
   if(s.id === 'lernen'){ const ex = S.exams.filter(e => e.date >= todayISO()).sort((a, b) => a.date.localeCompare(b.date))[0]; if(ex){ const d = daysBetween(todayISO(), ex.date); return `${ex.subject} ${d === 0 ? 'heute' : d === 1 ? 'morgen' : 'in ' + d + ' Tagen'}`; } }
   if(s.id === 'videos'){ const q = S.videos.filter(v => v.status && v.status !== 'done').length; if(q) return `${q} ${plural(q, 'Video wartet', 'Videos warten')} auf Zusammenfassung`; }
-  if(s.id === 'fussball' && S.matches.length){ const m = [...S.matches].sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0]; return `Letztes Spiel: Note ${m.rating || '–'} gegen ${m.opponent}`; }
+  if(s.id === 'fussball' && S.matches.length){ const m = [...S.matches].sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0]; return `Letztes Spiel: ${m.rating || '–'}/10 gegen ${m.opponent}`; }
+  if(s.id === 'denken'){ const g = lifeGoals().filter(x => x.status !== 'erreicht').map(x => [x, (x.steps || []).find(st => !st.ok)]).find(x => x[1]); if(g) return 'Nächste Etappe: ' + g[1].text; }
+  if(s.id === 'leben' && S.money.length){ const m = monthSum(todayISO().slice(0, 7)); return `${new Date().toLocaleDateString('de-DE', {month:'long'})}: ${euro2(m.out)} ausgegeben`; }
   return s.desc;
 }
+const monthSum = ym => { const L = S.money.filter(t => (t.date || '').startsWith(ym)); const sum = k => L.filter(t => t.type === k).reduce((a, t) => a + (t.amount || 0), 0); return {in:sum('in'), out:sum('out'), list:L}; };
 function renderHome(){
   $('#hDate').textContent = fmtLong(todayISO());
   const g = $('#greet'), gt = greeting();
@@ -2217,7 +1832,7 @@ function renderEvening(){
     : `<span class="pill acc">${ic('clock')}ca. 4 Minuten</span><span class="pill">10 Fragen</span>${st ? `<span class="pill">${ic('flame')}Serie: ${st}</span>` : ''}`;
   $('#evBody').innerHTML = `<p class="eyebrow">${done ? 'Heute erledigt' : (h >= 17 || h < 4) ? 'Jetzt ist ein guter Moment' : 'Für heute Abend'}</p>
     <h2>${done ? 'Abendbericht <span class="serif-it gt">erledigt.</span>' : 'Dein <span class="serif-it gt">Abendbericht</span>'}</h2>
-    <p>${done ? (r.tomorrow && r.tomorrow[0] ? 'Morgen zuerst: ' + esc(r.tomorrow[0]) : 'Gut gemacht. Schau dir Verlauf und Trends an.') : (r ? 'Du hast schon angefangen. Mach weiter, wo du aufgehört hast.' : 'Zehn kurze Fragen, jede mit eigener Animation: Stimmung, Energie, Schlaf, Gewinne, Gelerntes, Training, Gewohnheiten und dein Fokus für morgen.')}</p>
+    <p>${done ? (r.tomorrow && r.tomorrow[0] ? 'Morgen zuerst: ' + esc(r.tomorrow[0]) : 'Gut gemacht. Schau dir Verlauf und Trends an.') : (r ? 'Du hast schon angefangen. Mach weiter, wo du aufgehört hast.' : 'Wie war dein Tag? Zehn kurze Fragen.')}</p>
     <div class="ev-meta">${pills}</div>
     <div class="ev-cta"><button class="btn primary lg" data-action="startReport">${done ? 'Ansehen oder ändern' : r ? 'Weitermachen' : 'Bericht starten'}${ic('arrow', 2.2)}</button><button class="btn" data-action="open" data-id="abend" data-tab="trends">${ic('chart')}Verlauf & Trends</button></div>`;
   const stars = $('#evStars');
@@ -2229,15 +1844,15 @@ function renderTiles(){
     `<button class="tile" data-action="open" data-id="${s.id}" aria-label="${esc(s.title)} öffnen">${S.ready && c[s.id] ? `<span class="count">${c[s.id]}</span>` : ''}<span class="ic">${ic(s.id)}</span><span><span class="t">${esc(s.title)}</span><span class="desc">${esc(cut(tileDesc(s), 52))}</span></span><span class="go">${ic('arrow', 2)}</span></button>`).join('');
   $('#secHint').textContent = S.offline ? 'Offline' : '';
 }
+const QUICK = [
+  ['note','calendar','Termin'], ['match','fussball','Spiel'], ['grade','lernen','Note'], ['txn','leben','Ausgabe'],
+  ['win','trophy','Moment'], ['goal','denken','Ziel'], ['project','ki','Projekt'], ['note','bulb','Idee', {kind:'irgendwann', cat:'idee'}]
+];
 function renderDaily(){
-  const pool = [];
-  [['mental','mental','techniken'],['modelle','denken','modelle'],['fussball','fussball','prinzipien'],['ki','ki','grundlagen'],['denkfehler','denken','denkfehler']].forEach(([k, s, t]) => LIB[k].forEach((x, i) => pool.push({k, s, t, i})));
-  const day = Math.floor((Date.now() - new Date().getTimezoneOffset()*6e4) / 864e5);
-  const p = pool[(day * 7) % pool.length], it = LIB[p.k][p.i];
-  const d = $('#daily');
-  d.dataset.action = 'openCard'; d.dataset.id = p.s; d.dataset.tab = p.t; d.dataset.card = p.k + '-' + p.i;
-  d.innerHTML = `<span class="eyebrow">Gedanke des Tages · ${esc(sec(p.s).title)}</span><strong>${esc(it.t)}</strong><span>${esc(it.s)}</span>`;
+  const d = $('#daily'); if(d.dataset.built) return; d.dataset.built = '1';
+  d.innerHTML = `<div class="sec-h" style="margin-top:28px"><h3>Schnell eintragen</h3></div><div class="qgrid">${QUICK.map(([f, i, l], n) => `<button class="qbtn" data-action="quick" data-n="${n}"><span class="qi">${ic(i)}</span><span>${esc(l)}</span></button>`).join('')}</div>`;
 }
+ACT.quick = el => { const q = QUICK[+el.dataset.n]; if(q) openForm(q[0], null, q[3] ? {vals:q[3]} : {}); };
 function homeEntrance(){
   if(reduce) return;
   hold(1600);
@@ -2249,7 +1864,7 @@ function homeEntrance(){
   anim($('.ev-sun'), [{transform:'translateY(70px) scale(.7)', opacity:0}, {transform:'translateY(-22px)', opacity:1}], {duration:1600, delay:500, easing:EASE.out, fill:'backwards'});
   anim($('.sec-h'), [{opacity:0}, {opacity:1}], {duration:600, delay:520});
   $$('#tiles .tile').forEach((t, i) => anim(t, [{opacity:0, transform:`translateY(56px) rotateX(-32deg) scale(.9)`, filter:'blur(8px)'}, {opacity:1, transform:'none', filter:'blur(0px)'}], {duration:950, delay:560 + i*65, easing:EASE.out}));
-  anim($('#daily'), [{opacity:0, transform:'translateY(24px)'}, {opacity:1, transform:'none'}], {duration:800, delay:1050});
+  $$('#daily .qbtn').forEach((b, i) => anim(b, [{opacity:0, transform:'translateY(22px) scale(.9)'}, {opacity:1, transform:'none'}], {duration:700, delay:1000 + i*45, easing:EASE.out}));
 }
 $('#tiles').addEventListener('pointermove', e => { const t = e.target.closest('.tile'); if(!t) return; const r = t.getBoundingClientRect(); t.style.setProperty('--mx', (e.clientX - r.left) + 'px'); t.style.setProperty('--my', (e.clientY - r.top) + 'px'); }, {passive:true});
 
@@ -2283,46 +1898,23 @@ Object.assign(ACT, {
   }
 });
 
-function libCard(libKey, i, x, o={}){
-  const key = libKey + '-' + i, open = S.open.has(key), kick = [];
-  if(x.ev) kick.push(`<span class="ev"><span class="evbar">${[1,2,3].map(n => `<s class="${n <= x.ev ? 'on' : ''}"></s>`).join('')}</span>${EV[x.ev]}</span>`);
-  if(x.cat && o.showCat) kick.push(`<span>${esc(x.cat)}</span>`);
-  const b = [];
-  if(x.why) b.push(blk('Worum es geht', `<p>${esc(x.why)}</p>`));
-  if(x.idea) b.push(blk('Kernidee', `<p>${esc(x.idea)}</p>`));
-  if(x.what) b.push(blk('Was passiert', `<p>${esc(x.what)}</p>`));
-  if(x.body) b.push(blk('Das Wichtigste', `<p>${esc(x.body)}</p>`));
-  if(x.when) b.push(blk('Wann nutzen', `<p>${esc(x.when)}</p>`));
-  if(x.spot) b.push(blk('Woran du es erkennst', `<p>${esc(x.spot)}</p>`));
-  if(x.fix) b.push(blk('Gegenmittel', `<p>${esc(x.fix)}</p>`));
-  if(x.steps) b.push(blk("So geht's", `<ol>${x.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`));
-  if(x.cues) b.push(blk('Worauf du achtest', `<ul>${x.cues.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`));
-  if(x.trap) b.push(`<div class="example trap"><b>Typischer Fehler</b>${esc(x.trap)}</div>`);
-  if(x.drill) b.push(`<div class="example drill"><b>Übung</b>${esc(x.drill)}</div>`);
-  if(x.ex) b.push(`<div class="example"><b>Beispiel</b>${esc(x.ex)}</div>`);
-  if(x.note) b.push(`<p class="note">${esc(x.note)}</p>`);
-  return `<article class="card${open ? ' open' : ''}" data-key="${key}"><button class="card-h" data-action="card" aria-expanded="${open}"><span class="ct">${kick.length ? `<span class="kick">${kick.join('')}</span>` : ''}<span class="h">${esc(x.t)}</span><span class="s">${esc(x.s)}</span></span><span class="chev">${ic('chev', 2)}</span></button><div class="card-b"><div><div class="inner">${b.join('')}</div></div></div></article>`;
-}
-function libList(libKey, fname, cats, intro=''){
-  const all = LIB[libKey], f = S.f[fname] || 'Alle';
-  const counts = {Alle:all.length}; cats.forEach(c => { counts[c] = all.filter(x => x.cat === c).length; });
-  const list = all.map((x, i) => [x, i]).filter(([x]) => f === 'Alle' || x.cat === f);
-  return `${intro}<div class="toolbar">${chipRow(fname, [['Alle','Alle'], ...cats.map(c => [c, c])], f, counts)}</div><div class="list lib">${list.map(([x, i]) => libCard(libKey, i, x, {showCat:f === 'Alle'})).join('')}</div>`;
-}
 function entryRow(e, o={}){
   const meta = [];
   if(o.label) meta.push(`<span class="pill acc">${esc(o.label)}</span>`);
   meta.push(`<span>${esc(o.date ? fmtDay(o.date) : fmtStamp(e.createdAt))}</span>`);
   return `<div class="row${freshCls('entries', e.id)}${o.cls ? ' ' + o.cls : ''}" data-row="${e.id}"><button class="rt" data-action="edit" data-col="entries" data-id="${e.id}">${e.title ? `<span><b>${esc(e.title)}</b></span><small>${esc(e.text)}</small>` : `<span>${esc(e.text)}</span>`}<span class="meta">${meta.join('')}</span></button><button class="del" data-action="del" data-col="entries" data-id="${e.id}" aria-label="Löschen">${ic('x')}</button></div>`;
 }
-function areaNotes(area, prompt, filter){
+function areaNotes(area){
   if(!S.ready) return loading();
-  const all = S.entries.filter(e => e.area === area && (filter ? filter(e) : e.type === 'notiz' || !e.type)).sort(byNew);
-  if(!all.length) return empty('edit', 'Noch keine Notizen', prompt, `<button class="btn primary" data-action="fab" data-form="areaNote">${ic('plus')}Notiz schreiben</button>`);
-  const q = (S.q[area] || '').trim().toLowerCase();
-  const list = q ? all.filter(e => ((e.title || '') + ' ' + e.text).toLowerCase().includes(q)) : all;
-  const p = paged('n-' + area, list);
-  return `${all.length > 5 ? `<div class="toolbar"><input class="search" id="q_${area}" type="search" placeholder="Notizen durchsuchen" value="${esc(S.q[area] || '')}" data-input="search" data-name="${area}" autocomplete="off"></div>` : ''}${list.length ? `<div class="list">${p.items.map(e => entryRow(e)).join('')}</div>${p.more}` : empty('search', 'Nichts gefunden', 'Probier einen anderen Suchbegriff.')}`;
+  const types = AREA_NOTE_TYPES[area] || [], tl = k => (types.find(t => t[0] === k) || [0, ''])[1];
+  const all = S.entries.filter(e => e.area === area && isNote(e)).sort(byNew);
+  if(!all.length) return empty('edit', 'Noch keine Notizen', types.length ? types.map(t => t[1]).join(' · ') : '', `<button class="btn primary" data-action="fab" data-form="areaNote">${ic('plus')}Notiz</button>`);
+  const f = S.f['nt-' + area] || 'alle', q = (S.q[area] || '').trim().toLowerCase(), counts = {alle:all.length};
+  types.forEach(([k]) => { counts[k] = all.filter(e => e.type === k).length; });
+  let list = f === 'alle' ? all : all.filter(e => e.type === f);
+  if(q) list = list.filter(e => ((e.title || '') + ' ' + e.text).toLowerCase().includes(q));
+  const p = paged('n-' + area, list), used = types.filter(([k]) => counts[k]);
+  return `<div class="toolbar">${all.length > 6 ? `<input class="search" id="q_${area}" type="search" placeholder="Suchen" value="${esc(S.q[area] || '')}" data-input="search" data-name="${area}" autocomplete="off">` : ''}${used.length > 1 ? chipRow('nt-' + area, [['alle','Alle'], ...used], f, counts) : ''}</div>${list.length ? `<div class="list">${p.items.map(e => entryRow(e, {label:tl(e.type)})).join('')}</div>${p.more}` : empty('search', 'Nichts gefunden', '')}`;
 }
 
 /* ---------------- Notizbuch ---------------- */
@@ -2346,14 +1938,14 @@ function noteRow(n){
 function notesUpcoming(){
   const today = todayISO(), ws = weekStart(today), nws = addDays(ws, 7), nwe = addDays(ws, 14);
   const list = openNotes().filter(n => n.kind === 'anstehend').sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.time || '99').localeCompare(b.time || '99'));
-  if(!list.length) return `<div style="margin-top:14px">${empty('calendar', 'Nichts Anstehendes', 'Trag Termine, Abgaben, Spiele oder Aufgaben ein. Das Nächste erscheint auch auf der Startseite.')}</div>`;
+  if(!list.length) return `<div style="margin-top:14px">${empty('calendar', 'Nichts Anstehendes', 'Termine, Abgaben, Spiele, Aufgaben.')}</div>`;
   const grp = n => !n.date ? 'none' : n.date < today ? 'late' : n.date === today ? 'today' : n.date === addDays(today, 1) ? 'tomorrow' : n.date < nws ? 'week' : n.date < nwe ? 'next' : 'later';
   const G = [['late','Überfällig'],['today','Heute'],['tomorrow','Morgen'],['week','Diese Woche'],['next','Nächste Woche'],['later','Später'],['none','Ohne Datum']];
   return `<div style="margin-top:6px">${G.map(([k, l]) => { const it = list.filter(n => grp(n) === k); return it.length ? `<div class="group-h${k === 'late' ? ' late' : ''}">${l} <b>${it.length}</b></div><div class="list">${it.map(noteRow).join('')}</div>` : ''; }).join('')}</div>`;
 }
 function notesSomeday(){
   const all = openNotes().filter(n => n.kind !== 'anstehend').sort(byNew);
-  if(!all.length) return `<div style="margin-top:14px">${empty('star', 'Noch leer', 'Hier landet alles, was du irgendwann machen willst: Bücher, Filme, Projekte, Ideen und Dinge zum Ausprobieren.')}</div>`;
+  if(!all.length) return `<div style="margin-top:14px">${empty('star', 'Noch leer', 'Bücher, Filme, Ideen, Projekte.')}</div>`;
   const f = S.f.someday || 'alle', counts = {alle:all.length};
   SOMEDAY_CATS.forEach(([k]) => { counts[k] = all.filter(n => n.cat === k).length; });
   const opts = [['alle','Alle'], ...SOMEDAY_CATS.filter(([k]) => counts[k])];
@@ -2364,7 +1956,7 @@ function notesSomeday(){
 }
 function notesDone(){
   const list = S.notes.filter(n => n.done).sort((a, b) => (b.doneAt || '').localeCompare(a.doneAt || ''));
-  if(!list.length) return empty('check', 'Noch nichts erledigt', 'Hake Einträge ab, dann landen sie hier. Was älter als 30 Tage ist, kannst du mit einem Tipp aufräumen.');
+  if(!list.length) return empty('check', 'Noch nichts erledigt', '');
   const old = list.filter(n => n.doneAt && daysBetween(n.doneAt.slice(0, 10), todayISO()) > 30), p = paged('done', list);
   return `${old.length ? `<div class="insight">${ic('info')}<div>${old.length} ${plural(old.length, 'erledigter Eintrag ist', 'erledigte Einträge sind')} älter als 30 Tage.<div class="actions" style="margin-top:10px"><button class="btn sm" data-action="cleanup">${ic('trash')}Aufräumen</button></div></div></div>` : ''}<div class="list" style="margin-top:12px">${p.items.map(noteRow).join('')}</div>${p.more}`;
 }
@@ -2402,14 +1994,13 @@ Object.assign(ACT, {
   }
 });
 
-/* ---------------- Lernlabor ---------------- */
+/* ---------------- Schule ---------------- */
 function R_lernen(){
   const t = curTab('lernen');
-  if(t === 'methoden') return `<div class="insight">${ic('bulb')}<div>Die Balken zeigen, wie gut eine Methode erforscht ist: stark belegt, gut belegt oder Erfahrungswert. Fang mit den ersten beiden an, die bringen am meisten.</div></div><div class="list lib" style="margin-top:14px">${LIB.lernen.map((x, i) => libCard('lernen', i, x)).join('')}</div>`;
   if(t === 'pruefungen') return examsHTML();
+  if(t === 'noten') return gradesHTML();
   if(t === 'fokus') return FT.html();
-  if(t === 'feynman') return feynmanHTML();
-  return rulesHTML();
+  return areaNotes('lernen');
 }
 function planSessions(date, prev=[]){
   const today = todayISO(), D = daysBetween(today, date);
@@ -2423,13 +2014,13 @@ function examCard(e){
   const done = ses.filter(s => s.done).length, pct = ses.length ? Math.round(done / ses.length * 100) : 0;
   return `<div class="exam${freshCls('exams', e.id)}"><div class="exam-h"><div class="ct"><span class="eyebrow">${esc(fmtLong(e.date))}</span><h4>${esc(e.subject)}${e.title ? ` <span class="muted" style="font-weight:500">· ${esc(e.title)}</span>` : ''}</h4></div><div class="cd${d >= 0 && d <= 3 ? ' hot' : ''}"><b>${d < 0 ? '✓' : d}</b><span>${d < 0 ? 'vorbei' : d === 1 ? 'Tag' : 'Tage'}</span></div></div>
     ${ses.length ? `<div class="mrow" style="margin-top:14px"><div class="meter" style="flex:1"><i style="width:${pct}%"></i></div><span class="faint num" style="font-size:13px">${done}/${ses.length}</span></div><div class="sess">${ses.map((s, i) => { const cls = s.done ? 'on' : s.date === today ? 'today' : s.date < today ? 'past' : ''; return `<button class="ses ${cls}" data-action="toggleSes" data-id="${e.id}" data-i="${i}"><span class="box">${ic('check', 3)}</span><span class="d">${esc(s.date === today ? 'Heute' : fmtDay(s.date))}</span><span class="l">${esc(s.label)}</span></button>`; }).join('')}</div>` : ''}
-    <div class="actions"><button class="btn sm" data-action="edit" data-col="exams" data-id="${e.id}">${ic('edit')}Bearbeiten</button><button class="btn sm ghost" data-action="del" data-col="exams" data-id="${e.id}">${ic('trash')}Löschen</button></div></div>`;
+    <div class="actions">${d < 0 ? (examGrade(e) ? `<span class="pill acc">Note ${esc(examGrade(e).fields.label)}</span>` : `<button class="btn sm primary" data-action="examGrade" data-id="${e.id}">${ic('plus')}Note eintragen</button>`) : ''}<button class="btn sm" data-action="edit" data-col="exams" data-id="${e.id}">${ic('edit')}Bearbeiten</button><button class="btn sm ghost" data-action="del" data-col="exams" data-id="${e.id}">${ic('trash')}Löschen</button></div></div>`;
 }
 function examsHTML(){
   if(!S.ready) return loading();
   const today = todayISO(), up = S.exams.filter(e => e.date >= today).sort((a, b) => a.date.localeCompare(b.date)), past = S.exams.filter(e => e.date < today).sort((a, b) => b.date.localeCompare(a.date));
-  if(!S.exams.length) return empty('calendar', 'Keine Prüfung geplant', 'Trag deine nächste Klassenarbeit ein. Das Dashboard verteilt die Wiederholungen rückwärts bis zum Termin, so wie es die Lernforschung empfiehlt.', `<button class="btn primary" data-action="fab" data-form="exam">${ic('plus')}Prüfung eintragen</button>`);
-  return `${up.length ? `<div class="list">${up.map(examCard).join('')}</div>` : empty('check', 'Keine anstehenden Prüfungen', 'Alle eingetragenen Prüfungen liegen hinter dir.')}${past.length ? `<button class="fold" data-action="foldPast" aria-expanded="${!!S.showPast}">Vergangene Prüfungen (${past.length})${ic('chev')}</button>${S.showPast ? `<div class="list" style="margin-top:10px">${past.map(examCard).join('')}</div>` : ''}` : ''}`;
+  if(!S.exams.length) return empty('calendar', 'Keine Prüfung geplant', 'Wiederholungen werden automatisch bis zum Termin verteilt.', `<button class="btn primary" data-action="fab" data-form="exam">${ic('plus')}Prüfung eintragen</button>`);
+  return `${up.length ? `<div class="list">${up.map(examCard).join('')}</div>` : empty('check', 'Keine anstehenden Prüfungen', '')}${past.length ? `<button class="fold" data-action="foldPast" aria-expanded="${!!S.showPast}">Vergangene Prüfungen (${past.length})${ic('chev')}</button>${S.showPast ? `<div class="list" style="margin-top:10px">${past.map(examCard).join('')}</div>` : ''}` : ''}`;
 }
 Object.assign(ACT, {
   toggleSes: async el => {
@@ -2441,37 +2032,22 @@ Object.assign(ACT, {
   },
   foldPast: () => { S.showPast = !S.showPast; rerenderBody(false); }
 });
-function rulesHTML(){
+const examGrade = e => grades().find(g => g.fields.subject === e.subject && g.fields.date === e.date);
+ACT.examGrade = el => { const e = find('exams', el.dataset.id); if(e) openForm('grade', null, {vals:{subject:e.subject, date:e.date, title:e.title, kind:'ka'}}); };
+const gFmt = (v, sc) => sc === 'punkte' ? de(v, 1) : de(v, 2);
+function gradesHTML(){
   if(!S.ready) return loading();
-  const all = S.entries.filter(e => e.area === 'lernen' && e.type !== 'feynman').sort(byNew);
-  if(!all.length) return empty('bulb', 'Noch keine eigenen Regeln', 'Was funktioniert bei dir beim Lernen, was nicht? Halte Regeln, Erkenntnisse und Fehler fest, die du nicht wiederholen willst.', `<button class="btn primary" data-action="fab" data-form="rule">${ic('plus')}Regel notieren</button>`);
-  const f = S.f.rule || 'alle', counts = {alle:all.length};
-  RULE_TYPES.forEach(([k]) => { counts[k] = all.filter(e => e.type === k).length; });
-  const list = f === 'alle' ? all : all.filter(e => e.type === f), p = paged('rules', list);
-  return `<div class="toolbar">${chipRow('rule', [['alle','Alle'], ...RULE_TYPES], f, counts)}</div><div class="list">${p.items.map(e => entryRow(e, {label:(RULE_TYPES.find(r => r[0] === e.type) || [0, 'Notiz'])[1]})).join('')}</div>${p.more}`;
-}
-function feynmanHTML(){
-  const past = S.entries.filter(e => e.area === 'lernen' && e.type === 'feynman').sort(byNew);
-  return `<div class="panel"><h4>Erklär es in eigenen Worten</h4><p>Schreib auf, wie du ein Thema einem Mitschüler erklären würdest, ohne Buch. Claude prüft wie ein strenger Lehrer, was stimmt, was fehlt und was falsch ist. Danach bekommst du drei Prüfungsfragen.</p>
-    <div class="form" style="margin-top:16px"><div class="frow"><div class="field"><label for="fy_topic">Thema</label><input class="txt" id="fy_topic" placeholder="z. B. Fotosynthese" autocomplete="off"></div><div class="field"><label for="fy_subj">Fach</label><input class="txt" id="fy_subj" list="dl_fysubj" placeholder="z. B. Biologie" autocomplete="off"><datalist id="dl_fysubj">${SUBJECTS.map(s => `<option value="${esc(s)}"></option>`).join('')}</datalist></div></div>
-    <div class="field"><label for="fy_text">Deine Erklärung</label><textarea class="txt" id="fy_text" rows="7" placeholder="Aus dem Kopf. Lieber einfach als perfekt."></textarea></div>
-    <div><button class="btn primary" data-action="feynman">${ic('ki')}Von Claude prüfen lassen</button></div></div>
-    <div id="fyOut">${S.fyLast ? fyBox(S.fyLast) : ''}</div></div>
-    ${past.length ? `<div class="group-h">Bisherige Checks <b>${past.length}</b></div><div class="list">${past.map(feynCard).join('')}</div>` : ''}`;
-}
-function feynResultHTML(r){
-  const sc = clamp(Math.round(Number(r.score) || 0), 0, 100), L = a => Array.isArray(a) ? a.filter(Boolean) : [];
-  return `<div class="score-row"><b>${sc}</b><div class="meter"><i style="width:${sc}%"></i></div><span class="muted" style="font-size:13px">Verständnis</span></div>
-    ${L(r.good).length ? blk('Das sitzt', `<ul>${L(r.good).map(x => `<li>${esc(x)}</li>`).join('')}</ul>`) : ''}
-    ${L(r.gaps).length ? blk('Lücken', `<ul>${L(r.gaps).map(x => `<li>${esc(x)}</li>`).join('')}</ul>`) : ''}
-    ${L(r.errors).length ? `<div class="example trap"><b>Fehler</b>${L(r.errors).map(x => esc(x)).join('<br>')}</div>` : ''}
-    ${L(r.questions).length ? blk('Prüfungsfragen', `<ol>${L(r.questions).map(x => `<li>${esc(x)}</li>`).join('')}</ol>`) : ''}
-    ${r.tip ? `<div class="example drill"><b>Nächster Schritt</b>${esc(r.tip)}</div>` : ''}`;
-}
-function feynCard(e){
-  const key = 'fy-' + e.id, open = S.open.has(key), r = (e.fields && e.fields.result) || {};
-  return `<article class="card${open ? ' open' : ''}${freshCls('entries', e.id)}" data-key="${key}"><button class="card-h" data-action="card" aria-expanded="${open}"><span class="rate">${r.score != null ? Math.round(r.score) : '–'}</span><span class="ct"><span class="kick">${e.fields && e.fields.subject ? `<span class="pill">${esc(e.fields.subject)}</span>` : ''}<span class="faint">${fmtStamp(e.createdAt)}</span></span><span class="h">${esc(e.title || 'Feynman-Check')}</span></span><span class="chev">${ic('chev', 2)}</span></button>
-    <div class="card-b"><div><div class="inner">${blk('Meine Erklärung', `<p>${esc(e.text)}</p>`)}${feynResultHTML(r)}<div class="actions"><button class="btn sm ghost" data-action="del" data-col="entries" data-id="${e.id}">${ic('trash')}Löschen</button></div></div></div></div></article>`;
+  const all = grades();
+  if(!all.length) return empty('lernen', 'Noch keine Noten', 'Klassenarbeiten, Tests, Mündlich, Referate.', `<button class="btn primary" data-action="fab" data-form="grade">${ic('plus')}Note eintragen</button>`);
+  const sc = lastScale(), L = all.filter(g => g.fields.scale === sc), avg = a => a.reduce((s, g) => s + g.fields.value, 0) / a.length;
+  const subs = [...new Set(L.map(g => g.fields.subject))].map(name => { const a = L.filter(g => g.fields.subject === name).sort((x, y) => (y.fields.date || '').localeCompare(x.fields.date || '')); return {name, a, avg:avg(a)}; }).sort((x, y) => sc === 'punkte' ? y.avg - x.avg : x.avg - y.avg);
+  const good = v => sc === 'punkte' ? v >= 10 : v <= 2.5, bad = v => sc === 'punkte' ? v < 5 : v > 4;
+  const pct = v => sc === 'punkte' ? v / 15 * 100 : (6 - v) / 5 * 100;
+  const other = all.length - L.length;
+  return `<div class="stats"><div class="st"><span>Schnitt ${sc === 'punkte' ? '(Punkte)' : ''}</span><b>${gFmt(avg(L), sc)}</b></div><div class="st"><span>Noten</span><b>${L.length}</b><small>in ${subs.length} ${plural(subs.length, 'Fach', 'Fächern')}</small></div></div>
+    <div class="list" style="margin-top:14px">${subs.map(x => { const key = 'sub-' + x.name, open = S.open.has(key); return `<article class="card${open ? ' open' : ''}" data-key="${esc(key)}"><button class="card-h" data-action="card" aria-expanded="${open}"><span class="rate${bad(x.avg) ? ' bad' : good(x.avg) ? ' good' : ''}">${Number(x.avg.toFixed(sc === 'punkte' ? 1 : 2)).toLocaleString('de-DE')}</span><span class="ct"><span class="h">${esc(x.name)}</span><span class="gchips">${x.a.slice(0, 8).map(g => `<i>${esc(g.fields.label)}</i>`).join('')}</span><span class="meter thin"><i style="width:${clamp(pct(x.avg), 3, 100)}%"></i></span></span><span class="chev">${ic('chev', 2)}</span></button>
+      <div class="card-b"><div><div class="inner"><div class="list">${x.a.map(g => `<div class="row"><button class="rt" data-action="edit" data-col="entries" data-id="${g.id}"><span><b>${esc(g.fields.label)}</b> · ${esc((GRADE_KINDS.find(k => k[0] === g.fields.kind) || [0, ''])[1])}${g.title ? ' · ' + esc(g.title) : ''}</span><span class="meta"><span>${esc(fmtDay(g.fields.date))}</span></span></button><button class="del" data-action="del" data-col="entries" data-id="${g.id}" aria-label="Löschen">${ic('x')}</button></div>`).join('')}</div></div></div></div></article>`; }).join('')}</div>
+    <p class="note">Ungewichteter Schnitt${other ? ` · ${other} ${plural(other, 'Note', 'Noten')} in anderer Skala ausgeblendet` : ''}.</p>`;
 }
 
 /* ---------------- Video-Bibliothek ---------------- */
@@ -2479,7 +2055,7 @@ function R_videos(){
   const add = videoAddHTML();
   if(!S.ready) return add + loading();
   const vids = S.videos, done = vids.filter(v => !v.status || v.status === 'done'), queue = vids.filter(v => v.status && v.status !== 'done');
-  if(!vids.length) return add + `<div style="margin-top:16px">${empty('videos', 'Noch keine Videos', 'Füg oben einen YouTube-Link ein. Du kannst mir den Link auch im Chat schicken, dann landet die Zusammenfassung hier.')}</div>`;
+  if(!vids.length) return add + `<div style="margin-top:16px">${empty('videos', 'Noch keine Videos', 'YouTube-Link oben einfügen.')}</div>`;
   const f = S.f.vtopic || 'Alle', q = (S.q.videos || '').trim().toLowerCase();
   const used = TOPICS.filter(([t]) => done.some(v => v.topic === t)), star = done.filter(v => v.star).length;
   const opts = [['Alle','Alle'], ...(star ? [['__star','Vertiefen']] : []), ...(queue.length ? [['__queue','Warteschlange']] : []), ...used.map(([t]) => [t, t])];
@@ -2491,7 +2067,7 @@ function R_videos(){
   const p = paged('videos', list);
   const qb = queue.length && f !== '__queue' ? `<div class="list" style="margin-top:14px">${queue.slice(0, 3).map(queueCard).join('')}</div>` : '';
   return add + qb + `<div class="toolbar" style="margin-top:18px"><input class="search" id="q_videos" type="search" placeholder="Titel, Kanal, Inhalt durchsuchen" value="${esc(S.q.videos || '')}" autocomplete="off" data-input="search" data-name="videos">${chipRow('vtopic', opts, f, counts, colors)}</div>` +
-    (list.length ? `<div class="list">${p.items.map(v => v.status && v.status !== 'done' ? queueCard(v) : videoCard(v)).join('')}</div>${p.more}` : empty('search', 'Nichts gefunden', 'Probier eine andere Suche oder einen anderen Filter.'));
+    (list.length ? `<div class="list">${p.items.map(v => v.status && v.status !== 'done' ? queueCard(v) : videoCard(v)).join('')}</div>${p.more}` : empty('search', 'Nichts gefunden', ''));
 }
 function videoCard(v){
   const key = 'v-' + v.id, open = S.open.has(key), applied = v.applied || [];
@@ -2524,20 +2100,49 @@ Object.assign(ACT, {
 });
 CHG.vnote = async el => { const v = find('videos', el.dataset.id); if(!v || (v.note || '') === el.value) return; try{ await dbUpd('videos', v.id, {note:el.value}); toast('Gedanken gespeichert'); }catch(e){ failed(e); } };
 
-/* ---------------- Denkwerkzeuge ---------------- */
+/* ---------------- Ziele ---------------- */
 function R_denken(){
   const t = curTab('denken');
-  if(t === 'modelle') return libList('modelle', 'mcat', ['Entscheiden','Strategie','Probleme lösen','Menschen']);
-  if(t === 'denkfehler') return `<div class="insight">${ic('info')}<div>Denkfehler passieren allen, auch sehr klugen Menschen. Es geht nicht darum, sie nie zu machen, sondern sie zu erkennen, bevor du entscheidest.</div></div><div class="list lib" style="margin-top:14px">${LIB.denkfehler.map((x, i) => libCard('denkfehler', i, x)).join('')}</div>`;
   if(t === 'entscheidungen') return decisionsHTML();
-  return areaNotes('denken', 'Eigene Strategien und Denkweisen, die dir aufgefallen sind.');
+  return goalsHTML(t === 'erreicht');
 }
+function goalsHTML(reached){
+  if(!S.ready) return loading();
+  const list = lifeGoals().filter(g => (g.status === 'erreicht') === reached).sort((a, b) => reached ? (b.doneAt || '').localeCompare(a.doneAt || '') : (a.deadline || '9999').localeCompare(b.deadline || '9999'));
+  if(!list.length) return reached ? empty('trophy', 'Noch nichts erreicht', 'Erreichte Ziele landen hier.') : empty('denken', 'Kein aktives Ziel', 'Ein Ziel, ein paar Etappen. Mehr braucht es nicht.', `<button class="btn primary" data-action="fab" data-form="goal">${ic('plus')}Ziel setzen</button>`);
+  const f = S.f.garea || 'alle', counts = {alle:list.length};
+  GOAL_AREAS.forEach(([k]) => { counts[k] = list.filter(g => g.area === k).length; });
+  const used = GOAL_AREAS.filter(([k]) => counts[k]), L = f === 'alle' ? list : list.filter(g => g.area === f);
+  return `${used.length > 1 ? `<div class="toolbar">${chipRow('garea', [['alle','Alle'], ...used], f, counts)}</div>` : ''}<div class="list">${L.map(goalCard).join('')}</div>`;
+}
+function goalCard(g){
+  const key = 'g-' + g.id, open = S.open.has(key), st = g.steps || [], done = st.filter(x => x.ok).length, today = todayISO();
+  const next = st.find(x => !x.ok), area = (GOAL_AREAS.find(a => a[0] === g.area) || [0, ''])[1], reached = g.status === 'erreicht';
+  const dl = g.deadline ? daysBetween(today, g.deadline) : null;
+  return `<article class="card goal${open ? ' open' : ''}${freshCls('goals', g.id)}" data-key="${key}"><button class="card-h" data-action="card" aria-expanded="${open}"><span class="ring" style="--p:${st.length ? done / st.length * 100 : reached ? 100 : 0}"><b>${st.length ? done + '/' + st.length : reached ? '✓' : '–'}</b></span><span class="ct"><span class="kick">${area ? `<span class="pill">${esc(area)}</span>` : ''}${reached ? `<span class="pill ok">${ic('check')}Erreicht ${g.doneAt ? esc(fmtShort(g.doneAt.slice(0, 10))) : ''}</span>` : dl != null ? `<span class="${dl < 0 ? 'late' : dl <= 14 ? 'due' : 'faint'}">${dl < 0 ? 'Überfällig' : dl === 0 ? 'Heute' : 'noch ' + dl + ' ' + plural(dl, 'Tag', 'Tage')}</span>` : ''}</span><span class="h">${esc(g.title)}</span>${next && !reached ? `<span class="s">Als Nächstes: ${esc(next.text)}</span>` : ''}</span><span class="chev">${ic('chev', 2)}</span></button>
+    <div class="card-b"><div><div class="inner">${st.length ? `<div class="applied">${st.map((x, i) => `<button class="chk" data-action="gstep" data-id="${g.id}" data-i="${i}" aria-pressed="${!!x.ok}"><span class="box">${ic('check', 3)}</span><span class="l">${esc(x.text)}</span></button>`).join('')}</div>` : ''}${g.why ? `<div class="example"><b>Warum</b>${esc(g.why)}</div>` : ''}
+      <div class="actions">${reached ? `<button class="btn sm" data-action="greach" data-id="${g.id}">${ic('refresh')}Wieder aktiv</button>` : `<button class="btn sm primary" data-action="greach" data-id="${g.id}">${ic('trophy')}Erreicht</button>`}<button class="btn sm" data-action="edit" data-col="goals" data-id="${g.id}">${ic('edit')}Bearbeiten</button><button class="btn sm ghost" data-action="del" data-col="goals" data-id="${g.id}" aria-label="Löschen">${ic('trash')}</button></div></div></div></div></article>`;
+}
+Object.assign(ACT, {
+  gstep: async el => {
+    const g = find('goals', el.dataset.id); if(!g) return;
+    const st = (g.steps || []).map(x => Object.assign({}, x)), i = +el.dataset.i; if(!st[i]) return;
+    st[i].ok = !st[i].ok; el.setAttribute('aria-pressed', String(st[i].ok));
+    if(st[i].ok){ const r = $('.box', el).getBoundingClientRect(); FX.burst(r.left + 12, r.top + 12, {n:16, speed:4, ring:22}); if(st.every(x => x.ok)) toast('Alle Etappen geschafft. Ziel erreicht?', 'trophy'); }
+    try{ await dbUpd('goals', g.id, {steps:st}); }catch(e){ failed(e); }
+  },
+  greach: async el => {
+    const g = find('goals', el.dataset.id); if(!g) return; const on = g.status !== 'erreicht';
+    if(on){ const r = el.getBoundingClientRect(); FX.burst(r.left + r.width/2, r.top + r.height/2, {n:40, speed:7, ring:60}); FX.embers({left:0, top:innerHeight*.35, width:innerWidth, height:innerHeight*.65}, {n:80}); hold(900); }
+    try{ await dbUpd('goals', g.id, {status:on ? 'erreicht' : 'aktiv', doneAt:on ? nowISO() : null}); toast(on ? 'Ziel erreicht' : 'Wieder aktiv', on ? 'trophy' : 'refresh'); }catch(e){ failed(e); }
+  }
+});
 function decisionsHTML(){
   if(!S.ready) return loading();
   const list = [...S.decisions].sort(byNew), today = todayISO();
-  if(!list.length) return empty('denken', 'Noch keine Entscheidung', 'Wichtige Entscheidungen strukturiert durchdenken und später auswerten. So lernst du aus deinen Entscheidungen und nicht nur aus Ergebnissen.', `<button class="btn primary" data-action="fab" data-form="decision">${ic('plus')}Entscheidung durchdenken</button>`);
+  if(!list.length) return empty('denken', 'Noch keine Entscheidung', 'Durchdenken, entscheiden, später auswerten.', `<button class="btn primary" data-action="fab" data-form="decision">${ic('plus')}Entscheidung</button>`);
   const due = list.filter(d => !d.outcome && d.reviewOn && d.reviewOn <= today).length;
-  return `${due ? `<div class="insight">${ic('clock')}<div>${due} ${plural(due, 'Entscheidung ist', 'Entscheidungen sind')} reif für die Auswertung. Was ist passiert, und war die Entscheidung mit dem Wissen von damals gut?</div></div>` : ''}<div class="list" style="margin-top:${due ? 14 : 0}px">${list.map(decisionCard).join('')}</div>`;
+  return `${due ? `<div class="insight">${ic('clock')}<div>${due} ${plural(due, 'Entscheidung', 'Entscheidungen')} zum Auswerten fällig.</div></div>` : ''}<div class="list" style="margin-top:${due ? 14 : 0}px">${list.map(decisionCard).join('')}</div>`;
 }
 function devilHTML(dv){
   if(!dv) return '';
@@ -2549,21 +2154,20 @@ function decisionCard(d){
   const status = d.outcome ? `<span class="pill ok">${ic('check')}Ausgewertet</span>` : d.reviewOn && d.reviewOn <= today ? '<span class="pill warn">Auswerten fällig</span>' : d.reviewOn ? `<span class="pill">Auswerten am ${esc(fmtShort(d.reviewOn))}</span>` : '';
   const F = (h, v) => v ? blk(h, `<p>${esc(v)}</p>`) : '';
   return `<article class="card${open ? ' open' : ''}${freshCls('decisions', d.id)}" data-key="${key}"><button class="card-h" data-action="card" aria-expanded="${open}"><span class="ct"><span class="kick">${status}<span class="faint">${d.reversible === 'nein' ? 'Schwer umkehrbar' : 'Umkehrbar'} · ${fmtStamp(d.createdAt)}</span></span><span class="h">${esc(d.question)}</span>${d.choice ? `<span class="s">${esc(cut(d.choice, 130))}</span>` : ''}</span><span class="chev">${ic('chev', 2)}</span></button>
-    <div class="card-b"><div><div class="inner">${F('Optionen', d.options)}${F('Und was passiert danach?', d.second)}${F('Pre-Mortem', d.premortem)}${F('Meine Wahl', d.choice)}${F('Meine Erwartung', d.expect)}
+    <div class="card-b"><div><div class="inner">${F('Optionen', d.options)}${F('Meine Wahl', d.choice)}${F('Was schiefgehen könnte', d.premortem)}${F('Erwartung', d.expect)}
       ${d.outcome ? `<div class="example drill"><b>Was passiert ist</b>${esc(d.outcome)}</div>${d.lesson ? `<div class="example"><b>Lektion</b>${esc(d.lesson)}</div>` : ''}` : ''}
       <div id="dv_${d.id}">${devilHTML(d.devil)}</div>
-      <div class="actions">${!d.outcome ? `<button class="btn sm primary" data-action="review" data-id="${d.id}">${ic('check')}Auswerten</button>` : ''}<button class="btn sm" data-action="devil" data-id="${d.id}">${ic('ki')}${d.devil ? 'Neue Gegenargumente' : 'Gegenargumente von Claude'}</button><button class="btn sm" data-action="edit" data-col="decisions" data-id="${d.id}">${ic('edit')}Bearbeiten</button><button class="btn sm ghost" data-action="del" data-col="decisions" data-id="${d.id}" aria-label="Löschen">${ic('trash')}</button></div>
+      <div class="actions">${!d.outcome ? `<button class="btn sm primary" data-action="review" data-id="${d.id}">${ic('check')}Auswerten</button>` : ''}<button class="btn sm" data-action="devil" data-id="${d.id}">${ic('ki')}${d.devil ? 'Neue Gegenargumente' : 'Gegenargumente'}</button><button class="btn sm" data-action="edit" data-col="decisions" data-id="${d.id}">${ic('edit')}Bearbeiten</button><button class="btn sm ghost" data-action="del" data-col="decisions" data-id="${d.id}" aria-label="Löschen">${ic('trash')}</button></div>
     </div></div></div></article>`;
 }
 ACT.review = el => { const d = find('decisions', el.dataset.id); if(d) openForm('review', d); };
 
-/* ---------------- Mental Game ---------------- */
+/* ---------------- Mental ---------------- */
 function R_mental(){
   const t = curTab('mental');
-  if(t === 'techniken') return libList('mental', 'tcat', ['Druck','Fokus','Selbstvertrauen','Rückschläge']);
   if(t === 'routinen') return routinesHTML();
   if(t === 'beweise') return winsHTML();
-  return areaNotes('mental', 'Was dir unter Druck hilft, Routinen vor Spielen, Erkenntnisse nach schwierigen Momenten.', e => e.type !== 'erfolg');
+  return areaNotes('mental');
 }
 function routinesHTML(){
   const key = S.f.routine || 'spieltag', phases = routineOf(key), ck = store.get('rt-' + key, {});
@@ -2571,7 +2175,7 @@ function routinesHTML(){
   return `<div class="toolbar"><div><div class="seg" id="rtSeg">${Object.entries(ROUTINES).map(([k, r]) => `<button type="button" data-action="rtSel" data-v="${k}" aria-pressed="${k === key}">${esc(r.label)}</button>`).join('')}<span class="pill-bg"></span></div></div></div>
     <div class="panel routine"><div class="score-row" style="margin-top:0"><b class="num">${done}/${total}</b><div class="meter"><i style="width:${total ? done / total * 100 : 0}%"></i></div><button class="btn sm ghost" data-action="rtReset">${ic('refresh')}Neu starten</button></div>
     ${phases.map(([h, items], p) => `<div class="phase"><h5>${esc(h)}</h5><div class="list">${items.map((it, i) => `<div class="mrow"><button class="chk" data-action="rtCheck" data-k="${p}-${i}" aria-pressed="${!!ck[p + '-' + i]}"><span class="box">${ic('check', 3)}</span><span class="l">${esc(it)}</span></button><button class="del" data-action="rtDel" data-p="${p}" data-i="${i}" aria-label="Punkt entfernen">${ic('x')}</button></div>`).join('')}</div><div class="add-line"><input class="txt" id="rt_new_${p}" placeholder="Punkt hinzufügen" autocomplete="off" maxlength="80"><button class="btn sm" data-action="rtAdd" data-p="${p}" aria-label="Hinzufügen">${ic('plus')}</button></div></div>`).join('')}
-    </div><p class="note">Häkchen werden auf diesem Gerät gemerkt. Eigene Punkte werden in deinem Profil gespeichert.</p>`;
+    </div>`;
 }
 async function saveRoutine(key, phases){ const r = Object.assign({}, prefs().routines || {}); r[key] = phases; try{ await savePrefs({routines:r}); }catch(e){ failed(e); } }
 Object.assign(ACT, {
@@ -2592,9 +2196,8 @@ function winsHTML(){
   if(!S.ready) return loading();
   const d = e => (e.fields && e.fields.date) || (e.createdAt || '').slice(0, 10);
   const all = S.entries.filter(e => e.area === 'mental' && e.type === 'erfolg').sort((a, b) => d(b).localeCompare(d(a)));
-  const intro = `<div class="insight">${ic('trophy')}<div>Selbstvertrauen entsteht aus Belegen. Sammle hier deine starken Momente und lies vor wichtigen Spielen oder Prüfungen drei davon.</div></div>`;
-  if(!all.length) return intro + `<div style="margin-top:14px">${empty('trophy', 'Noch leer', 'Halte deinen nächsten starken Moment fest: ein gutes Spiel, eine gute Note oder ein Moment, in dem du dich überwunden hast.', `<button class="btn primary" data-action="fab" data-form="win">${ic('plus')}Moment festhalten</button>`)}</div>`;
-  return intro + `<div class="actions">${all.length >= 3 ? `<button class="btn" data-action="winRandom">${ic('dice')}Zieh drei Beweise</button>` : ''}</div><div class="list" style="margin-top:14px">${all.map(e => entryRow(e, {label:(WIN_CATS.find(c => c[0] === e.cat) || [0, 'Moment'])[1], date:d(e)})).join('')}</div>`;
+  if(!all.length) return empty('trophy', 'Noch leer', 'Gutes Spiel, gute Note, dich überwunden: festhalten. Vor wichtigen Tagen liest du drei davon.', `<button class="btn primary" data-action="fab" data-form="win">${ic('plus')}Moment festhalten</button>`);
+  return `${all.length >= 3 ? `<div class="actions" style="margin-top:0"><button class="btn" data-action="winRandom">${ic('dice')}Zieh drei Beweise</button></div>` : ''}<div class="list" style="margin-top:14px">${all.map(e => entryRow(e, {label:(WIN_CATS.find(c => c[0] === e.cat) || [0, 'Moment'])[1], date:d(e)})).join('')}</div>`;
 }
 ACT.winRandom = () => {
   const rows = $$('#vbody [data-row]'); if(rows.length < 3) return;
@@ -2605,20 +2208,17 @@ ACT.winRandom = () => {
   setTimeout(() => rows.forEach(r => { r.style.opacity = ''; }), 6000);
 };
 
-/* ---------------- Spielintelligenz ---------------- */
+/* ---------------- Fußball ---------------- */
 function R_fussball(){
-  const t = curTab('fussball');
-  if(t === 'prinzipien') return libList('fussball', 'fcat', ['Mit Ball','Ohne Ball','Gegen den Ball','Kopf','Körper']);
-  if(t === 'spiele') return matchesHTML();
-  return areaNotes('fussball', 'Trainingsfokus, Feedback vom Trainer, Dinge, die dir bei Profis aufgefallen sind.');
+  return curTab('fussball') === 'spiele' ? matchesHTML() : areaNotes('fussball');
 }
 function matchesHTML(){
   if(!S.ready) return loading();
   const list = [...S.matches].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  if(!list.length) return empty('fussball', 'Noch keine Spiele eingetragen', 'Trag nach jedem Spiel Note, Spielminuten und Prozessziele ein. Mit der Zeit siehst du, wie du dich entwickelst.', `<button class="btn primary" data-action="fab" data-form="match">${ic('plus')}Spiel eintragen</button>`);
+  if(!list.length) return empty('fussball', 'Noch keine Spiele', 'Note, Minuten, Prozessziele. Der Verlauf entsteht von selbst.', `<button class="btn primary" data-action="fab" data-form="match">${ic('plus')}Spiel eintragen</button>`);
   const n = list.length, rated = list.filter(m => m.rating), avg = rated.length ? rated.reduce((s, m) => s + m.rating, 0) / rated.length : 0, mins = list.reduce((s, m) => s + (m.minutes || 0), 0);
   const goals = list.flatMap(m => m.goals || []), gp = goals.length ? Math.round(goals.filter(g => g.ok).length / goals.length * 100) : null;
-  return `<div class="stats"><div class="st"><span>Spiele</span><b>${n}</b></div><div class="st"><span>Ø Note</span><b>${rated.length ? de(avg, 1) : '–'}</b></div><div class="st"><span>Spielminuten</span><b>${de(mins)}</b></div><div class="st"><span>Prozessziele erreicht</span><b>${gp == null ? '–' : gp + ' %'}</b></div></div>
+  return `<div class="stats"><div class="st"><span>Spiele</span><b>${n}</b></div><div class="st"><span>Ø Note</span><b>${rated.length ? de(avg, 1) : '–'}</b></div><div class="st"><span>Spielminuten</span><b>${de(mins)}</b></div><div class="st"><span>Prozessziele</span><b>${gp == null ? '–' : gp + ' %'}</b></div></div>
     ${rated.length >= 2 ? ratingChart(rated.slice(0, 12).reverse()) : ''}
     <div class="list" style="margin-top:14px">${list.map(matchCard).join('')}</div>`;
 }
@@ -2630,48 +2230,93 @@ function matchCard(m){
       <div class="actions"><button class="btn sm" data-action="edit" data-col="matches" data-id="${m.id}">${ic('edit')}Bearbeiten</button><button class="btn sm ghost" data-action="del" data-col="matches" data-id="${m.id}">${ic('trash')}Löschen</button></div></div></div></div></article>`;
 }
 
-/* ---------------- KI-Werkstatt ---------------- */
+/* ---------------- KI & Projekte ---------------- */
 function R_ki(){
   const t = curTab('ki');
-  if(t === 'grundlagen') return libList('ki', 'kcat', ['Prompting','Workflows','Prüfen','Lernen mit KI']);
-  if(t === 'vorlagen') return `<div class="insight">${ic('bulb')}<div>Ersetze die Teile in eckigen Klammern. Unter jeder Vorlage steht, warum sie funktioniert.</div></div><div class="list" style="margin-top:14px">${LIB.vorlagen.map((x, i) => promptCard({id:'tpl' + i, title:x.t, cat:x.cat, text:x.text, fields:{why:x.why}}, true)).join('')}</div>`;
-  if(t === 'bibliothek') return promptsHTML();
-  return promptCoachHTML();
+  if(t === 'prompts') return promptsHTML();
+  if(t === 'projekte') return projectsHTML();
+  return areaNotes('ki');
 }
+function projectsHTML(){
+  if(!S.ready) return loading();
+  const all = S.entries.filter(e => e.area === 'ki' && e.type === 'projekt').sort(byNew);
+  if(!all.length) return empty('ki', 'Noch kein Projekt', 'Ideen, laufende Projekte und was du gebaut hast.', `<button class="btn primary" data-action="fab" data-form="project">${ic('plus')}Projekt anlegen</button>`);
+  const st = e => (e.fields || {}).status || 'idee';
+  return [['laeuft','Läuft'],['idee','Ideen'],['fertig','Fertig']].map(([k, l]) => { const it = all.filter(e => st(e) === k); return it.length ? `<div class="group-h">${l} <b>${it.length}</b></div><div class="list">${it.map(projectRow).join('')}</div>` : ''; }).join('');
+}
+function projectRow(e){
+  const f = e.fields || {}, s = f.status || 'idee', cat = (PROJECT_AREAS.find(c => c[0] === e.cat) || [0, ''])[1];
+  const nx = s === 'idee' ? ['laeuft', 'Starten', 'play'] : s === 'laeuft' ? ['fertig', 'Fertig', 'check'] : null;
+  return `<div class="row${s === 'fertig' ? ' done' : ''}${freshCls('entries', e.id)}"><span class="pdot ${s}"></span><button class="rt" data-action="edit" data-col="entries" data-id="${e.id}"><span><b>${esc(e.title)}</b></span>${f.next && s !== 'fertig' ? `<small>→ ${esc(f.next)}</small>` : ''}<span class="meta">${cat ? `<span class="pill">${esc(cat)}</span>` : ''}<span>${fmtStamp(e.createdAt)}</span></span></button>${nx ? `<button class="btn sm" data-action="pstat" data-id="${e.id}" data-v="${nx[0]}">${ic(nx[2])}${nx[1]}</button>` : ''}</div>`;
+}
+ACT.pstat = async el => {
+  const e = find('entries', el.dataset.id); if(!e) return; const v = el.dataset.v;
+  const r = el.getBoundingClientRect(); FX.burst(r.left + r.width/2, r.top + r.height/2, {n:v === 'fertig' ? 36 : 18, speed:5, ring:30});
+  hold(500);
+  try{ await dbUpd('entries', e.id, {fields:Object.assign({}, e.fields, {status:v})}); toast(v === 'fertig' ? 'Projekt fertig' : 'Projekt läuft', v === 'fertig' ? 'trophy' : 'play'); }catch(err){ failed(err); }
+};
 function promptCard(p, tpl){
   const key = (tpl ? 'tpl-' : 'p-') + p.id, open = S.open.has(key), cat = (PROMPT_CATS.find(c => c[0] === p.cat) || [0, ''])[1];
   return `<article class="card${open ? ' open' : ''}${tpl ? '' : freshCls('entries', p.id)}" data-key="${key}"><button class="card-h" data-action="card" aria-expanded="${open}"><span class="ct"><span class="kick">${cat ? `<span class="pill">${esc(cat)}</span>` : ''}<span class="faint">${tpl ? 'Vorlage' : fmtStamp(p.createdAt)}</span></span><span class="h">${esc(p.title)}</span><span class="s">${esc(cut(p.text, 110))}</span></span><span class="chev">${ic('chev', 2)}</span></button>
-    <div class="card-b"><div><div class="inner"><div class="copybox" id="pt_${esc(p.id)}">${esc(p.text)}</div>${p.fields && p.fields.why ? `<div class="example"><b>Warum er funktioniert</b>${esc(p.fields.why)}</div>` : ''}
+    <div class="card-b"><div><div class="inner"><div class="copybox" id="pt_${esc(p.id)}">${esc(p.text)}</div>
       <div class="actions"><button class="btn sm primary" data-action="copy" data-src="pt_${esc(p.id)}">${ic('copy')}Kopieren</button>${tpl ? `<button class="btn sm" data-action="tplSave" data-i="${esc(p.id.slice(3))}">${ic('plus')}In meine Prompts</button>` : `<button class="btn sm" data-action="edit" data-col="entries" data-id="${p.id}">${ic('edit')}Bearbeiten</button><button class="btn sm ghost" data-action="del" data-col="entries" data-id="${p.id}" aria-label="Löschen">${ic('trash')}</button>`}</div></div></div></div></article>`;
 }
 function promptsHTML(){
   if(!S.ready) return loading();
-  const all = S.entries.filter(e => e.area === 'ki').sort(byNew);
-  if(!all.length) return empty('ki', 'Noch keine eigenen Prompts', 'Speichere Prompts, die gut funktioniert haben. Übernimm eine Vorlage oder lass dir im Prompt-Coach einen verbessern.', `<button class="btn primary" data-action="fab" data-form="prompt">${ic('plus')}Prompt speichern</button>`);
+  const all = S.entries.filter(e => e.area === 'ki' && e.type === 'prompt').sort(byNew);
+  if(!all.length) return empty('ki', 'Noch keine Prompts', 'Speichere Prompts, die gut funktioniert haben.', `<button class="btn primary" data-action="fab" data-form="prompt">${ic('plus')}Prompt speichern</button>`);
   const f = S.f.pcat || 'alle', q = (S.q.ki || '').trim().toLowerCase(), counts = {alle:all.length};
   PROMPT_CATS.forEach(([k]) => { counts[k] = all.filter(e => e.cat === k).length; });
   let list = f === 'alle' ? all : all.filter(e => e.cat === f);
   if(q) list = list.filter(e => ((e.title || '') + ' ' + e.text).toLowerCase().includes(q));
   return `<div class="toolbar"><input class="search" id="q_ki" type="search" placeholder="Prompts durchsuchen" value="${esc(S.q.ki || '')}" data-input="search" data-name="ki" autocomplete="off">${chipRow('pcat', [['alle','Alle'], ...PROMPT_CATS.filter(([k]) => counts[k])], f, counts)}</div>${list.length ? `<div class="list">${list.map(e => promptCard(e, false)).join('')}</div>` : empty('search', 'Nichts gefunden', 'Probier eine andere Suche.')}`;
 }
-ACT.tplSave = async el => {
-  const x = LIB.vorlagen[+el.dataset.i]; if(!x) return;
-  try{ const id = await dbAdd('entries', {area:'ki', type:'prompt', title:x.t, cat:x.cat, text:x.text, fields:{why:x.why}, createdAt:nowISO()}); S.fresh = {col:'entries', id}; const tb = $('#tabs [data-tab="bibliothek"]'); if(tb) flyGhost({from:el.getBoundingClientRect(), to:tb.getBoundingClientRect(), html:esc(x.t)}); toast('In deine Prompts übernommen'); }catch(e){ failed(e); }
-};
-function promptCoachHTML(){
-  return `<div class="panel"><h4>Prompt-Coach</h4><p>Füg einen Prompt ein, den du benutzen willst. Claude bewertet ihn, zeigt die Schwächen und schreibt eine bessere Version. Dazu erklärt er, warum sie besser ist.</p>
-    <div class="form" style="margin-top:16px"><div class="field"><label for="pc_text">Dein Prompt</label><textarea class="txt code" id="pc_text" rows="6" placeholder="z. B. Erklär mir Bruchrechnung"></textarea></div>
-    <div class="field"><label for="pc_goal">Was willst du erreichen? <small>optional</small></label><input class="txt" id="pc_goal" placeholder="z. B. Ich will mich auf eine Mathe-Arbeit vorbereiten" autocomplete="off"></div>
-    <div><button class="btn primary" data-action="promptCoach">${ic('ki')}Prompt verbessern</button></div></div><div id="pcOut">${S.pcLast ? pcResultHTML(S.pcLast) : ''}</div></div>`;
-}
-
-/* ---------------- Geld & Leben ---------------- */
+/* ---------------- Geld ---------------- */
 function R_leben(){
   const t = curTab('leben');
-  if(t === 'grundlagen') return libList('leben', 'lcat', ['Geld','Verträge & Recht','Business','Kommunikation']);
   if(t === 'rechner') return calcHTML();
-  return areaNotes('leben', 'Was du über Geld, Verträge, Business oder Kommunikation gelernt hast.');
+  if(t === 'sparziele') return savingsHTML();
+  return moneyHTML();
 }
+const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const ymLabel = ym => MONTHS_DE[+ym.slice(5, 7) - 1] + ' ' + ym.slice(0, 4);
+function moneyHTML(){
+  if(!S.ready) return loading();
+  if(!S.money.length) return empty('leben', 'Noch keine Buchungen', 'Taschengeld, Job, Ausgaben. Zwei Sekunden pro Eintrag.', `<button class="btn primary" data-action="fab" data-form="txn">${ic('plus')}Buchung</button>`);
+  const months = [...new Set(S.money.map(t => (t.date || '').slice(0, 7)))].sort().reverse(), cur = todayISO().slice(0, 7);
+  if(!months.includes(cur)) months.unshift(cur);
+  const ym = months.includes(S.f.ym) ? S.f.ym : cur, m = monthSum(ym), net = m.in - m.out;
+  const total = S.money.reduce((a, t) => a + (t.type === 'in' ? 1 : -1) * (t.amount || 0), 0);
+  const cats = MONEY_OUT.map(([k, l]) => [l, m.list.filter(t => t.type === 'out' && t.cat === k).reduce((a, t) => a + t.amount, 0)]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]);
+  const max = cats.length ? cats[0][1] : 1;
+  const L = [...m.list].sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdAt || '').localeCompare(a.createdAt || ''));
+  const catL = t => ((t.type === 'in' ? MONEY_IN : MONEY_OUT).find(c => c[0] === t.cat) || [0, 'Sonstiges'])[1];
+  return `<div class="toolbar">${chipRow('ym', months.slice(0, 6).map(x => [x, ymLabel(x).replace(/ \d+$/, x.slice(0, 4) === cur.slice(0, 4) ? '' : ' ' + x.slice(2, 4))]), ym)}</div>
+    <div class="stats three"><div class="st"><span>Rein</span><b class="amt in">${euro2(m.in)}</b></div><div class="st"><span>Raus</span><b class="amt out">${euro2(m.out)}</b></div><div class="st"><span>Saldo</span><b class="amt ${net >= 0 ? 'in' : 'out'}">${net > 0 ? '+' : ''}${euro2(net)}</b></div></div>
+    ${cats.length ? `<div class="panel" style="margin-top:12px"><h4 style="font-size:15px;margin-bottom:12px">Ausgaben nach Kategorie</h4>${cats.map(([l, v]) => `<div class="catbar"><span>${esc(l)}</span><div class="meter"><i style="width:${Math.max(4, v / max * 100)}%"></i></div><b>${euro2(v)}</b></div>`).join('')}</div>` : ''}
+    ${L.length ? `<div class="group-h">Buchungen <b>${L.length}</b></div><div class="list">${L.map(t => `<div class="row${freshCls('money', t.id)}"><button class="rt" data-action="edit" data-col="money" data-id="${t.id}"><span>${esc(t.note || catL(t))}</span><span class="meta"><span>${esc(fmtDay(t.date))}</span>${t.note ? `<span class="pill">${esc(catL(t))}</span>` : ''}</span></button><b class="amt ${t.type}">${t.type === 'in' ? '+' : '−'}${euro2(t.amount)}</b><button class="del" data-action="del" data-col="money" data-id="${t.id}" aria-label="Löschen">${ic('x')}</button></div>`).join('')}</div>` : `<div style="margin-top:14px">${empty('leben', 'Keine Buchungen in diesem Monat', '')}</div>`}
+    <p class="note">Bilanz seit Beginn: <b class="amt ${total >= 0 ? 'in' : 'out'}">${total > 0 ? '+' : ''}${euro2(total)}</b></p>`;
+}
+function savingsHTML(){
+  if(!S.ready) return loading();
+  const list = S.goals.filter(g => g.kind === 'spar').sort(byNew);
+  if(!list.length) return empty('star', 'Kein Sparziel', 'Wofür sparst du? Mit Zielbetrag siehst du, wie nah du dran bist.', `<button class="btn primary" data-action="fab" data-form="saving">${ic('plus')}Sparziel</button>`);
+  return `<div class="list">${list.map(g => { const p = g.target ? Math.min(100, (g.saved || 0) / g.target * 100) : 0, done = p >= 100; const dl = g.deadline ? daysBetween(todayISO(), g.deadline) : null;
+    return `<div class="exam${freshCls('goals', g.id)}"><div class="exam-h"><div class="ct"><span class="eyebrow">${done ? 'Geschafft' : dl != null ? (dl < 0 ? 'Termin vorbei' : 'noch ' + dl + ' ' + plural(dl, 'Tag', 'Tage')) : 'Sparziel'}</span><h4>${esc(g.title)}</h4></div><div class="cd${done ? '' : ''}"><b>${Math.round(p)}<small style="font-size:14px">%</small></b></div></div>
+      <div class="mrow" style="margin-top:14px"><div class="meter" style="flex:1"><i style="width:${p}%"></i></div></div>
+      <p class="muted" style="margin:10px 0 0;font-size:14px"><b class="amt in">${euro2(g.saved || 0)}</b> von ${euro2(g.target)}${!done ? ` · fehlen ${euro2(g.target - (g.saved || 0))}` : ''}</p>
+      ${!done ? `<div class="add-line"><input class="txt" id="sp_${g.id}" inputmode="decimal" placeholder="Betrag einzahlen" autocomplete="off"><button class="btn sm primary" data-action="spAdd" data-id="${g.id}">${ic('plus')}Einzahlen</button></div>` : ''}
+      <div class="actions"><button class="btn sm" data-action="edit" data-col="goals" data-id="${g.id}">${ic('edit')}Bearbeiten</button><button class="btn sm ghost" data-action="del" data-col="goals" data-id="${g.id}" aria-label="Löschen">${ic('trash')}</button></div></div>`; }).join('')}</div>`;
+}
+ACT.spAdd = async el => {
+  const g = find('goals', el.dataset.id), inp = $('#sp_' + el.dataset.id); if(!g || !inp) return;
+  const v = money(inp.value); if(!(v > 0)){ shake(inp); return; }
+  const saved = Math.round(((g.saved || 0) + v) * 100) / 100, r = el.getBoundingClientRect();
+  inp.value = '';
+  FX.burst(r.left + r.width/2, r.top + r.height/2, {n:22, speed:5, ring:30});
+  if(saved >= g.target) FX.embers({left:0, top:innerHeight*.35, width:innerWidth, height:innerHeight*.65}, {n:80});
+  try{ await dbUpd('goals', g.id, {saved}); toast(saved >= g.target ? 'Sparziel erreicht' : `${euro2(v)} eingezahlt`, saved >= g.target ? 'trophy' : 'check'); }catch(e){ failed(e); }
+};
 
 /* =====================================================================
    DIAGRAMME (SVG, in echter Pixelbreite gezeichnet)
@@ -2820,7 +2465,7 @@ const FT = (() => {
     </div>
     <div class="stats" style="margin-top:12px"><div class="st"><span>Heute</span><b>${mins}<small>Min</small></b></div><div class="st"><span>Blöcke heute</span><b>${n}</b></div><div class="st"><span>Diese Woche</span><b>${weekMinutes()}<small>Min</small></b></div><div class="st"><span>Tage mit Fokus</span><b>${focusStreak()}<small>in Folge</small></b></div></div>
     ${weekBars()}
-    <p class="note">Der Timer läuft weiter, wenn du den Bereich wechselst. Ein Block zählt, sobald er vollständig ist. Brichst du nach mindestens 5 Minuten ab, wird die Zeit trotzdem gespeichert.</p>`;
+    <p class="note">Läuft weiter, wenn du den Bereich wechselst.</p>`;
   }
   function paint(){
     const l = left(), t = $('#ftTime'), p = $('#ftPrg');
@@ -2947,80 +2592,6 @@ async function askText(prompt, o={}){
 const aiBox = title => `<div class="ai busy"><div class="ai-h"><span class="badge">${ic('ki')}</span><strong>${esc(title)}</strong><small>Claude</small></div><div class="ai-body"><span class="thinking"><i><b></b><b></b><b></b></i>Claude denkt nach …</span></div></div>`;
 const errBox = msg => `<div class="insight" style="border-color:rgba(255,90,78,.3);background:rgba(255,90,78,.06)">${ic('info')}<div>${esc(msg)}</div></div>`;
 
-/* ---------- Feynman-Check ---------- */
-const fyBox = f => `<div class="ai"><div class="ai-h"><span class="badge">${ic('ki')}</span><strong>Feynman-Check: ${esc(f.topic)}</strong><small>gespeichert</small></div>${feynResultHTML(f.res)}</div>`;
-ACT.feynman = async el => {
-  const tEl = $('#fy_topic'), xEl = $('#fy_text'), topic = tEl.value.trim(), subj = $('#fy_subj').value.trim(), text = xEl.value.trim();
-  if(!topic){ shake(tEl); tEl.focus(); return; }
-  if(text.length < 40){ shake(xEl); xEl.focus(); toast('Schreib ein paar Sätze mehr, damit Claude etwas prüfen kann.', 'info'); return; }
-  const out = $('#fyOut'); out.innerHTML = aiBox('Claude prüft deine Erklärung'); el.disabled = true; S.fyLast = null;
-  const prompt = `Du bist ein strenger, fairer Lehrer an einem deutschen Gymnasium. Ein Schüler erklärt ein Thema in eigenen Worten (Feynman-Methode). Prüfe die Erklärung fachlich.
-
-Fach: ${subj || 'nicht angegeben'}
-Thema: ${topic}
-Erklärung des Schülers:
-"""
-${text.slice(0, 6000)}
-"""
-
-Antworte nur mit einem JSON-Objekt:
-{"score": 0-100, "good": ["…"], "gaps": ["…"], "errors": ["…"], "questions": ["…", "…", "…"], "tip": "…"}
-
-- score: wie vollständig und korrekt das Verständnis ist.
-- good: bis zu 3 Dinge, die richtig und gut erklärt sind.
-- gaps: wichtige Punkte, die fehlen oder zu vage sind.
-- errors: fachliche Fehler, jeweils kurz mit der Korrektur. Leere Liste, wenn keine.
-- questions: genau 3 Prüfungsfragen, die seine Lücken testen, ohne Lösungen.
-- tip: ein konkreter nächster Lernschritt.
-Deutsch, direkt, kein Lob ohne Grund. Hat die Erklärung kaum Inhalt, gib einen niedrigen Wert. Erfinde nichts.`;
-  try{
-    const r = await askJSON(prompt);
-    const res = {score:clamp(Number(r.score) || 0, 0, 100), good:arr(r.good), gaps:arr(r.gaps), errors:arr(r.errors), questions:arr(r.questions).slice(0, 3), tip:String(r.tip || '')};
-    S.fyLast = {topic, res};
-    out.innerHTML = fyBox(S.fyLast);
-    staggerIn($$('.ai > *', out), {y:12, blur:4, gap:70});
-    const box = out.getBoundingClientRect(); FX.burst(box.left + 40, box.top + 30, {n:20, speed:5});
-    tEl.value = ''; xEl.value = ''; $('#fy_subj').value = '';
-    try{ const id = await dbAdd('entries', {area:'lernen', type:'feynman', title:topic, text, fields:{subject:subj, result:res}, createdAt:nowISO()}); S.fresh = {col:'entries', id}; }catch(e){ failed(e); }
-  }catch(e){ out.innerHTML = errBox(sMsg(e)); }
-  el.disabled = false;
-};
-
-/* ---------- Prompt-Coach ---------- */
-function pcResultHTML(r){
-  return `<div class="ai"><div class="ai-h"><span class="badge">${ic('ki')}</span><strong>Bewertung deines Prompts</strong><small>Claude</small></div><div class="score-row"><b>${r.score}/10</b><div class="meter"><i style="width:${r.score * 10}%"></i></div></div>
-    ${r.problems.length ? blk('Schwächen', `<ul>${r.problems.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`) : ''}
-    ${blk('Verbesserte Version', `<div class="copybox" id="pc_imp">${esc(r.improved)}</div>`)}
-    ${r.why.length ? blk('Warum das besser funktioniert', `<ul>${r.why.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`) : ''}
-    <div class="actions"><button class="btn sm primary" data-action="copy" data-src="pc_imp">${ic('copy')}Kopieren</button><button class="btn sm" data-action="pcSave">${ic('plus')}In meine Prompts</button></div></div>`;
-}
-ACT.promptCoach = async el => {
-  const tEl = $('#pc_text'), text = tEl.value.trim(), goal = $('#pc_goal').value.trim();
-  if(text.length < 8){ shake(tEl); tEl.focus(); return; }
-  const out = $('#pcOut'); out.innerHTML = aiBox('Claude analysiert deinen Prompt'); el.disabled = true;
-  const prompt = `Du bist Experte für Prompt Engineering und bringst es einem ehrgeizigen Schüler bei. Bewerte seinen Prompt und verbessere ihn.
-
-Prompt:
-"""
-${text.slice(0, 8000)}
-"""
-${goal ? `Sein Ziel: ${goal}\n` : ''}
-Antworte nur mit einem JSON-Objekt:
-{"score": 1-10, "problems": ["…"], "improved": "…", "why": ["…"]}
-
-- problems: 2 bis 4 konkrete Schwächen.
-- improved: die verbesserte Version, direkt nutzbar, auf Deutsch. Mit Kontext, klarer Aufgabe, Format und, wo sinnvoll, der Erlaubnis für Rückfragen. Nicht unnötig lang. Platzhalter in eckigen Klammern, wo er etwas ergänzen muss.
-- why: 3 kurze Erklärungen, warum die neue Version besser funktioniert.
-Sei ehrlich, keine Schönfärberei.`;
-  try{
-    const r = await askJSON(prompt);
-    S.pcLast = {score:clamp(Math.round(Number(r.score) || 0), 1, 10), problems:arr(r.problems), improved:String(r.improved || ''), why:arr(r.why)};
-    out.innerHTML = pcResultHTML(S.pcLast); staggerIn($$('.ai > *', out), {y:12, blur:4, gap:70});
-  }catch(e){ out.innerHTML = errBox(sMsg(e)); }
-  el.disabled = false;
-};
-ACT.pcSave = () => { if(S.pcLast) openForm('prompt', null, {vals:{title:'', text:S.pcLast.improved, cat:'lernen', why:S.pcLast.why.join(' ')}}); };
-
 /* ---------- Gegenargumente zu Entscheidungen ---------- */
 ACT.devil = async el => {
   const d = find('decisions', el.dataset.id); if(!d) return;
@@ -3073,7 +2644,7 @@ const STAGES = {meta:'Videodaten laden', tr:'Transkript über vidIQ holen', ai:'
 function videoAddHTML(){
   const job = VJ.job, meta = store.get('vmeta', true), bal = VJ.balance;
   const stages = job ? `<div class="stages">${job.steps.map(k => { const i = job.steps.indexOf(k), cur = job.steps.indexOf(job.stage); const cls = job.err && k === job.stage ? 'err' : i < cur ? 'ok' : i === cur ? (job.err ? 'err' : 'run') : ''; return `<div class="stage ${cls}"><span class="dot"></span>${esc(STAGES[k])}</div>`; }).join('')}</div>${job.err ? errBox(job.err) + `<div class="actions"><button class="btn sm" data-action="vjClose">Schließen</button></div>` : '<div class="scan"></div>'}` : '';
-  return `<div class="add-video" id="vadd"><h4>Video zusammenfassen</h4><p>YouTube-Link einfügen. Das Dashboard holt das Transkript über deinen vidIQ-Connector, Claude schreibt daraus die Zusammenfassung. Das dauert meist unter einer Minute.</p>
+  return `<div class="add-video" id="vadd"><h4>Video zusammenfassen</h4>
     <div class="av-row"><input class="txt" id="vurl" type="url" inputmode="url" placeholder="https://www.youtube.com/watch?v=…" autocomplete="off" ${job && !job.err ? 'disabled' : ''} aria-label="YouTube-Link"><button class="btn primary" data-action="vgo" ${job && !job.err ? 'disabled' : ''}>${ic('ki')}Zusammenfassen</button></div>
     ${stages}
     <div class="av-foot"><span>${bal ? `vidIQ: ${bal.total} Credits übrig, reicht für etwa ${Math.floor(bal.total / (meta ? 10 : 5))} Videos${bal.reset ? ` · neu ab ${esc(bal.reset)}` : ''}` : `Pro Video ${meta ? 10 : 5} vidIQ-Credits`}</span><button class="tgl" type="button" data-action="vmeta" aria-pressed="${meta}"><span>Originaltitel und Kanal</span><span class="sw"></span></button></div></div>`;
@@ -3950,7 +3521,7 @@ Deutsch, direkt, keine leeren Motivationssprüche.`;
    INTRO  (ca. 9,5 Sekunden, jederzeit überspringbar)
    ===================================================================== */
 const INTRO_WORDS = ['Lernen.', 'Denken.', 'Vorbereiten.', 'Wachsen.'];
-const INTRO_ICONS = ['notizen', 'lernen', 'videos', 'denken', 'mental', 'fussball', 'ki', 'leben'];
+const INTRO_ICONS = ['notizen', 'lernen', 'fussball', 'denken', 'mental', 'videos', 'ki', 'leben'];
 function shouldPlayIntro(){
   if(reduce) return false;
   const mode = store.get('intro', 'daily');
