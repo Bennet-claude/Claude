@@ -714,19 +714,23 @@ textarea.r-in{ min-height:108px; resize:none; }
 .i-ic{ position:absolute; left:50%; top:50%; width:50px; height:50px; margin:-25px 0 0 -25px; border-radius:16px; display:grid; place-items:center; color:#FFB25B; background:linear-gradient(145deg, rgba(255,122,31,.34), rgba(36,20,10,.92)); box-shadow:inset 0 0 0 1px rgba(255,170,100,.4), 0 12px 32px -10px rgba(255,122,31,.9); opacity:0; will-change:transform, opacity; z-index:2; }
 .i-ic svg{ width:25px; height:25px; }
 .ig-h{ position:absolute; left:0; right:0; top:calc(50% - 228px); text-align:center; font-family:var(--mono); font-size:12px; letter-spacing:.3em; text-transform:uppercase; color:rgba(255,178,91,.9); white-space:nowrap; }
-.i-grid{ position:absolute; left:50%; top:50%; translate:-50% -50%; width:min(94vw, 440px); display:grid; grid-template-columns:1fr 1fr; gap:16px 10px; }
-.ig-c{ display:flex; align-items:center; gap:10px; min-width:0; }
-.ig-slot{ flex:none; width:46px; height:50px; }
+.i-grid{ position:absolute; left:50%; top:50%; translate:-50% -50%; width:min(96vw, 440px); display:grid; grid-template-columns:1fr 1fr; gap:10px 8px; }
+.ig-c{ position:relative; display:flex; align-items:center; gap:8px; min-width:0; padding:5px 8px 5px 5px; }
+.ig-bg{ position:absolute; inset:0; border-radius:18px; background:linear-gradient(120deg, rgba(255,140,60,.12), rgba(255,255,255,.02) 70%); border:1px solid rgba(255,170,100,.16); transform-origin:30px 50%; transform:scaleX(0); opacity:0; }
+.ig-slot, .ig-tx{ position:relative; }
+.ig-slot{ flex:none; width:50px; height:50px; }
+.ig-tx{ overflow:hidden; }
 .ig-tx{ display:flex; flex-direction:column; min-width:0; }
 .ig-tx .lm{ max-width:100%; }
-.ig-t{ font-size:clamp(12.5px, 3.6vw, 15px); font-weight:750; letter-spacing:-.015em; white-space:nowrap; }
+.ig-t{ font-size:clamp(12.5px, 3.5vw, 15px); font-weight:750; letter-spacing:-.015em; white-space:nowrap; }
 .ig-s{ font-size:clamp(11px, 3vw, 12.5px); color:rgba(246,237,228,.58); white-space:nowrap; }
 @media (min-width:760px){
   .i-grid{ width:min(90vw, 880px); grid-template-columns:repeat(4, 1fr); gap:34px 18px; }
-  .ig-c{ flex-direction:column; text-align:center; gap:12px; }
+  .ig-c{ flex-direction:column; text-align:center; gap:12px; padding:14px 8px 16px; }
+  .ig-bg{ transform-origin:50% 39px; }
   .ig-tx{ align-items:center; }
   .ig-t{ font-size:17px; }
-  .ig-h{ top:calc(50% - 170px); }
+  .ig-h{ top:calc(50% - 205px); }
 }
 .i-fin{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; opacity:0; padding:0 16px; }
 .i-logo{ width:76px; height:76px; overflow:visible; margin-bottom:22px; opacity:0; }
@@ -6296,7 +6300,9 @@ TABCOUNT['abend/verlauf'] = () => S.reports.filter(r => r.completed).length;
    kein Blur), damit nichts ruckelt.
    ===================================================================== */
 const INTRO_ICONS = ['notizen', 'lernen', 'videos', 'denken', 'mental', 'fussball', 'ki', 'leben'];
-const INTRO_SUB = {notizen:'Planen & merken', lernen:'Schule & Lernen', videos:'Wissen aus Videos', denken:'Ziele & Entscheidungen', mental:'Druck & Fokus', fussball:'Der 8er', ki:'KI beherrschen', leben:'Geld & Leben'};
+const INTRO_SUB = {notizen:'Planen & merken', lernen:'Schule & Lernen', videos:'Wissen aus Videos', denken:'Klar entscheiden', mental:'Druck & Fokus', fussball:'Der 8er', ki:'KI beherrschen', leben:'Geld & Leben'};
+/* Landezeit von Icon i im Raster; Beschriftung entfaltet sich erst danach aus dem Icon. */
+const LAND = i => IT.ex + .1 + i * .06 + .95;
 const IT = {open:.25, A:2.2, B:5.45, C:8.7, D:11.95, ring:15.25, orbit:15.45, imp:18.05, ex:18.6, gx:22.3, title:22.85, end:26.4};
 const WARPS = [[1.55, 1], [4.95, .95], [8.2, .95], [11.45, .95], [14.75, .95], [18.55, 1.2], [22.3, .8]];
 function shouldPlayIntro(){
@@ -6346,7 +6352,7 @@ function runIntro(force){
       ${GROW.map(g => `<div class="iw-pt"><i></i><span>${esc(g)}</span></div>`).join('')}</section>
     <svg class="i-ring" id="iRing" viewBox="0 0 150 150"><defs><linearGradient id="ig" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE2B3"/><stop offset=".5" stop-color="#FFB25B"/><stop offset="1" stop-color="#FF4E2A"/></linearGradient></defs><circle class="trk" cx="75" cy="75" r="62"/><circle class="drw" cx="75" cy="75" r="62" pathLength="1" transform="rotate(-90 75 75)"/><circle class="core" cx="75" cy="75" r="9"/></svg>
     <div class="ig-h" id="igH">${L('Acht Bereiche · Ein System', '')}</div>
-    <div class="i-grid" id="iGrid">${INTRO_ICONS.map(k => `<div class="ig-c"><span class="ig-slot"></span><div class="ig-tx"><span class="lm"><span class="lc ig-t">${esc(sec(k).title)}</span></span><span class="lm"><span class="lc ig-s">${esc(INTRO_SUB[k])}</span></span></div></div>`).join('')}</div>
+    <div class="i-grid" id="iGrid">${INTRO_ICONS.map(k => `<div class="ig-c"><i class="ig-bg"></i><span class="ig-slot"></span><div class="ig-tx"><span class="lm"><span class="lc ig-t">${esc(sec(k).title)}</span></span><span class="lm"><span class="lc ig-s">${esc(INTRO_SUB[k])}</span></span></div></div>`).join('')}</div>
     ${INTRO_ICONS.map(k => `<div class="i-ic">${ic(k)}</div>`).join('')}
     <div class="i-fin" id="iFin"><svg class="i-logo" viewBox="0 0 150 150"><circle class="trk" cx="75" cy="75" r="62"/><circle class="drw" cx="75" cy="75" r="62" pathLength="1" transform="rotate(-90 75 75)"/><circle class="core" cx="75" cy="75" r="11"/></svg>
       <div class="i-title" style="font-size:${tsz.toFixed(1)}px">${[...'Self Educate'].map(c => `<span class="m"><span class="shine">${c === ' ' ? '&nbsp;' : esc(c)}</span></span>`).join('')}</div>
@@ -6376,6 +6382,7 @@ function runIntro(force){
   const rotAt = t => .7 * (t - IT.orbit) + 2.6 * Math.pow(Math.max(0, t - IT.imp + .5), 2.2);
   const icons = $$('.i-ic', el), slots = $$('.ig-slot', el);
   let slotPos = [];
+  const stageEl = $('#iStage', el);
   function frame(now){
     const dt = Math.min(.05, (now - lastNow) / 1000); lastNow = now;
     const real = (now - tStart) / 1000, t = t0 == null ? -1 : (now - t0) / 1000;
@@ -6440,7 +6447,10 @@ function runIntro(force){
       if(t > IT.ex - .05 && t < IT.ex + .5) glowAt(cx, cy, 260 * (1 - seg(t, IT.ex, .5)) + 60, 1 - seg(t, IT.ex, .5));
       if(t > IT.ex - .03 && t < IT.ex + .9){ const k = seg(t, IT.ex - .03, .92), f = k < .1 ? k / .1 : Math.pow(1 - (k - .1) / .9, 2); ctx.globalAlpha = f * .8; ctx.fillStyle = '#FFD9B0'; ctx.fillRect(-20, -20, W + 40, H + 40); glowAt(cx, cy, Math.max(W, H) * .7, f); }
       if(t > IT.title - .1 && t < IT.end) glowAt(cx, cy - tsz * .95, 90, .35 * seg(t, IT.title, .6));
-      /* Icons: Orbit -> Implosion -> Raster -> Abflug */
+      /* Icons: Orbit -> Implosion -> Raster -> Abflug. Zielplätze werden live gemessen,
+         relativ zur Bühnenmitte: so sitzen die Icons exakt neben der Schrift, auch wenn
+         Schrift nachlädt, das Fenster die Größe ändert oder die Kamera wackelt. */
+      if(t >= IT.ex - .1){ const sr = stageEl.getBoundingClientRect(), mx = sr.left + sr.width / 2, my = sr.top + sr.height / 2; slotPos = slots.map(s => { const r = s.getBoundingClientRect(); return [r.left + r.width / 2 - mx, r.top + r.height / 2 - my]; }); }
       icons.forEach((c, i) => {
         let x = 0, y = 0, s = 1, o = 0, r = 0;
         const a0 = i / 8 * Math.PI * 2 - Math.PI / 2;
@@ -6448,10 +6458,11 @@ function runIntro(force){
           const p = E.outC(seg(t, IT.orbit + i * .08, 1.1)), imp = E.inC(seg(t, IT.imp, IT.ex - IT.imp));
           if(p > 0){ const ang = a0 + rotAt(t) + (1 - p) * 2.4, rad = lerp(Math.max(W, H) * .8, R * (1 - imp), p); x = Math.cos(ang) * rad; y = Math.sin(ang) * rad; s = lerp(.5, 1, p) * (1 - imp * .75); o = p * (1 - imp * .4); }
         } else if(slotPos[i]){
-          const q = seg(t, IT.ex + .1 + i * .045, 1.05), e = E.outB(q), g = E.inC(seg(t, IT.gx + i * .035, .6));
-          const tx = slotPos[i][0] - cx, ty = slotPos[i][1] - cy, curve = Math.sin(q * Math.PI) * 60 * (i % 2 ? 1 : -1);
+          const q = seg(t, LAND(i) - .95, .95), e = 1 + 1.9 * Math.pow(q - 1, 3) + .9 * Math.pow(q - 1, 2), g = E.inC(seg(t, IT.gx + i * .035, .6)), lp = seg(t, LAND(i), .4);
+          const tx = slotPos[i][0], ty = slotPos[i][1], curve = Math.sin(q * Math.PI) * 60 * (i % 2 ? 1 : -1);
           x = lerp(0, tx, e) - ty / (Math.hypot(tx, ty) || 1) * curve; y = lerp(0, ty, e) + tx / (Math.hypot(tx, ty) || 1) * curve;
-          s = lerp(.25, 1, Math.min(1, e)); r = (1 - Math.min(1, e)) * 300; o = q > 0 ? 1 : 0;
+          s = lerp(.25, 1, Math.min(1, e)) * (1 + .12 * Math.sin(lp * Math.PI)); r = (1 - Math.min(1, e)) * 300; o = q > 0 ? 1 : 0;
+          if(lp > 0 && lp < 1) glowAt(cx + tx, cy + ty, 46, .55 * Math.sin(lp * Math.PI));
           if(g > 0){ x = lerp(x, 0, g); y = lerp(y, -tsz * .95, g); s *= 1 - g * .8; o = 1 - g; }
         }
         c.style.opacity = o.toFixed(3); c.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${s.toFixed(3)}) rotate(${r.toFixed(1)}deg)`;
@@ -6546,8 +6557,9 @@ function runIntro(force){
     /* Raster mit Beschriftung */
     const hd = $('#igH', el);
     rise($$('.lc', hd), IT.ex + .35, .012, .7); fall($$('.lc', hd), IT.gx, .006, .4);
-    $$('.ig-c', el).forEach((cell, i) => { const at = IT.ex + .55 + i * .05;
-      rise($$('.lc', cell), at, .09, .75);
+    $$('.ig-c', el).forEach((cell, i) => { const at = LAND(i) - .12;
+      A($('.ig-bg', cell), [{transform:wide ? 'scaleY(0)' : 'scaleX(0)', opacity:0}, {transform:'none', opacity:1}], at, .6, {easing:EASE.out});
+      $$('.lc', cell).forEach((n, j) => A(n, [{transform:`translate(${wide ? 0 : -14}px, 108%)`}, {transform:'none'}], at + .1 + j * .08, .7));
       X(cell, [{opacity:1, transform:'none'}, {opacity:0, transform:'scale(.9)'}], IT.gx + i * .03, .45, {easing:EASE.in}); });
     /* Finale: Titel */
     const fin = $('#iFin', el), logo = $('.i-logo', fin);
@@ -6564,7 +6576,6 @@ function runIntro(force){
     A(fin, [{transform:'scale(1)'}, {transform:'scale(1.035)'}], IT.title, IT.end - IT.title, {easing:'linear'});
     A($('#iBar', el), [{transform:'scaleX(0)'}, {transform:'scaleX(1)'}], 0, IT.end, {easing:'linear'});
     /* Raster-Positionen messen */
-    slotPos = slots.map(s => { const r = s.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
   }
 
   /* ---------- Start (Schriften abwarten, damit nichts springt) ---------- */
